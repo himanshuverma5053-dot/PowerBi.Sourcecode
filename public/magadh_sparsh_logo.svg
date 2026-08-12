@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 80" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sparshGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4f72ff" />
+      <stop offset="35%" stop-color="#818cf8" />
+      <stop offset="70%" stop-color="#d946ef" />
+      <stop offset="100%" stop-color="#ec4899" />
+    </linearGradient>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Georgia&amp;family=Inter:wght@400;500;600&amp;display=swap');
+      .magadh-text {
+        font-family: 'Georgia', 'Times New Roman', serif;
+        font-size: 64px;
+        font-weight: 400;
+        fill: #b34eb1;
+      }
+      .sparsh-text {
+        font-family: 'Inter', -apple-system, sans-serif;
+        font-size: 64px;
+        font-weight: 500;
+        fill: url(#sparshGrad);
+        letter-spacing: -0.5px;
+      }
+    </style>
+  </defs>
+
+  <g transform="translate(5, 60)">
+    <text class="magadh-text" x="0" y="0">magadh</text>
+    <text class="sparsh-text" x="226" y="0">Sparsh</text>
+  </g>
+</svg>

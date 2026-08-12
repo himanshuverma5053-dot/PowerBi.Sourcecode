@@ -1,0 +1,6 @@
+{
+  "name": "magadh Sparsh",
+  "description": "Modern premium B2C tyres customer platform featuring real-time inventory, tyre finder, quick ordering, GST invoicing, order tracking, payments, and admin control.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
