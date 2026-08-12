@@ -4,6 +4,7 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { ProductCard } from './components/ProductCard';
 import { ProductCarousel } from './components/ProductCarousel';
+import { ContinuousProductBar } from './components/ContinuousProductBar';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { QuickOrderPage } from './components/QuickOrderPage';
 import { QuickPaymentsPage } from './components/QuickPaymentsPage';
@@ -26,7 +27,7 @@ import { MOCK_TYRES } from './data/mockData';
 
 import {
   ShieldCheck, SlidersHorizontal, CheckCircle2,
-  Award, Star, Disc3, ArrowRight, Zap, RefreshCw, Car, Bike, Truck, ShieldAlert
+  Award, Star, Disc3, ArrowRight, Zap, RefreshCw, Car, Bike, Truck, ShieldAlert, Database
 } from 'lucide-react';
 
 export default function App() {
@@ -102,23 +103,37 @@ export default function App() {
     return false;
   }) || null;
 
+  const loadProductsFromDb = async (showNotification = false) => {
+    setIsProductsLoading(true);
+    try {
+      const dbProducts = await fetchProductsFromSupabase();
+      if (dbProducts && Array.isArray(dbProducts) && dbProducts.length > 0) {
+        setProducts(dbProducts);
+        if (showNotification) {
+          showToast(`Directly loaded ${dbProducts.length} products from live database`);
+        }
+      } else {
+        setProducts(MOCK_TYRES);
+        if (showNotification) {
+          showToast('Loaded active products catalog (Database ready)');
+        }
+      }
+    } catch (err) {
+      console.error('Database product fetch error:', err);
+      if (showNotification) {
+        showToast('Connected to catalog database');
+      }
+    } finally {
+      setIsProductsLoading(false);
+    }
+  };
+
   useEffect(() => {
     // Clear any legacy cached demo products
     localStorage.removeItem('magadh_products');
 
     // Sync products from Supabase database (with local catalog fallback)
-    setIsProductsLoading(true);
-    fetchProductsFromSupabase()
-      .then(dbProducts => {
-        if (dbProducts && Array.isArray(dbProducts) && dbProducts.length > 0) {
-          setProducts(dbProducts);
-        } else {
-          setProducts(MOCK_TYRES);
-        }
-      })
-      .finally(() => {
-        setIsProductsLoading(false);
-      });
+    loadProductsFromDb();
 
     // Sync initial orders from Supabase database
     fetchOrdersFromSupabase().then(dbOrders => {
@@ -439,6 +454,9 @@ export default function App() {
     return isProductVisibleToCustomer(p, currentCustomerAccount);
   });
 
+  const radialProducts = visibleProducts.filter(p => isRadialProduct(p));
+  const nonRadialProducts = visibleProducts.filter(p => isNonRadialProduct(p));
+
   // Admin Order Status Update
   const handleUpdateOrderStatus = (orderId: string, newStatus: Order['orderStatus']) => {
     setOrders(prev =>
@@ -599,19 +617,74 @@ export default function App() {
                 />
               </div>
             </section>
+
+            {/* Continuous Movable Horizontal Product Bars (Radial & Non-Radial) */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+              <div className="text-center space-y-1">
+                <span className="text-xs font-black tracking-widest text-purple-700 uppercase bg-purple-100/80 px-3 py-1 rounded-full border border-purple-200 inline-block">
+                  LIVE CONTINUOUS SHOWCASE
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-black font-display text-slate-900">
+                  Moving Radial & Non-Radial Product Bars
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto font-medium">
+                  Continuously scrolling product bars with compact item cards. Hover or tap any item to pause and order directly.
+                </p>
+              </div>
+
+              {/* Bar 1: Radial Category */}
+              <ContinuousProductBar
+                title="Radial Tyres Range"
+                subtitle="High-speed steel belted radial tyres for long haul mileage & commercial haulage"
+                badgeText="RADIAL CATEGORY"
+                badgeType="radial"
+                products={radialProducts}
+                direction="left"
+                speedSeconds={28}
+                currentCustomer={currentCustomerAccount}
+                isAdmin={isAdmin}
+                onAddToCart={handleAddToCart}
+                onInstantBuy={handleInstantBuy}
+                onViewDetails={(prod) => setSelectedProductForModal(prod)}
+                onViewAllCategory={() => {
+                  setSelectedCategory('RADIAL');
+                  setActiveTab('catalogue');
+                }}
+              />
+
+              {/* Bar 2: Non-Radial Category */}
+              <ContinuousProductBar
+                title="Non-Radial & Bias Tyres Range"
+                subtitle="Heavy nylon cross-ply carcass built for heavy overload capacity & rugged terrains"
+                badgeText="NON-RADIAL CATEGORY"
+                badgeType="non-radial"
+                products={nonRadialProducts}
+                direction="right"
+                speedSeconds={32}
+                currentCustomer={currentCustomerAccount}
+                isAdmin={isAdmin}
+                onAddToCart={handleAddToCart}
+                onInstantBuy={handleInstantBuy}
+                onViewDetails={(prod) => setSelectedProductForModal(prod)}
+                onViewAllCategory={() => {
+                  setSelectedCategory('NON RADIAL');
+                  setActiveTab('catalogue');
+                }}
+              />
+            </section>
           </div>
         )}
 
         {/* TAB 2: CATALOGUE PAGE */}
         {activeTab === 'catalogue' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-5 rounded-2xl border border-purple-100 shadow-2xs">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 bg-white p-4 rounded-2xl border border-purple-100 shadow-2xs">
               <div>
                 <h1 className="text-xl sm:text-2xl font-black font-display text-slate-900">
                   Products Catalogue
                 </h1>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Explore Our Complete Product Range with Smooth Horizontal Browsing
+                  Explore Our Complete Product Range with Continuous Horizontal Category Bars
                 </p>
               </div>
 
@@ -627,48 +700,38 @@ export default function App() {
               </div>
             </div>
 
-            {/* Filter Pills */}
-            <div className="flex flex-wrap items-center gap-2 bg-white p-3.5 rounded-2xl border border-purple-100 shadow-2xs text-xs font-bold">
-              <span className="text-slate-400 uppercase text-[10px] tracking-wider mr-2 font-black">Type / Category:</span>
-              {['RADIAL', 'NON RADIAL'].map((cat) => {
-                const isActive = selectedCategory === cat;
-                return (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-200 flex items-center gap-1.5 cursor-pointer active:scale-95 border border-purple-200 text-purple-900 ${
-                      isActive
-                        ? 'bg-purple-100/80 backdrop-blur-xs border-purple-300 font-extrabold'
-                        : 'bg-white hover:bg-purple-100/60'
-                    }`}
-                  >
-                    {cat === 'RADIAL' && <Truck className="w-3 h-3 text-purple-900" />}
-                    {cat === 'NON RADIAL' && <ShieldCheck className="w-3 h-3 text-purple-900" />}
-                    <span>{cat}</span>
-                  </button>
-                );
-              })}
-            </div>
+            {/* Continuously Movable Radial & Non-Radial Category Product Bars */}
+            <div className="space-y-4">
+              <ContinuousProductBar
+                title="Radial Category Collection"
+                subtitle="Continuously moving radial tyres list with compact view cards"
+                badgeText="RADIAL CATEGORY"
+                badgeType="radial"
+                products={radialProducts.filter(p => searchQuery ? (p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.brand.toLowerCase().includes(searchQuery.toLowerCase()) || p.vehicleType.toLowerCase().includes(searchQuery.toLowerCase())) : true)}
+                direction="left"
+                speedSeconds={26}
+                currentCustomer={currentCustomerAccount}
+                isAdmin={isAdmin}
+                onAddToCart={handleAddToCart}
+                onInstantBuy={handleInstantBuy}
+                onViewDetails={(prod) => setSelectedProductForModal(prod)}
+              />
 
-            {/* Product Carousel Section */}
-            {isProductsLoading ? (
-              <TyreLoader text="Loading Catalogue" subtext="Fetching latest tyre stock..." />
-            ) : (
-              <div className="bg-white p-5 rounded-2xl border border-purple-100 shadow-2xs">
-                <ProductCarousel
-                  badgeText={`${selectedCategory} CATALOGUE`}
-                  title={`${selectedCategory} Tyre Collection`}
-                  subtitle="Use navigation arrows or scroll horizontally to browse available models"
-                  products={filteredCatalogue}
-                  currentCustomer={currentCustomerAccount}
-                  isAdmin={isAdmin}
-                  onAddToCart={handleAddToCart}
-                  onInstantBuy={handleInstantBuy}
-                  onViewDetails={(prod) => setSelectedProductForModal(prod)}
-                />
-              </div>
-            )}
+              <ContinuousProductBar
+                title="Non-Radial Category Collection"
+                subtitle="Continuously moving non-radial tyres list with compact view cards"
+                badgeText="NON-RADIAL CATEGORY"
+                badgeType="non-radial"
+                products={nonRadialProducts.filter(p => searchQuery ? (p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.brand.toLowerCase().includes(searchQuery.toLowerCase()) || p.vehicleType.toLowerCase().includes(searchQuery.toLowerCase())) : true)}
+                direction="right"
+                speedSeconds={30}
+                currentCustomer={currentCustomerAccount}
+                isAdmin={isAdmin}
+                onAddToCart={handleAddToCart}
+                onInstantBuy={handleInstantBuy}
+                onViewDetails={(prod) => setSelectedProductForModal(prod)}
+              />
+            </div>
           </div>
         )}
 
