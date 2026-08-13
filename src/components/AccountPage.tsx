@@ -207,7 +207,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({
               <span>{isAdminUser ? 'Super Admin Account' : 'Standard Customer Account'}</span>
             </div>
             <h1 className="text-lg sm:text-xl font-bold font-display text-white leading-tight">
-              {customerName || 'My Account Profile'}
+              {customerName || 'My Profile'}
             </h1>
             <p className="text-purple-200 text-xs">
               {companyName ? `${companyName} | ` : ''}{email || 'No email provided'}

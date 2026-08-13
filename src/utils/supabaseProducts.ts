@@ -135,7 +135,7 @@ export async function fetchProductsFromSupabase(): Promise<TyreProduct[]> {
       return [];
     }
 
-    if (Array.isArray(data) && data.length > 0) {
+    if (Array.isArray(data)) {
       return data.map(normalizeProductRow);
     }
   } catch (err) {

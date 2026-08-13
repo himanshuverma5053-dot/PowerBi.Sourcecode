@@ -63,7 +63,7 @@ export const QuickOrderPage: React.FC<QuickOrderPageProps> = ({
             <span>Fast Dispatch & GST Tax Invoice Records</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-black font-display text-white">
-            Quick Order Section
+            My Orders
           </h1>
           <p className="text-purple-200 text-sm mt-1 max-w-xl">
             Track real-time delivery timelines, download GST-ready 18% tax invoices, and review order payment statuses.

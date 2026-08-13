@@ -38,13 +38,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   return (
-    <div className={`group bg-white rounded-2xl border border-purple-100/90 shadow-md hover:shadow-xl hover:border-purple-300 transition-all duration-300 flex flex-col justify-between overflow-hidden relative ${
+    <div className={`group bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-slate-300 transition-all duration-300 flex flex-col justify-between overflow-hidden relative ${
       compact ? 'h-full' : ''
     }`}>
       {/* Top Badges Overlay */}
       <div className="p-3 pb-0 flex justify-between items-start z-10 gap-1">
         <div className="flex flex-wrap gap-1 items-center">
-          <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-purple-900 text-white border border-purple-800 shadow-2xs">
+          <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-slate-900 text-white border border-slate-950 shadow-2xs">
             {product.brand}
           </span>
           {product.evReady && (
@@ -62,7 +62,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         <div className="text-right shrink-0">
           {product.stock > 0 ? (
-            <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-purple-100 text-purple-900 border border-purple-200">
+            <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-slate-100 text-slate-800 border border-slate-200">
               {product.stock} in Stock
             </span>
           ) : (
@@ -75,7 +75,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
       {/* Image Container with Hover Zoom */}
       <div
-        className="relative h-32 sm:h-36 w-full flex items-center justify-center p-3 cursor-pointer overflow-hidden bg-purple-50/40 mt-1"
+        className="relative h-32 sm:h-36 w-full flex items-center justify-center p-3 cursor-pointer overflow-hidden bg-slate-50/70 mt-1"
         onClick={handleView}
       >
         <img
@@ -96,7 +96,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
           <h3
             onClick={handleView}
-            className="text-xs sm:text-sm font-extrabold text-purple-950 hover:text-purple-700 cursor-pointer line-clamp-1 transition-colors font-display"
+            className="text-xs sm:text-sm font-extrabold text-slate-900 hover:text-slate-700 cursor-pointer line-clamp-1 transition-colors font-display"
           >
             {product.name}
           </h3>
@@ -107,29 +107,29 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Specs Pill Grid */}
-        <div className="grid grid-cols-3 gap-1 bg-purple-50/80 p-1.5 rounded-lg border border-purple-100 text-[10px] font-semibold text-purple-950">
+        <div className="grid grid-cols-3 gap-1 bg-slate-50 p-1.5 rounded-lg border border-slate-200 text-[10px] font-semibold text-slate-900">
           <div className="text-center">
-            <span className="text-[8px] text-purple-600 block uppercase font-bold">Eff.</span>
-            <span className="text-purple-950 font-extrabold">{product.fuelEfficiency}</span>
+            <span className="text-[8px] text-slate-500 block uppercase font-bold">Eff.</span>
+            <span className="text-slate-950 font-extrabold">{product.fuelEfficiency}</span>
           </div>
-          <div className="text-center border-x border-purple-200">
-            <span className="text-[8px] text-purple-600 block uppercase font-bold">Grip</span>
-            <span className="text-purple-950 font-extrabold">{product.wetGrip}</span>
+          <div className="text-center border-x border-slate-200">
+            <span className="text-[8px] text-slate-500 block uppercase font-bold">Grip</span>
+            <span className="text-slate-950 font-extrabold">{product.wetGrip}</span>
           </div>
           <div className="text-center">
-            <span className="text-[8px] text-purple-600 block uppercase font-bold">Noise</span>
-            <span className="text-purple-950 font-extrabold">{product.noiseDb} dB</span>
+            <span className="text-[8px] text-slate-500 block uppercase font-bold">Noise</span>
+            <span className="text-slate-950 font-extrabold">{product.noiseDb} dB</span>
           </div>
         </div>
 
         {/* Pricing & Add to Cart */}
-        <div className="pt-2 border-t border-purple-100/80 flex items-center justify-between gap-1">
+        <div className="pt-2 border-t border-slate-200 flex items-center justify-between gap-1">
           <div>
             <div className="flex items-baseline space-x-1">
-              <span className="text-sm sm:text-base font-black text-purple-950 font-display">
+              <span className="text-sm sm:text-base font-black text-slate-950 font-display">
                 {formatCurrency(displayPrice)}
               </span>
-              <span className="text-[9px] text-purple-600 font-medium">/ unit</span>
+              <span className="text-[9px] text-slate-500 font-medium">/ unit</span>
             </div>
             <div className="text-[9px] text-amber-900 font-bold truncate">
               Bulk 4+: {formatCurrency(isCustomRate ? displayPrice : (product.bulkPrice || displayPrice))}
@@ -139,9 +139,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <button
             type="button"
             onClick={handleView}
-            className="px-3 py-1.5 rounded-lg bg-purple-100 hover:bg-purple-200 text-purple-950 text-[11px] font-bold transition-all flex items-center space-x-1 cursor-pointer shrink-0"
+            className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold transition-all flex items-center space-x-1 cursor-pointer shrink-0 shadow-2xs"
           >
-            <Eye className="w-3 h-3 text-purple-900" />
+            <Eye className="w-3 h-3 text-slate-200" />
             <span>Details</span>
           </button>
         </div>

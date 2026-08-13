@@ -27,14 +27,15 @@ import { MOCK_TYRES } from './data/mockData';
 
 import {
   ShieldCheck, SlidersHorizontal, CheckCircle2,
-  Award, Star, Disc3, ArrowRight, Zap, RefreshCw, Car, Bike, Truck, ShieldAlert, Database
+  Award, Star, Disc3, ArrowRight, Zap, RefreshCw, Car, Bike, Truck, ShieldAlert, Database,
+  Search, X, PackageX
 } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('home');
 
-  // Shared Master State 1: Products (fetched from database with catalog fallback)
-  const [products, setProducts] = useState<TyreProduct[]>(MOCK_TYRES);
+  // Shared Master State 1: Products (fetched live from Supabase database)
+  const [products, setProducts] = useState<TyreProduct[]>([]);
   const [isProductsLoading, setIsProductsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -107,21 +108,23 @@ export default function App() {
     setIsProductsLoading(true);
     try {
       const dbProducts = await fetchProductsFromSupabase();
-      if (dbProducts && Array.isArray(dbProducts) && dbProducts.length > 0) {
+      if (dbProducts && Array.isArray(dbProducts)) {
         setProducts(dbProducts);
         if (showNotification) {
-          showToast(`Directly loaded ${dbProducts.length} products from live database`);
+          if (dbProducts.length > 0) {
+            showToast(`Loaded ${dbProducts.length} live products from Supabase`);
+          } else {
+            showToast('No products available in Supabase database');
+          }
         }
       } else {
-        setProducts(MOCK_TYRES);
-        if (showNotification) {
-          showToast('Loaded active products catalog (Database ready)');
-        }
+        setProducts([]);
       }
     } catch (err) {
       console.error('Database product fetch error:', err);
+      setProducts([]);
       if (showNotification) {
-        showToast('Connected to catalog database');
+        showToast('Connected to Supabase database');
       }
     } finally {
       setIsProductsLoading(false);
@@ -468,6 +471,37 @@ export default function App() {
     showToast(`Order status updated to ${newStatus}`);
   };
 
+  // Comprehensive Search Matching Helper
+  const matchesSearchQuery = (p: TyreProduct, query: string): boolean => {
+    if (!query || !query.trim()) return true;
+    const q = query.toLowerCase().trim();
+    const tokens = q.split(/\s+/).filter(Boolean);
+
+    const nameLower = (p.name || '').toLowerCase();
+    const brandLower = (p.brand || '').toLowerCase();
+    const categoryLower = (p.category || '').toLowerCase();
+    const descLower = (p.description || '').toLowerCase();
+    const skuLower = (p.sku || '').toLowerCase();
+    const patternLower = (p.pattern || '').toLowerCase();
+    const tireTypeLower = (p.tireType || p.tire_type || '').toLowerCase();
+    const tyreSizeLower = ((p as any).tyreSize || '').toLowerCase();
+    const sizeString = `${p.width || ''}/${p.aspectRatio || ''} r${p.rimSize || ''}`.toLowerCase();
+    const cleanSizeString = sizeString.replace(/[\/\-\s]/g, '');
+    const vehicleString = Array.isArray(p.compatibleVehicles) ? p.compatibleVehicles.join(' ').toLowerCase() : '';
+    const vehicleTypeLower = ((p as any).vehicleType || '').toLowerCase();
+    const tagString = Array.isArray(p.tags) ? p.tags.join(' ').toLowerCase() : '';
+
+    const fullSearchableText = `${nameLower} ${brandLower} ${categoryLower} ${descLower} ${skuLower} ${patternLower} ${tireTypeLower} ${tyreSizeLower} ${sizeString} ${cleanSizeString} ${vehicleString} ${vehicleTypeLower} ${tagString}`;
+
+    return tokens.every((token) => {
+      const cleanToken = token.replace(/[\/\-\s]/g, '');
+      if (fullSearchableText.includes(token)) return true;
+      if (cleanToken.length > 1 && cleanSizeString.includes(cleanToken)) return true;
+      if (token === String(p.width) || token === String(p.rimSize) || token === `r${p.rimSize}`) return true;
+      return false;
+    });
+  };
+
   // Filter catalogue
   const filteredCatalogue = visibleProducts.filter(p => {
     if (selectedCategory === 'RADIAL') {
@@ -481,15 +515,7 @@ export default function App() {
     if (selectedRimSize !== 'All' && p.rimSize !== Number(selectedRimSize)) return false;
     if (selectedTerrain !== 'All' && p.terrain !== selectedTerrain) return false;
     if (evOnlyFilter && !p.evReady) return false;
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      const matchName = p.name.toLowerCase().includes(q);
-      const matchBrand = p.brand.toLowerCase().includes(q);
-      const matchVehicle = p.compatibleVehicles.some(v => v.toLowerCase().includes(q));
-      const matchDesc = p.description.toLowerCase().includes(q);
-      if (!matchName && !matchBrand && !matchVehicle && !matchDesc) return false;
-    }
-    return true;
+    return matchesSearchQuery(p, searchQuery);
   }).sort((a, b) => {
     const priceA = getCustomerEffectivePrice(a, currentCustomerAccount).effectivePrice;
     const priceB = getCustomerEffectivePrice(b, currentCustomerAccount).effectivePrice;
@@ -555,73 +581,14 @@ export default function App() {
               setActiveTab={setActiveTab}
             />
 
-            {/* Category Cards Grid */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-              <div className="text-center space-y-2 mb-8">
-                <span className="text-xs font-black tracking-widest text-purple-700 uppercase">
-                  Explore By Vehicle Category
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-black font-display text-slate-900">
-                  Precision Tyres For Every Segment
-                </h2>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                  { name: 'Radial Tyres', category: 'RADIAL', icon: Truck, bg: 'from-purple-900 to-indigo-950', desc: '295/90 R20, Endurace LD/MA/RA(T), Endutrax MA/MD' },
-                  { name: 'Non Radial Tyres', category: 'NON RADIAL', icon: ShieldCheck, bg: 'from-amber-950 to-purple-950', desc: 'Amar Gold, Abhimanyu, XR-1X, XT-100 HD' },
-                  { name: 'Truck & Commercial', category: 'RADIAL', icon: Truck, bg: 'from-indigo-950 to-slate-900', desc: 'Heavy Duty Commercial Tyres' },
-                  { name: 'EV Ready Range', category: 'RADIAL', icon: Zap, bg: 'from-purple-900 to-indigo-900', desc: 'Low Rolling Resistance Radial Range' },
-                ].map((cat) => {
-                  const Icon = cat.icon;
-                  const catCount = products.filter(p => {
-                    if (cat.category === 'RADIAL') return isRadialProduct(p);
-                    if (cat.category === 'NON RADIAL') return isNonRadialProduct(p);
-                    if (cat.category === 'ALL') return true;
-                    if (cat.category === 'EV') return p.evReady;
-                    return p.category === cat.category;
-                  }).length;
-                  return (
-                    <button
-                      key={cat.name}
-                      onClick={() => {
-                        setSelectedCategory(cat.category);
-                        setActiveTab('catalogue');
-                      }}
-                      className={`p-5 rounded-2xl bg-gradient-to-br ${cat.bg} text-white shadow-lg hover:scale-105 transition-all text-left flex flex-col justify-between h-36 border border-white/10 group`}
-                    >
-                      <Icon className="w-7 h-7 text-amber-400 group-hover:rotate-12 transition-transform" />
-                      <div>
-                        <h3 className="font-extrabold text-sm font-display">{cat.name}</h3>
-                        <p className="text-[11px] text-purple-200 mt-0.5">{catCount} Models ({cat.desc})</p>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
 
-            {/* Featured Tyres Carousel */}
-            <section className="bg-purple-50/50 py-10 border-y border-purple-100">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
-                <ProductCarousel
-                  badgeText="BEST-SELLERS"
-                  title="Top Featured Tyres"
-                  subtitle="Explore our top-performing commercial radial & non-radial tyre models"
-                  products={visibleProducts}
-                  currentCustomer={currentCustomerAccount}
-                  isAdmin={isAdmin}
-                  onAddToCart={handleAddToCart}
-                  onInstantBuy={handleInstantBuy}
-                  onViewDetails={(prod) => setSelectedProductForModal(prod)}
-                />
-              </div>
-            </section>
+
 
             {/* Continuous Movable Horizontal Product Bars (Radial & Non-Radial) */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
               <div className="text-center space-y-1">
-                <span className="text-xs font-black tracking-widest text-purple-700 uppercase bg-purple-100/80 px-3 py-1 rounded-full border border-purple-200 inline-block">
+                <span className="text-xs font-black tracking-widest text-slate-800 uppercase bg-slate-100 px-3 py-1 rounded-full border border-slate-200 inline-block shadow-2xs">
                   LIVE CONTINUOUS SHOWCASE
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-black font-display text-slate-900">
@@ -676,64 +643,147 @@ export default function App() {
         )}
 
         {/* TAB 2: CATALOGUE PAGE */}
-        {activeTab === 'catalogue' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 bg-white p-4 rounded-2xl border border-purple-100 shadow-2xs">
-              <div>
-                <h1 className="text-xl sm:text-2xl font-black font-display text-slate-900">
-                  Products Catalogue
-                </h1>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Explore Our Complete Product Range
-                </p>
+        {activeTab === 'catalogue' && (() => {
+          const searchedProducts = visibleProducts.filter(p => matchesSearchQuery(p, searchQuery));
+          const searchedRadialProducts = radialProducts.filter(p => matchesSearchQuery(p, searchQuery));
+          const searchedNonRadialProducts = nonRadialProducts.filter(p => matchesSearchQuery(p, searchQuery));
+          const popularBrands = Array.from(new Set(visibleProducts.map(p => p.brand).filter(Boolean))).slice(0, 6);
+
+          return (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-4">
+              {/* Header Card with Search Input */}
+              <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-3">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                  <div>
+                    <h1 className="text-xl sm:text-2xl font-black font-display text-slate-900">
+                      Products
+                    </h1>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Explore Our Complete Tyre Range ({visibleProducts.length} Available)
+                    </p>
+                  </div>
+
+                  {/* Search Bar Input */}
+                  <div className="w-full md:w-96 relative flex items-center">
+                    <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      placeholder="Search tyre name, size e.g. 10.00R20, brand..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-9 pr-8 py-2.5 rounded-xl bg-slate-100/80 border border-slate-200 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all shadow-2xs"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-900 rounded-full hover:bg-slate-200 transition-colors cursor-pointer"
+                        title="Clear search query"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+
               </div>
 
-              {/* Search Bar */}
-              <div className="w-full md:w-80 relative">
-                <input
-                  type="text"
-                  placeholder="Search tyre name, brand, vehicle..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-purple-50/50 border border-purple-200 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-700"
+              {/* Active Search Query Status Bar */}
+              {searchQuery.trim() && (
+                <div className="flex items-center justify-between bg-slate-900 text-white px-4 py-2.5 rounded-2xl text-xs font-bold shadow-2xs">
+                  <div className="flex items-center space-x-2 min-w-0">
+                    <Search className="w-4 h-4 text-amber-300 flex-shrink-0" />
+                    <span className="truncate">
+                      Search results for <strong className="text-amber-300">"{searchQuery.trim()}"</strong> — {searchedProducts.length} matching product(s)
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="ml-3 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 hover:text-white transition-colors flex-shrink-0 text-[11px] cursor-pointer"
+                  >
+                    Clear Filter
+                  </button>
+                </div>
+              )}
+
+              {/* Search Results Product Grid */}
+              {searchQuery.trim() ? (
+                searchedProducts.length > 0 ? (
+                  <div className="space-y-3 pt-1">
+                    <h2 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider px-1">
+                      Matching Products ({searchedProducts.length})
+                    </h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      {searchedProducts.map(product => (
+                        <ProductCard
+                          key={product.id}
+                          product={product}
+                          currentCustomer={currentCustomerAccount}
+                          isAdmin={isAdmin}
+                          onAddToCart={handleAddToCart}
+                          onInstantBuy={handleInstantBuy}
+                          onViewDetails={(prod) => setSelectedProductForModal(prod)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-3xl p-10 text-center border border-slate-200 shadow-2xs space-y-3 my-2">
+                    <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-600">
+                      <PackageX className="w-7 h-7" />
+                    </div>
+                    <h3 className="text-base font-extrabold text-slate-900">
+                      No products found matching "{searchQuery}"
+                    </h3>
+                    <p className="text-xs text-slate-500 max-w-md mx-auto">
+                      We couldn't find any tyres matching your search query. Try searching for a brand name (e.g., Apollo, JK Tyre, CEAT), size (e.g., 10.00R20), or vehicle category.
+                    </p>
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="mt-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-2xs transition-colors cursor-pointer inline-flex items-center space-x-1.5"
+                    >
+                      <X className="w-4 h-4 text-amber-300" />
+                      <span>Clear Search Criteria</span>
+                    </button>
+                  </div>
+                )
+              ) : null}
+
+              {/* Continuously Movable Radial & Non-Radial Category Product Bars */}
+              <div className="space-y-4 pt-1">
+                <ContinuousProductBar
+                  title="Radial Category Collection"
+                  subtitle="Continuously moving radial tyres list with compact view cards"
+                  badgeText="RADIAL CATEGORY"
+                  badgeType="radial"
+                  products={searchedRadialProducts}
+                  direction="left"
+                  speedSeconds={26}
+                  currentCustomer={currentCustomerAccount}
+                  isAdmin={isAdmin}
+                  onAddToCart={handleAddToCart}
+                  onInstantBuy={handleInstantBuy}
+                  onViewDetails={(prod) => setSelectedProductForModal(prod)}
+                />
+
+                <ContinuousProductBar
+                  title="Non-Radial Category Collection"
+                  subtitle="Continuously moving non-radial tyres list with compact view cards"
+                  badgeText="NON-RADIAL CATEGORY"
+                  badgeType="non-radial"
+                  products={searchedNonRadialProducts}
+                  direction="left"
+                  speedSeconds={30}
+                  currentCustomer={currentCustomerAccount}
+                  isAdmin={isAdmin}
+                  onAddToCart={handleAddToCart}
+                  onInstantBuy={handleInstantBuy}
+                  onViewDetails={(prod) => setSelectedProductForModal(prod)}
                 />
               </div>
             </div>
-
-            {/* Continuously Movable Radial & Non-Radial Category Product Bars */}
-            <div className="space-y-4">
-              <ContinuousProductBar
-                title="Radial Category Collection"
-                subtitle="Continuously moving radial tyres list with compact view cards"
-                badgeText="RADIAL CATEGORY"
-                badgeType="radial"
-                products={radialProducts.filter(p => searchQuery ? (p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.brand.toLowerCase().includes(searchQuery.toLowerCase()) || p.vehicleType.toLowerCase().includes(searchQuery.toLowerCase())) : true)}
-                direction="left"
-                speedSeconds={26}
-                currentCustomer={currentCustomerAccount}
-                isAdmin={isAdmin}
-                onAddToCart={handleAddToCart}
-                onInstantBuy={handleInstantBuy}
-                onViewDetails={(prod) => setSelectedProductForModal(prod)}
-              />
-
-              <ContinuousProductBar
-                title="Non-Radial Category Collection"
-                subtitle="Continuously moving non-radial tyres list with compact view cards"
-                badgeText="NON-RADIAL CATEGORY"
-                badgeType="non-radial"
-                products={nonRadialProducts.filter(p => searchQuery ? (p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.brand.toLowerCase().includes(searchQuery.toLowerCase()) || p.vehicleType.toLowerCase().includes(searchQuery.toLowerCase())) : true)}
-                direction="left"
-                speedSeconds={30}
-                currentCustomer={currentCustomerAccount}
-                isAdmin={isAdmin}
-                onAddToCart={handleAddToCart}
-                onInstantBuy={handleInstantBuy}
-                onViewDetails={(prod) => setSelectedProductForModal(prod)}
-              />
-            </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* TAB 3: QUICK ORDER PAGE */}
         {activeTab === 'quick-order' && (
@@ -872,9 +922,6 @@ export default function App() {
         onRemoveItem={handleRemoveCartItem}
         onPlaceOrder={handlePlaceOrder}
       />
-
-      {/* Footer - Rendered on Home page when logged in */}
-      {isLoggedIn && activeTab === 'home' && <Footer setActiveTab={setActiveTab} />}
     </div>
   );
 }
