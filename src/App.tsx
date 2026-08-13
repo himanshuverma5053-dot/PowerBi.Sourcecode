@@ -684,7 +684,7 @@ export default function App() {
                   Products Catalogue
                 </h1>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Explore Our Complete Product Range with Continuous Horizontal Category Bars
+                  Explore Our Complete Product Range
                 </p>
               </div>
 
@@ -723,7 +723,7 @@ export default function App() {
                 badgeText="NON-RADIAL CATEGORY"
                 badgeType="non-radial"
                 products={nonRadialProducts.filter(p => searchQuery ? (p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.brand.toLowerCase().includes(searchQuery.toLowerCase()) || p.vehicleType.toLowerCase().includes(searchQuery.toLowerCase())) : true)}
-                direction="right"
+                direction="left"
                 speedSeconds={30}
                 currentCustomer={currentCustomerAccount}
                 isAdmin={isAdmin}
