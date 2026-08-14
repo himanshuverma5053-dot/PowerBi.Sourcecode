@@ -570,8 +570,11 @@ export default function App() {
           </div>
         ) : (
           <>
-        {/* TAB 1: HOMEPAGE / CATALOGUE */}
-        {(activeTab === 'home' || activeTab === 'catalogue') && (() => {
+        {/* TAB 1: HOMEPAGE (All sections removed as requested) */}
+        {activeTab === 'home' && null}
+
+        {/* TAB 2: CATALOGUE PAGE */}
+        {activeTab === 'catalogue' && (() => {
           const searchedProducts = visibleProducts.filter(p => matchesSearchQuery(p, searchQuery));
           const searchedRadialProducts = radialProducts.filter(p => matchesSearchQuery(p, searchQuery));
           const searchedNonRadialProducts = nonRadialProducts.filter(p => matchesSearchQuery(p, searchQuery));
