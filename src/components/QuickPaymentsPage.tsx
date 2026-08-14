@@ -95,24 +95,24 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
   return (
     <div className="py-8 space-y-8">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-purple-950 via-purple-900 to-indigo-950 text-white p-8 rounded-3xl border border-purple-800/60 shadow-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <div className="bg-white text-slate-900 p-8 rounded-3xl border border-slate-200/90 shadow-2xs flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-black font-display text-white">
+          <h1 className="text-3xl sm:text-4xl font-black font-display text-slate-900">
             Quick Payments & Gateway Hub
           </h1>
-          <p className="text-purple-200 text-sm mt-1 max-w-xl">
+          <p className="text-slate-600 text-sm mt-1 max-w-xl">
             Select any order to make payments instantly through secure gateways (Razorpay, PhonePe, UPI, Cards) or configure live payment API keys.
           </p>
         </div>
 
         {/* Sub-Tab Switcher */}
-        <div className="bg-purple-900/80 p-2 rounded-2xl border border-purple-700/60 flex items-center space-x-2">
+        <div className="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 flex items-center space-x-2">
           <button
             onClick={() => setActiveSubTab('settlement')}
-            className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-2 ${
+            className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-2 cursor-pointer ${
               activeSubTab === 'settlement'
-                ? 'bg-amber-400 text-slate-950 shadow-md'
-                : 'text-purple-200 hover:text-white'
+                ? 'bg-slate-900 text-white shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <CreditCard className="w-4 h-4" />
@@ -121,10 +121,10 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
 
           <button
             onClick={() => setActiveSubTab('integrations')}
-            className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-2 ${
+            className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-2 cursor-pointer ${
               activeSubTab === 'integrations'
-                ? 'bg-amber-400 text-slate-950 shadow-md'
-                : 'text-purple-200 hover:text-white'
+                ? 'bg-slate-900 text-white shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <Zap className="w-4 h-4" />
@@ -139,14 +139,14 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
         <div className="space-y-8">
 
           {/* Quick Select Order Bar */}
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-100 shadow-xl text-slate-900 space-y-4">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xs text-slate-900 space-y-4">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div>
-                <h2 className="text-xl font-black font-display text-purple-950 flex items-center space-x-2">
-                  <Zap className="w-5 h-5 text-purple-700" />
+                <h2 className="text-xl font-black font-display text-slate-900 flex items-center space-x-2">
+                  <Zap className="w-5 h-5 text-amber-500" />
                   <span>Select Order to Pay via Gateway</span>
                 </h2>
-                <p className="text-purple-800/80 text-xs mt-1">
+                <p className="text-slate-600 text-xs mt-1">
                   Choose an un-settled order from the dropdown below or click "Pay Now" on any order head.
                 </p>
               </div>
@@ -163,7 +163,7 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
               <select
                 value={quickOrderSelectId}
                 onChange={(e) => setQuickOrderSelectId(e.target.value)}
-                className="w-full sm:flex-1 px-4 py-3 rounded-2xl bg-purple-50/60 border border-purple-200 text-xs font-bold text-purple-950 focus:outline-none focus:border-purple-600"
+                className="w-full sm:flex-1 px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-slate-400"
               >
                 <option value="">-- Choose an Order to Make Payment --</option>
                 {orders.map((o) => (
@@ -181,7 +181,7 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
                 }}
                 className={`w-full sm:w-auto px-6 py-3 rounded-2xl font-black text-xs transition-all flex items-center justify-center space-x-2 ${
                   quickOrderSelectId
-                    ? 'bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-lg active:scale-95 cursor-pointer'
+                    ? 'bg-slate-900 hover:bg-slate-800 text-white shadow-2xs active:scale-95 cursor-pointer'
                     : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed opacity-60'
                 }`}
               >
@@ -193,9 +193,9 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
 
           {/* Last Completed Receipt Banner (if recently processed) */}
           {lastReceipt && (
-            <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-purple-950 text-white rounded-3xl p-6 border border-emerald-500/40 shadow-2xl space-y-3 animate-fade-in">
+            <div className="bg-emerald-50 text-slate-900 rounded-3xl p-6 border border-emerald-200 shadow-2xs space-y-3 animate-fade-in">
               <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-2 text-emerald-400">
+                <div className="flex items-center space-x-2 text-emerald-800">
                   <CheckCircle2 className="w-6 h-6" />
                   <span className="text-sm font-extrabold uppercase tracking-widest">
                     Recent Payment Verified & Settled
@@ -203,57 +203,57 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
                 </div>
                 <button
                   onClick={() => window.print()}
-                  className="px-4 py-2 rounded-xl bg-amber-400 text-slate-950 font-black text-xs flex items-center space-x-1.5 hover:bg-amber-300 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-slate-900 text-white font-black text-xs flex items-center space-x-1.5 hover:bg-slate-800 cursor-pointer shadow-2xs"
                 >
                   <Download className="w-4 h-4" />
                   <span>Download GST Receipt</span>
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs pt-2 border-t border-emerald-900/50 text-purple-200">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs pt-2 border-t border-emerald-200 text-slate-600">
                 <div>
-                  <span className="text-purple-400 block text-[10px] uppercase font-bold">Transaction ID</span>
-                  <span className="font-mono font-bold text-white">{lastReceipt.paymentId}</span>
+                  <span className="text-slate-500 block text-[10px] uppercase font-bold">Transaction ID</span>
+                  <span className="font-mono font-bold text-slate-900">{lastReceipt.paymentId}</span>
                 </div>
                 <div>
-                  <span className="text-purple-400 block text-[10px] uppercase font-bold">Order Number</span>
-                  <span className="font-bold text-white">{lastReceipt.orderId}</span>
+                  <span className="text-slate-500 block text-[10px] uppercase font-bold">Order Number</span>
+                  <span className="font-bold text-slate-900">{lastReceipt.orderId}</span>
                 </div>
                 <div>
-                  <span className="text-purple-400 block text-[10px] uppercase font-bold">Gateway Mode</span>
-                  <span className="font-bold text-white">{lastReceipt.method}</span>
+                  <span className="text-slate-500 block text-[10px] uppercase font-bold">Gateway Mode</span>
+                  <span className="font-bold text-slate-900">{lastReceipt.method}</span>
                 </div>
                 <div>
-                  <span className="text-purple-400 block text-[10px] uppercase font-bold">Amount Paid</span>
-                  <span className="font-black text-amber-300">{formatCurrency(lastReceipt.amount)}</span>
+                  <span className="text-slate-500 block text-[10px] uppercase font-bold">Amount Paid</span>
+                  <span className="font-black text-slate-900">{formatCurrency(lastReceipt.amount)}</span>
                 </div>
               </div>
             </div>
           )}
 
           {/* ORDER HISTORY & PAYMENT STATUS LIST */}
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-100 shadow-xl text-slate-900 space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-purple-100">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xs text-slate-900 space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-slate-200">
               <div>
-                <h2 className="text-xl font-bold font-display text-purple-950 flex items-center space-x-2">
-                  <ShoppingBag className="w-5 h-5 text-purple-700" />
+                <h2 className="text-xl font-bold font-display text-slate-900 flex items-center space-x-2">
+                  <ShoppingBag className="w-5 h-5 text-slate-700" />
                   <span>Order History & Payment Status</span>
                 </h2>
-                <p className="text-purple-800/80 text-xs mt-1">
+                <p className="text-slate-600 text-xs mt-1">
                   View all placed tyre orders, check payment settlement status, and click "Pay via Gateway" to settle.
                 </p>
               </div>
 
               {/* Filter Tabs */}
-              <div className="flex items-center space-x-2 bg-purple-50 p-1.5 rounded-2xl border border-purple-100">
+              <div className="flex items-center space-x-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
                 {['All', 'Pending', 'Paid', 'Failed'].map((status) => (
                   <button
                     key={status}
                     onClick={() => setPaymentStatusFilter(status)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       paymentStatusFilter === status
-                        ? 'bg-purple-900 text-white shadow-md'
-                        : 'text-purple-900 hover:text-purple-950'
+                        ? 'bg-slate-900 text-white shadow-2xs'
+                        : 'text-slate-700 hover:text-slate-900'
                     }`}
                   >
                     {status}
@@ -264,20 +264,20 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
 
             {/* Search bar */}
             <div className="relative w-full max-w-md">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-500" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
                 placeholder="Search orders by #, customer name or GSTIN..."
                 value={orderSearch}
                 onChange={(e) => setOrderSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-purple-50/60 border border-purple-200 rounded-xl text-xs text-purple-950 placeholder-purple-400 focus:outline-none focus:border-purple-600"
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-400"
               />
             </div>
 
             {/* Orders List */}
             {filteredOrders.length === 0 ? (
-              <div className="p-8 text-center bg-purple-50/40 rounded-2xl border border-purple-100 text-purple-800 text-xs space-y-2">
-                <Package className="w-8 h-8 mx-auto text-purple-400" />
+              <div className="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200 text-slate-600 text-xs space-y-2">
+                <Package className="w-8 h-8 mx-auto text-slate-400" />
                 <p className="font-semibold">No orders found matching status filter or search query.</p>
               </div>
             ) : (
@@ -287,12 +287,12 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
                   return (
                     <div
                       key={`${order.id}-${order.orderNumber}-${idx}`}
-                      className="bg-purple-50/40 border border-purple-100 hover:border-purple-300 rounded-2xl p-5 transition-all shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+                      className="bg-slate-50/60 border border-slate-200 hover:border-slate-300 rounded-2xl p-5 transition-all shadow-2xs flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
                     >
                       {/* Order Info Head */}
                       <div className="space-y-2 flex-1">
                         <div className="flex flex-wrap items-center gap-3">
-                          <span className="text-base font-black font-display text-purple-950">
+                          <span className="text-base font-black font-display text-slate-900">
                             {order.orderNumber}
                           </span>
 
@@ -310,34 +310,34 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
                           </span>
 
                           {/* Order Fulfillment Status */}
-                          <span className="text-[10px] font-semibold text-purple-900 bg-purple-100 border border-purple-200 px-2 py-0.5 rounded-full">
+                          <span className="text-[10px] font-semibold text-slate-800 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">
                             {order.orderStatus}
                           </span>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-purple-800">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
                           <span className="flex items-center space-x-1">
-                            <Calendar className="w-3.5 h-3.5 text-purple-600" />
+                            <Calendar className="w-3.5 h-3.5 text-slate-500" />
                             <span>{order.date}</span>
                           </span>
-                          <span>Customer: <strong className="text-purple-950">{order.customerName}</strong></span>
+                          <span>Customer: <strong className="text-slate-900">{order.customerName}</strong></span>
                           {order.gstNumber && (
-                            <span className="font-mono text-amber-900 font-bold bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
+                            <span className="font-mono text-slate-900 font-bold bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
                               GSTIN: {order.gstNumber}
                             </span>
                           )}
                         </div>
 
-                        <div className="text-[11px] text-purple-800 font-medium">
+                        <div className="text-[11px] text-slate-600 font-medium">
                           Items: {order.items.map(i => `${i.quantity}× ${i.product.name}`).join(', ')}
                         </div>
                       </div>
 
                       {/* Total Amount & Pay Button */}
-                      <div className="flex items-center space-x-4 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 border-purple-100 pt-3 md:pt-0">
+                      <div className="flex items-center space-x-4 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 border-slate-200 pt-3 md:pt-0">
                         <div className="text-left md:text-right">
-                          <span className="text-[10px] uppercase font-bold text-purple-600 block">Total Amount</span>
-                          <span className="text-lg font-black text-purple-950 font-display">
+                          <span className="text-[10px] uppercase font-bold text-slate-500 block">Total Amount</span>
+                          <span className="text-lg font-black text-slate-900 font-display">
                             {formatCurrency(order.totalAmount)}
                           </span>
                         </div>
@@ -353,9 +353,9 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
                         ) : (
                           <button
                             onClick={() => handleOpenPaymentGateway(order)}
-                            className="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs shadow-lg active:scale-95 transition-all flex items-center space-x-1.5 cursor-pointer"
+                            className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs shadow-md active:scale-95 transition-all flex items-center space-x-1.5 cursor-pointer"
                           >
-                            <Zap className="w-4 h-4 text-slate-950 fill-slate-950" />
+                            <Zap className="w-4 h-4 text-amber-400 fill-amber-400" />
                             <span>Pay {formatCurrency(order.totalAmount)} via Gateway</span>
                           </button>
                         )}
@@ -368,26 +368,26 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
           </div>
 
           {/* Recent Payment History Table */}
-          <div className="bg-white rounded-3xl p-6 border border-purple-100 shadow-xl space-y-4 text-slate-900">
-            <h3 className="text-base font-bold text-purple-950 font-display flex items-center space-x-2">
-              <Clock className="w-4 h-4 text-purple-700" />
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-2xs space-y-4 text-slate-900">
+            <h3 className="text-base font-bold text-slate-900 font-display flex items-center space-x-2">
+              <Clock className="w-4 h-4 text-slate-700" />
               <span>Settlement Audit Log</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {payments.map((p, idx) => (
-                <div key={`${p.id}-${p.paymentId}-${idx}`} className="p-3.5 rounded-2xl bg-purple-50/50 border border-purple-100 text-xs space-y-1">
+                <div key={`${p.id}-${p.paymentId}-${idx}`} className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1">
                   <div className="flex justify-between items-center">
-                    <span className="font-extrabold text-purple-950">{p.paymentId}</span>
+                    <span className="font-extrabold text-slate-900">{p.paymentId}</span>
                     <span className="font-black text-emerald-900 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded text-[10px]">
                       {p.status}
                     </span>
                   </div>
-                  <div className="flex justify-between text-purple-900">
+                  <div className="flex justify-between text-slate-700">
                     <span>{p.customerName} ({p.orderId})</span>
-                    <span className="font-bold text-purple-950">{formatCurrency(p.amount)}</span>
+                    <span className="font-bold text-slate-900">{formatCurrency(p.amount)}</span>
                   </div>
-                  <div className="text-[10px] text-purple-600">
+                  <div className="text-[10px] text-slate-500">
                     {p.date} | Mode: {p.method}
                   </div>
                 </div>
@@ -400,46 +400,46 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
 
       {/* PAYMENT GATEWAY CHECKOUT MODAL */}
       {selectedOrderForPayment && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-          <div className="bg-gradient-to-b from-slate-900 via-purple-950 to-slate-950 rounded-3xl border border-purple-700/80 shadow-2xl max-w-lg w-full p-6 sm:p-8 text-white relative space-y-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 sm:p-8 text-slate-900 relative space-y-6">
             
             {/* Close Button */}
             <button
               disabled={isProcessing}
               onClick={() => setSelectedOrderForPayment(null)}
-              className="absolute right-4 top-4 p-2 rounded-full hover:bg-purple-900/50 text-purple-300 hover:text-white transition-colors"
+              className="absolute right-4 top-4 p-2 rounded-full hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             {/* Modal Title */}
             <div className="space-y-1">
-              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-[11px] font-black uppercase tracking-wider">
-                <Lock className="w-3 h-3" />
+              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-800 text-[11px] font-black uppercase tracking-wider">
+                <Lock className="w-3 h-3 text-slate-700" />
                 <span>256-Bit SSL Gateway Checkout</span>
               </div>
-              <h3 className="text-xl font-black font-display text-white">
+              <h3 className="text-xl font-black font-display text-slate-900">
                 Settle Payment for {selectedOrderForPayment.orderNumber}
               </h3>
             </div>
 
             {/* Selected Order Summary Card */}
-            <div className="bg-slate-950/80 rounded-2xl p-4 border border-purple-800/60 space-y-2 text-xs">
-              <div className="flex justify-between text-purple-200">
+            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-2 text-xs">
+              <div className="flex justify-between text-slate-600">
                 <span>Customer Name:</span>
-                <span className="font-bold text-white">{selectedOrderForPayment.customerName}</span>
+                <span className="font-bold text-slate-900">{selectedOrderForPayment.customerName}</span>
               </div>
               {selectedOrderForPayment.gstNumber && (
-                <div className="flex justify-between text-purple-200">
+                <div className="flex justify-between text-slate-600">
                   <span>GSTIN:</span>
-                  <span className="font-mono text-amber-300 font-bold">{selectedOrderForPayment.gstNumber}</span>
+                  <span className="font-mono text-slate-900 font-bold">{selectedOrderForPayment.gstNumber}</span>
                 </div>
               )}
-              <div className="flex justify-between text-purple-200">
+              <div className="flex justify-between text-slate-600">
                 <span>Items:</span>
-                <span className="text-white font-medium">{selectedOrderForPayment.items.length} Product line(s)</span>
+                <span className="text-slate-900 font-medium">{selectedOrderForPayment.items.length} Product line(s)</span>
               </div>
-              <div className="flex justify-between text-sm font-black text-amber-300 pt-2 border-t border-purple-800/60">
+              <div className="flex justify-between text-sm font-black text-slate-900 pt-2 border-t border-slate-200">
                 <span>Total Amount Payable:</span>
                 <span className="text-base font-display">{formatCurrency(selectedOrderForPayment.totalAmount)}</span>
               </div>
@@ -448,7 +448,7 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
             {/* Form & Gateway Selector */}
             <form onSubmit={handleExecuteGatewayPayment} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-purple-200 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
                   Select Gateway Provider / Payment Method
                 </label>
                 <div className="grid grid-cols-2 gap-2.5">
@@ -465,16 +465,16 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
                         key={gw.id}
                         type="button"
                         onClick={() => setSelectedGateway(gw.id as any)}
-                        className={`p-3 rounded-2xl text-left border transition-all flex items-start space-x-2.5 ${
+                        className={`p-3 rounded-2xl text-left border transition-all flex items-start space-x-2.5 cursor-pointer ${
                           isSelected
-                            ? 'bg-amber-400 text-slate-950 border-amber-400 shadow-md font-bold'
-                            : 'bg-slate-950/60 hover:bg-purple-950 text-purple-200 border-purple-800/50'
+                            ? 'bg-slate-900 text-white border-slate-900 shadow-2xs font-bold'
+                            : 'bg-slate-50 hover:bg-slate-100 text-slate-800 border-slate-200'
                         }`}
                       >
-                        <IconComp className={`w-4 h-4 mt-0.5 ${isSelected ? 'text-slate-950' : 'text-amber-400'}`} />
+                        <IconComp className={`w-4 h-4 mt-0.5 ${isSelected ? 'text-amber-400' : 'text-slate-600'}`} />
                         <div>
                           <span className="text-xs font-black block">{gw.label}</span>
-                          <span className={`text-[10px] block ${isSelected ? 'text-slate-900 font-semibold' : 'text-purple-300/80'}`}>
+                          <span className={`text-[10px] block ${isSelected ? 'text-slate-300 font-semibold' : 'text-slate-500'}`}>
                             {gw.sub}
                           </span>
                         </div>
@@ -485,8 +485,8 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
               </div>
 
               {selectedGateway === 'upi' && (
-                <div className="p-3.5 rounded-2xl bg-slate-950 border border-purple-800/60 space-y-1.5">
-                  <label className="block text-xs font-bold text-amber-300">
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">
                     Enter Virtual Payment Address (VPA):
                   </label>
                   <input
@@ -495,7 +495,7 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
                     placeholder="e.g. 9876543210@ybl or name@upi"
                     value={upiId}
                     onChange={(e) => setUpiId(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-purple-950/60 border border-purple-800/60 text-xs font-bold text-white focus:outline-none focus:border-amber-400 placeholder-purple-400/60"
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-slate-400 placeholder-slate-400"
                   />
                 </div>
               )}
@@ -504,24 +504,24 @@ export const QuickPaymentsPage: React.FC<QuickPaymentsPageProps> = ({
               <button
                 type="submit"
                 disabled={isProcessing}
-                className="w-full py-4 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm shadow-xl active:scale-95 transition-all flex items-center justify-center space-x-2"
+                className="w-full py-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-sm shadow-md active:scale-95 transition-all flex items-center justify-center space-x-2 cursor-pointer"
               >
                 {isProcessing ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin text-slate-950" />
+                    <Loader2 className="w-5 h-5 animate-spin text-white" />
                     <span>{processingStep}</span>
                   </>
                 ) : (
                   <>
-                    <ShieldCheck className="w-5 h-5 text-slate-950" />
+                    <ShieldCheck className="w-5 h-5 text-emerald-400" />
                     <span>Pay {formatCurrency(selectedOrderForPayment.totalAmount)} Now</span>
                   </>
                 )}
               </button>
             </form>
 
-            <div className="flex items-center justify-center space-x-2 text-[10px] text-purple-300/80 pt-1 border-t border-purple-900/50">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <div className="flex items-center justify-center space-x-2 text-[10px] text-slate-500 pt-1 border-t border-slate-200">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
               <span>PCI-DSS Compliant & RBI Approved Secure Payment Node</span>
             </div>
 

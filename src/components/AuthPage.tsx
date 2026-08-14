@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { ADMIN_CONFIG, checkIsAdmin } from '../utils/admin';
-import { Mail, Lock, LogIn, UserPlus, AlertCircle, ArrowRight, ShieldCheck, Disc, MailCheck, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Mail, Lock, LogIn, AlertCircle, ArrowRight, ShieldCheck, Disc, MailCheck, RefreshCw, CheckCircle2 } from 'lucide-react';
 
 interface AuthPageProps {
   initialMode?: 'signin' | 'signup';
@@ -148,20 +148,16 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   if (verificationSent) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-6 bg-white p-8 sm:p-10 rounded-3xl border border-purple-100 shadow-2xl relative overflow-hidden text-center">
+        <div className="max-w-md w-full space-y-6 bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-2xs relative overflow-hidden text-center">
           
-          {/* Decorative background glow */}
-          <div className="absolute -top-20 -right-20 w-40 h-40 bg-purple-200/50 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-indigo-200/50 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-950 to-indigo-900 text-amber-400 flex items-center justify-center mx-auto shadow-lg shadow-purple-900/20">
-            <MailCheck className="w-8 h-8 text-amber-400" />
+          <div className="w-16 h-16 rounded-2xl bg-slate-900 text-white flex items-center justify-center mx-auto shadow-2xs">
+            <MailCheck className="w-8 h-8 text-white" />
           </div>
 
           <div className="space-y-2">
             <h2 className="text-2xl font-black text-slate-900 font-display">Check Your Email</h2>
             <p className="text-xs text-slate-600 leading-relaxed">
-              We sent a verification link to <strong className="text-purple-900 font-bold">{verificationEmail}</strong>.
+              We sent a verification link to <strong className="text-slate-900 font-bold">{verificationEmail}</strong>.
             </p>
             <p className="text-xs text-slate-500">
               Please click the link in your email to verify your account before signing in.
@@ -187,16 +183,16 @@ export const AuthPage: React.FC<AuthPageProps> = ({
               type="button"
               disabled={resendLoading}
               onClick={() => handleResendEmail(verificationEmail)}
-              className="w-full py-3 px-4 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-950 font-extrabold text-xs flex items-center justify-center space-x-2 transition-all disabled:opacity-50"
+              className="w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 font-extrabold text-xs flex items-center justify-center space-x-2 transition-all disabled:opacity-50 cursor-pointer"
             >
               {resendLoading ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin text-purple-700" />
+                  <RefreshCw className="w-4 h-4 animate-spin text-slate-700" />
                   <span>Resending...</span>
                 </>
               ) : (
                 <>
-                  <RefreshCw className="w-4 h-4 text-purple-700" />
+                  <RefreshCw className="w-4 h-4 text-slate-700" />
                   <span>Resend Verification Email</span>
                 </>
               )}
@@ -209,16 +205,16 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                 setMode('signin');
                 setError(null);
               }}
-              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-purple-950 to-indigo-900 text-white font-extrabold text-xs shadow-md flex items-center justify-center space-x-2 hover:opacity-95 transition-all"
+              className="w-full py-3 px-4 rounded-xl bg-slate-900 text-white font-extrabold text-xs shadow-md flex items-center justify-center space-x-2 hover:bg-slate-800 transition-all cursor-pointer"
             >
-              <LogIn className="w-4 h-4 text-amber-400" />
+              <LogIn className="w-4 h-4 text-slate-300" />
               <span>I've Verified — Proceed to Sign In</span>
             </button>
           </div>
 
-          <div className="pt-4 border-t border-purple-100 flex items-center justify-center space-x-2 text-[11px] text-slate-400">
-            <ShieldCheck className="w-3.5 h-3.5 text-purple-500" />
-            <span>Supabase Email Verification Enabled</span>
+          <div className="pt-4 border-t border-slate-200 flex items-center justify-center space-x-2 text-[11px] text-slate-400">
+            <ShieldCheck className="w-3.5 h-3.5 text-slate-500" />
+            <span>Secured by Supabase Authentication</span>
           </div>
         </div>
       </div>
@@ -227,16 +223,12 @@ export const AuthPage: React.FC<AuthPageProps> = ({
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 sm:p-10 rounded-3xl border border-purple-100 shadow-2xl relative overflow-hidden">
+      <div className="max-w-md w-full space-y-8 bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-2xs relative overflow-hidden">
         
-        {/* Decorative background glow */}
-        <div className="absolute -top-20 -right-20 w-40 h-40 bg-purple-200/50 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-indigo-200/50 rounded-full blur-3xl pointer-events-none" />
-
         {/* Header */}
         <div className="text-center relative">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-950 to-indigo-900 text-amber-400 flex items-center justify-center mx-auto shadow-lg shadow-purple-900/20 mb-4">
-            <Disc className="w-8 h-8 animate-spin-slow" />
+          <div className="w-16 h-16 rounded-2xl bg-slate-900 text-white flex items-center justify-center mx-auto shadow-2xs mb-4">
+            <Disc className="w-8 h-8 animate-spin-slow text-white" />
           </div>
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 font-display">
             Sign In to Magadh Tyres
@@ -259,9 +251,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@company.com"
-                className="w-full pl-10 pr-4 py-3 rounded-xl text-sm bg-purple-50/50 border border-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:bg-white transition-all text-slate-900 placeholder-purple-300"
+                className="w-full pl-10 pr-4 py-3 rounded-xl text-sm bg-slate-50 border border-slate-200 focus:outline-none focus:border-slate-400 focus:bg-white transition-all text-slate-900 placeholder-slate-400"
               />
-              <Mail className="w-4 h-4 text-purple-500 absolute left-3.5 top-3.5" />
+              <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
             </div>
           </div>
 
@@ -277,9 +269,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-10 pr-4 py-3 rounded-xl text-sm bg-purple-50/50 border border-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:bg-white transition-all text-slate-900 placeholder-purple-300"
+                className="w-full pl-10 pr-4 py-3 rounded-xl text-sm bg-slate-50 border border-slate-200 focus:outline-none focus:border-slate-400 focus:bg-white transition-all text-slate-900 placeholder-slate-400"
               />
-              <Lock className="w-4 h-4 text-purple-500 absolute left-3.5 top-3.5" />
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
             </div>
           </div>
 
@@ -304,7 +296,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                     type="button"
                     disabled={resendLoading}
                     onClick={() => handleResendEmail(email)}
-                    className="w-full py-2 px-3 rounded-lg bg-red-100 hover:bg-red-200 text-red-900 font-bold text-xs flex items-center justify-center space-x-1.5 transition-colors disabled:opacity-50"
+                    className="w-full py-2 px-3 rounded-lg bg-red-100 hover:bg-red-200 text-red-900 font-bold text-xs flex items-center justify-center space-x-1.5 transition-colors disabled:opacity-50 cursor-pointer"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${resendLoading ? 'animate-spin' : ''}`} />
                     <span>Resend Verification Email to {email}</span>
@@ -318,24 +310,24 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-950 via-purple-900 to-indigo-900 hover:from-purple-900 hover:to-indigo-950 text-white font-extrabold text-sm shadow-lg shadow-purple-900/25 flex items-center justify-center space-x-2 transition-all disabled:opacity-60"
+            className="w-full py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm shadow-md flex items-center justify-center space-x-2 transition-all disabled:opacity-60 cursor-pointer"
           >
             {loading ? (
               <span className="flex items-center space-x-2">
-                <Disc className="w-4 h-4 animate-spin text-amber-400" />
+                <Disc className="w-4 h-4 animate-spin text-slate-300" />
                 <span>Processing...</span>
               </span>
             ) : (
               <span className="flex items-center space-x-2">
                 <span>Sign In Now</span>
-                <ArrowRight className="w-4 h-4 text-amber-400" />
+                <ArrowRight className="w-4 h-4 text-slate-300" />
               </span>
             )}
           </button>
         </form>
 
-        <div className="pt-4 border-t border-purple-100 flex items-center justify-center space-x-2 text-[11px] text-slate-400">
-          <ShieldCheck className="w-3.5 h-3.5 text-purple-500" />
+        <div className="pt-4 border-t border-slate-200 flex items-center justify-center space-x-2 text-[11px] text-slate-400">
+          <ShieldCheck className="w-3.5 h-3.5 text-slate-500" />
           <span>Secured by Supabase Authentication</span>
         </div>
       </div>

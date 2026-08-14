@@ -38,8 +38,8 @@ export const ContinuousProductBar: React.FC<ContinuousProductBarProps> = ({
 
   if (!products || products.length === 0) {
     return (
-      <div className="bg-white rounded-2xl p-6 text-center border border-purple-100 space-y-2 my-4">
-        <Disc3 className="w-8 h-8 text-purple-300 mx-auto animate-spin" />
+      <div className="bg-white rounded-2xl p-6 text-center border border-slate-200 shadow-2xs space-y-2 my-4">
+        <Disc3 className="w-8 h-8 text-slate-400 mx-auto animate-spin" />
         <h3 className="text-sm font-bold text-slate-800">No {badgeText} Products Available</h3>
         <p className="text-xs text-slate-500">Check back soon for inventory updates.</p>
       </div>

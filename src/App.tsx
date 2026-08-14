@@ -525,11 +525,11 @@ export default function App() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col selection:bg-purple-900 selection:text-white">
+    <div className="min-h-screen bg-[#F7F7F7] text-slate-900 font-sans flex flex-col selection:bg-slate-900 selection:text-white">
       
       {/* Toast Popup Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-950 text-white px-5 py-3 rounded-2xl shadow-2xl border border-purple-500/40 text-xs font-bold flex items-center space-x-2 animate-bounce-short">
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl border border-slate-700 text-xs font-bold flex items-center space-x-2 animate-bounce-short">
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           <span>{toastMessage}</span>
         </div>
@@ -548,6 +548,7 @@ export default function App() {
         currentUser={currentUser}
         allProducts={visibleProducts}
         onSelectProduct={(product) => setSelectedProductForModal(product)}
+        onSelectCategory={(category) => setSelectedCategory(category)}
       />
 
       {/* Main Dynamic View Content */}
@@ -569,81 +570,8 @@ export default function App() {
           </div>
         ) : (
           <>
-        {/* TAB 1: HOMEPAGE */}
-        {activeTab === 'home' && (
-          <div>
-            <Hero
-              onSearch={(params) => {
-                if (params.category) setSelectedCategory(params.category);
-                if (params.vehicle) setSearchQuery(params.vehicle);
-                if (params.rimSize) setSelectedRimSize(String(params.rimSize));
-              }}
-              setActiveTab={setActiveTab}
-            />
-
-
-
-
-
-            {/* Continuous Movable Horizontal Product Bars (Radial & Non-Radial) */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-              <div className="text-center space-y-1">
-                <span className="text-xs font-black tracking-widest text-slate-800 uppercase bg-slate-100 px-3 py-1 rounded-full border border-slate-200 inline-block shadow-2xs">
-                  LIVE CONTINUOUS SHOWCASE
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-black font-display text-slate-900">
-                  Moving Radial & Non-Radial Product Bars
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto font-medium">
-                  Continuously scrolling product bars with compact item cards. Hover or tap any item to pause and order directly.
-                </p>
-              </div>
-
-              {/* Bar 1: Radial Category */}
-              <ContinuousProductBar
-                title="Radial Tyres Range"
-                subtitle="High-speed steel belted radial tyres for long haul mileage & commercial haulage"
-                badgeText="RADIAL CATEGORY"
-                badgeType="radial"
-                products={radialProducts}
-                direction="left"
-                speedSeconds={28}
-                currentCustomer={currentCustomerAccount}
-                isAdmin={isAdmin}
-                onAddToCart={handleAddToCart}
-                onInstantBuy={handleInstantBuy}
-                onViewDetails={(prod) => setSelectedProductForModal(prod)}
-                onViewAllCategory={() => {
-                  setSelectedCategory('RADIAL');
-                  setActiveTab('catalogue');
-                }}
-              />
-
-              {/* Bar 2: Non-Radial Category */}
-              <ContinuousProductBar
-                title="Non-Radial & Bias Tyres Range"
-                subtitle="Heavy nylon cross-ply carcass built for heavy overload capacity & rugged terrains"
-                badgeText="NON-RADIAL CATEGORY"
-                badgeType="non-radial"
-                products={nonRadialProducts}
-                direction="right"
-                speedSeconds={32}
-                currentCustomer={currentCustomerAccount}
-                isAdmin={isAdmin}
-                onAddToCart={handleAddToCart}
-                onInstantBuy={handleInstantBuy}
-                onViewDetails={(prod) => setSelectedProductForModal(prod)}
-                onViewAllCategory={() => {
-                  setSelectedCategory('NON RADIAL');
-                  setActiveTab('catalogue');
-                }}
-              />
-            </section>
-          </div>
-        )}
-
-        {/* TAB 2: CATALOGUE PAGE */}
-        {activeTab === 'catalogue' && (() => {
+        {/* TAB 1: HOMEPAGE / CATALOGUE */}
+        {(activeTab === 'home' || activeTab === 'catalogue') && (() => {
           const searchedProducts = visibleProducts.filter(p => matchesSearchQuery(p, searchQuery));
           const searchedRadialProducts = radialProducts.filter(p => matchesSearchQuery(p, searchQuery));
           const searchedNonRadialProducts = nonRadialProducts.filter(p => matchesSearchQuery(p, searchQuery));
@@ -846,13 +774,13 @@ export default function App() {
                 showToast={showToast}
               />
             ) : (
-              <div className="bg-white rounded-3xl p-12 text-center border border-purple-100 shadow-xl space-y-4 max-w-xl mx-auto my-12">
+              <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-2xs space-y-4 max-w-xl mx-auto my-12">
                 <div className="w-16 h-16 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center mx-auto">
                   <ShieldAlert className="w-8 h-8" />
                 </div>
                 <h2 className="text-2xl font-black text-slate-900 font-display">Access Restricted</h2>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Admin Console privileges are granted exclusively to designated administrator <strong className="text-purple-900 font-black">"{ADMIN_CONFIG.username}"</strong> ({ADMIN_CONFIG.email}).
+                  Admin Console privileges are granted exclusively to designated administrator <strong className="text-slate-900 font-black">"{ADMIN_CONFIG.username}"</strong> ({ADMIN_CONFIG.email}).
                 </p>
                 <p className="text-xs text-slate-500">
                   Current user profile: <span className="font-bold text-slate-700">{currentUser || 'Standard User'}</span>
@@ -860,7 +788,7 @@ export default function App() {
                 <div className="pt-2">
                   <button
                     onClick={() => setActiveTab('account')}
-                    className="px-6 py-2.5 rounded-xl bg-purple-900 hover:bg-purple-950 text-white font-bold text-xs shadow-md transition-all"
+                    className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
                   >
                     Go to Account Settings
                   </button>

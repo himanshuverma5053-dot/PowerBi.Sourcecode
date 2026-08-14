@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Order } from '../types';
-import { formatCurrency, formatGST, numberToWords } from '../utils/formatters';
-import { X, Printer, Download, ShieldCheck, Disc3, FileText, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { numberToWords } from '../utils/formatters';
+import { X, Printer, FileText, ArrowLeft } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 
 interface InvoiceModalProps {
@@ -32,24 +32,24 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ order, onClose }) =>
   const upiPaymentUrl = 'upi://pay?pa=arvindsingh73808@icici&pn=MAGADH TYRES';
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-6 animate-fade-in">
-      <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-purple-100 my-4 sm:my-8">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-2 sm:p-6 animate-fade-in">
+      <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 my-4 sm:my-8">
         
         {/* Modal Action Bar (Screen only) */}
-        <div className="flex items-center justify-between px-6 py-4 bg-slate-900 text-white print:hidden border-b border-slate-800 sticky top-0 z-20">
+        <div className="flex items-center justify-between px-6 py-4 bg-slate-50 text-slate-900 print:hidden border-b border-slate-200 sticky top-0 z-20">
           <div className="flex items-center space-x-3">
             <button
               onClick={onClose}
-              className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-bold text-xs flex items-center space-x-2 transition-all cursor-pointer border border-slate-700"
+              className="px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs flex items-center space-x-2 transition-all cursor-pointer border border-slate-200 shadow-2xs"
               title="Return to Invoice Dashboard"
             >
-              <ArrowLeft className="w-4 h-4 text-purple-400" />
+              <ArrowLeft className="w-4 h-4 text-slate-600" />
               <span>Dashboard</span>
             </button>
-            <div className="h-4 w-[1px] bg-slate-700 hidden sm:block" />
+            <div className="h-4 w-[1px] bg-slate-200 hidden sm:block" />
             <div className="flex items-center space-x-2">
-              <FileText className="w-5 h-5 text-amber-400" />
-              <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wider">
+              <FileText className="w-5 h-5 text-slate-700" />
+              <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-slate-900">
                 GST Tax Invoice / Quotation #{order.orderNumber}
               </span>
             </div>
@@ -58,7 +58,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ order, onClose }) =>
           <div className="flex items-center space-x-3">
             <button
               onClick={handlePrint}
-              className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center space-x-1.5 transition-all shadow-md cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center space-x-1.5 transition-all shadow-2xs cursor-pointer"
             >
               <Printer className="w-4 h-4" />
               <span className="hidden sm:inline">Print / Save PDF</span>
@@ -66,7 +66,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ order, onClose }) =>
             </button>
             <button
               onClick={onClose}
-              className="p-2.5 rounded-full bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white transition-all cursor-pointer border border-slate-700/80 hover:border-rose-500 shadow-md focus:outline-none focus:ring-2 focus:ring-rose-400 flex items-center justify-center shrink-0"
+              className="p-2.5 rounded-full bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-all cursor-pointer border border-slate-200 shadow-2xs focus:outline-none flex items-center justify-center shrink-0"
               title="Close Invoice & Return to Dashboard"
               aria-label="Close Invoice"
             >
@@ -79,9 +79,9 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ order, onClose }) =>
         <div className="px-6 sm:px-8 pt-4 pb-0 print:hidden flex items-center justify-between">
           <button
             onClick={onClose}
-            className="inline-flex items-center space-x-2 text-xs font-bold text-purple-900 hover:text-purple-950 transition-all cursor-pointer bg-purple-50 hover:bg-purple-100 px-4 py-2 rounded-xl border border-purple-200 shadow-sm"
+            className="inline-flex items-center space-x-2 text-xs font-bold text-slate-700 hover:text-slate-900 transition-all cursor-pointer bg-slate-50 hover:bg-slate-100 px-4 py-2 rounded-xl border border-slate-200 shadow-2xs"
           >
-            <ArrowLeft className="w-4 h-4 text-purple-700" />
+            <ArrowLeft className="w-4 h-4 text-slate-600" />
             <span>← Return to Invoice Dashboard</span>
           </button>
 
@@ -96,14 +96,14 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ order, onClose }) =>
           {/* Top-Right Close "X" Icon Button on Sheet */}
           <button
             onClick={onClose}
-            className="absolute top-6 right-6 print:hidden p-2.5 rounded-full bg-slate-100 hover:bg-rose-600 text-slate-600 hover:text-white transition-all duration-200 cursor-pointer border border-slate-200 hover:border-rose-500 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-rose-400 flex items-center justify-center shrink-0 group z-10"
+            className="absolute top-6 right-6 print:hidden p-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all duration-200 cursor-pointer border border-slate-200 shadow-2xs focus:outline-none flex items-center justify-center shrink-0 group z-10"
             title="Close Invoice & Return to Dashboard"
             aria-label="Close Invoice"
           >
             <X className="w-4 h-4 transition-transform group-hover:scale-110" />
           </button>
 
-          {/* EXACT B2B GST QUOTATION / TAX INVOICE FORMAT FROM IMAGE */}
+          {/* EXACT B2B GST QUOTATION / TAX INVOICE FORMAT */}
           <div className="border border-black font-sans text-xs text-black bg-white min-w-[680px]">
             
             {/* 1. DOCUMENT TITLE */}
@@ -163,7 +163,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ order, onClose }) =>
 
               {/* QR Code Column */}
               <div className="col-span-3 p-2 flex flex-col items-center justify-center text-center bg-white min-h-[165px]">
-                <div className="bg-white border border-slate-900 p-1.5 rounded shadow-sm flex items-center justify-center">
+                <div className="bg-white border border-slate-900 p-1.5 rounded shadow-2xs flex items-center justify-center">
                   <QRCodeSVG value={upiPaymentUrl} size={130} level="M" />
                 </div>
               </div>
@@ -349,4 +349,3 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ order, onClose }) =>
     </div>
   );
 };
-

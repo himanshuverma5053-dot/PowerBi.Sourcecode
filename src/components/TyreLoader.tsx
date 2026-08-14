@@ -14,7 +14,7 @@ export const TyreLoader: React.FC<TyreLoaderProps> = ({
   return (
     <div className={`flex flex-col items-center justify-center p-8 my-8 ${className}`}>
       {/* Small white rounded container with subtle shadow */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-purple-100/80 flex flex-col items-center justify-center space-y-3 max-w-xs w-full transition-all">
+      <div className="bg-white rounded-2xl p-6 shadow-2xs border border-slate-200 flex flex-col items-center justify-center space-y-3 max-w-xs w-full transition-all">
         {/* Realistic Rotating Tyre SVG */}
         <div className="relative w-16 h-16 flex items-center justify-center">
           <svg
@@ -70,7 +70,7 @@ export const TyreLoader: React.FC<TyreLoaderProps> = ({
           </svg>
 
           {/* Subtle Center Glow Accent */}
-          <div className="absolute w-2 h-2 rounded-full bg-purple-500/40 blur-[2px]" />
+          <div className="absolute w-2 h-2 rounded-full bg-slate-400/40 blur-[2px]" />
         </div>
 
         {/* Loading Text with Animated Dots */}

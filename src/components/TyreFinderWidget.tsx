@@ -23,16 +23,16 @@ export const TyreFinderWidget: React.FC<TyreFinderWidgetProps> = ({ onSearch, se
   };
 
   return (
-    <div className="w-full bg-slate-900/90 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 border border-purple-800/50 shadow-2xl shadow-purple-950/40">
+    <div className="w-full bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xs">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 border-b border-purple-800/40 pb-4">
-        <div className="flex items-center space-x-2 text-amber-400 font-extrabold text-sm sm:text-base">
-          <Sliders className="w-5 h-5" />
-          <span className="text-white">Search Tyres by Size Specs</span>
+      <div className="flex items-center justify-between mb-6 border-b border-slate-200 pb-4">
+        <div className="flex items-center space-x-2 text-slate-900 font-extrabold text-sm sm:text-base">
+          <Sliders className="w-5 h-5 text-slate-700" />
+          <span className="text-slate-950 font-display">Search Tyres by Size Specs</span>
         </div>
 
-        <span className="inline-flex items-center text-xs font-semibold text-amber-300 bg-amber-400/10 border border-amber-400/30 px-3 py-1 rounded-full">
-          <Sparkles className="w-3.5 h-3.5 mr-1 text-amber-400" />
+        <span className="inline-flex items-center text-xs font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-3 py-1 rounded-full shadow-2xs">
+          <Sparkles className="w-3.5 h-3.5 mr-1 text-amber-500" />
           Instant Fit Guarantee
         </span>
       </div>
@@ -42,51 +42,51 @@ export const TyreFinderWidget: React.FC<TyreFinderWidgetProps> = ({ onSearch, se
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Width */}
             <div>
-              <label className="block text-xs font-bold text-purple-200 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
                 Section Width (mm)
               </label>
               <select
                 value={width}
                 onChange={(e) => setWidth(e.target.value ? Number(e.target.value) : '')}
-                className="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-purple-800/50 text-sm font-semibold text-white focus:outline-none focus:border-amber-400"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
               >
-                <option value="" className="bg-slate-900 text-white">Select Width</option>
+                <option value="" className="bg-white text-slate-900">Select Width</option>
                 {[100, 165, 185, 195, 205, 215, 225, 235, 265, 295].map(w => (
-                  <option key={w} value={w} className="bg-slate-900 text-white">{w} mm</option>
+                  <option key={w} value={w} className="bg-white text-slate-900">{w} mm</option>
                 ))}
               </select>
             </div>
 
             {/* Aspect Ratio */}
             <div>
-              <label className="block text-xs font-bold text-purple-200 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
                 Aspect Ratio (%)
               </label>
               <select
                 value={aspectRatio}
                 onChange={(e) => setAspectRatio(e.target.value ? Number(e.target.value) : '')}
-                className="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-purple-800/50 text-sm font-semibold text-white focus:outline-none focus:border-amber-400"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
               >
-                <option value="" className="bg-slate-900 text-white">Select Aspect Ratio</option>
+                <option value="" className="bg-white text-slate-900">Select Aspect Ratio</option>
                 {[50, 55, 60, 65, 70, 80, 90].map(a => (
-                  <option key={a} value={a} className="bg-slate-900 text-white">{a}%</option>
+                  <option key={a} value={a} className="bg-white text-slate-900">{a}%</option>
                 ))}
               </select>
             </div>
 
             {/* Rim Diameter */}
             <div>
-              <label className="block text-xs font-bold text-purple-200 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
                 Rim Diameter (Inches)
               </label>
               <select
                 value={rimSize}
                 onChange={(e) => setRimSize(e.target.value ? Number(e.target.value) : '')}
-                className="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-purple-800/50 text-sm font-semibold text-white focus:outline-none focus:border-amber-400"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
               >
-                <option value="" className="bg-slate-900 text-white">Select Rim Size</option>
+                <option value="" className="bg-white text-slate-900">Select Rim Size</option>
                 {[14, 15, 16, 17, 18, 19, 22].map(r => (
-                  <option key={r} value={r} className="bg-slate-900 text-white">R{r} Inches</option>
+                  <option key={r} value={r} className="bg-white text-slate-900">R{r} Inches</option>
                 ))}
               </select>
             </div>
@@ -94,16 +94,16 @@ export const TyreFinderWidget: React.FC<TyreFinderWidgetProps> = ({ onSearch, se
         </div>
 
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center text-xs text-purple-300 space-x-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <div className="flex items-center text-xs text-slate-500 space-x-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>Guaranteed OEM specifications & real-time stock verification</span>
           </div>
 
           <button
             type="submit"
-            className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center space-x-2"
+            className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-sm shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer"
           >
-            <Search className="w-4 h-4 text-slate-950" />
+            <Search className="w-4 h-4 text-amber-300" />
             <span>Search Tyres Catalog</span>
           </button>
         </div>

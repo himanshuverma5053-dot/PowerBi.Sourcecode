@@ -60,7 +60,7 @@ export const ProductCarousel: React.FC<ProductCarouselProps> = ({
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 px-1">
           <div>
             {badgeText && (
-              <span className="text-[11px] font-black tracking-wider text-purple-700 uppercase bg-purple-100/80 px-2.5 py-0.5 rounded-md border border-purple-200 inline-block mb-1">
+              <span className="text-[11px] font-black tracking-wider text-slate-800 uppercase bg-slate-100 px-2.5 py-0.5 rounded-md border border-slate-200 inline-block mb-1 shadow-2xs">
                 {badgeText}
               </span>
             )}
@@ -90,7 +90,7 @@ export const ProductCarousel: React.FC<ProductCarouselProps> = ({
                 aria-label="Scroll left"
                 className={`p-2 rounded-xl border transition-all cursor-pointer ${
                   canScrollLeft
-                    ? 'bg-white border-purple-200 text-purple-900 hover:bg-purple-100 hover:scale-105 shadow-xs'
+                    ? 'bg-white border-slate-200 text-slate-900 hover:bg-slate-100 hover:scale-105 shadow-2xs'
                     : 'bg-slate-100 border-slate-200 text-slate-300 cursor-not-allowed opacity-50'
                 }`}
               >
@@ -103,7 +103,7 @@ export const ProductCarousel: React.FC<ProductCarouselProps> = ({
                 aria-label="Scroll right"
                 className={`p-2 rounded-xl border transition-all cursor-pointer ${
                   canScrollRight
-                    ? 'bg-purple-900 border-purple-950 text-white hover:bg-purple-950 hover:scale-105 shadow-xs'
+                    ? 'bg-slate-900 border-slate-950 text-white hover:bg-slate-800 hover:scale-105 shadow-2xs'
                     : 'bg-slate-100 border-slate-200 text-slate-300 cursor-not-allowed opacity-50'
                 }`}
               >
@@ -116,8 +116,8 @@ export const ProductCarousel: React.FC<ProductCarouselProps> = ({
 
       {/* Horizontal Carousel View */}
       {products.length === 0 ? (
-        <div className="bg-white rounded-2xl p-8 text-center border border-purple-100 space-y-2">
-          <Disc3 className="w-8 h-8 text-purple-300 mx-auto" />
+        <div className="bg-white rounded-2xl p-8 text-center border border-slate-200 shadow-2xs space-y-2">
+          <Disc3 className="w-8 h-8 text-slate-400 mx-auto" />
           <h3 className="text-sm font-bold text-slate-800">{emptyMessage}</h3>
           <p className="text-xs text-slate-500">Try adjusting your filters or search terms.</p>
         </div>
@@ -135,7 +135,7 @@ export const ProductCarousel: React.FC<ProductCarouselProps> = ({
           <div
             ref={scrollContainerRef}
             onScroll={checkScroll}
-            className="flex items-stretch gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory py-2 px-1 scrollbar-thin scrollbar-thumb-purple-200 hover:scrollbar-thumb-purple-400 scrollbar-track-transparent pb-3"
+            className="flex items-stretch gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory py-2 px-1 scrollbar-thin scrollbar-thumb-slate-300 hover:scrollbar-thumb-slate-400 scrollbar-track-transparent pb-3"
             style={{
               scrollbarWidth: 'thin',
               scrollSnapType: 'x mandatory'

@@ -735,58 +735,58 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   return (
     <div className="py-8 space-y-8">
       {/* Admin Header */}
-      <div className="bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 text-white p-6 sm:p-8 rounded-3xl border border-purple-800/60 shadow-2xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
+      <div className="bg-white text-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-2xs flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
         <div>
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-black mb-2">
-            <BarChart3 className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-800 text-xs font-bold mb-2">
+            <BarChart3 className="w-3.5 h-3.5 text-slate-700" />
             <span>Magadh Enterprise Control Console</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black font-display text-white">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black font-display text-slate-900">
             Magadh Admin Management Panel
           </h1>
-          <p className="text-purple-200 text-xs sm:text-sm mt-1 max-w-xl">
+          <p className="text-slate-600 text-xs sm:text-sm mt-1 max-w-xl">
             Real-time management for product stock, pricing, customer orders, GST invoices, payment logs, and store analytics.
           </p>
         </div>
 
         {/* Admin Tabs */}
-        <div className="flex flex-wrap items-center bg-purple-900/90 p-1.5 sm:p-2 rounded-2xl border border-purple-700/60 backdrop-blur-md text-xs font-bold gap-1.5 w-full xl:w-auto shadow-inner">
+        <div className="flex flex-wrap items-center bg-slate-100 p-1.5 sm:p-2 rounded-2xl border border-slate-200 text-xs font-bold gap-1.5 w-full xl:w-auto shadow-inner">
           <button
             onClick={() => setActiveTab('analytics')}
-            className={`px-3.5 py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5 whitespace-nowrap ${
-              activeTab === 'analytics' ? 'bg-amber-400 text-slate-950 font-black shadow-md' : 'text-purple-200 hover:text-white hover:bg-purple-800/60'
+            className={`px-3.5 py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5 whitespace-nowrap cursor-pointer ${
+              activeTab === 'analytics' ? 'bg-slate-900 text-white font-black shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
             }`}
           >
             <span>Analytics</span>
           </button>
           <button
             onClick={() => setActiveTab('products')}
-            className={`px-3.5 py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5 whitespace-nowrap ${
-              activeTab === 'products' ? 'bg-amber-400 text-slate-950 font-black shadow-md' : 'text-purple-200 hover:text-white hover:bg-purple-800/60'
+            className={`px-3.5 py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5 whitespace-nowrap cursor-pointer ${
+              activeTab === 'products' ? 'bg-slate-900 text-white font-black shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
             }`}
           >
             <span>Inventory ({products.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('orders')}
-            className={`px-3.5 py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5 whitespace-nowrap ${
-              activeTab === 'orders' ? 'bg-amber-400 text-slate-950 font-black shadow-md' : 'text-purple-200 hover:text-white hover:bg-purple-800/60'
+            className={`px-3.5 py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5 whitespace-nowrap cursor-pointer ${
+              activeTab === 'orders' ? 'bg-slate-900 text-white font-black shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
             }`}
           >
             <span>Orders ({orders.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('payments')}
-            className={`px-3.5 py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5 whitespace-nowrap ${
-              activeTab === 'payments' ? 'bg-amber-400 text-slate-950 font-black shadow-md' : 'text-purple-200 hover:text-white hover:bg-purple-800/60'
+            className={`px-3.5 py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5 whitespace-nowrap cursor-pointer ${
+              activeTab === 'payments' ? 'bg-slate-900 text-white font-black shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
             }`}
           >
             <span>Payments ({payments.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('gateways')}
-            className={`px-3.5 py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5 whitespace-nowrap ${
-              activeTab === 'gateways' ? 'bg-amber-400 text-slate-950 font-black shadow-md' : 'text-purple-200 hover:text-white hover:bg-purple-800/60'
+            className={`px-3.5 py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5 whitespace-nowrap cursor-pointer ${
+              activeTab === 'gateways' ? 'bg-slate-900 text-white font-black shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
             }`}
           >
             <Zap className="w-3.5 h-3.5" />
@@ -794,8 +794,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('users')}
-            className={`px-3.5 py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5 whitespace-nowrap ${
-              activeTab === 'users' ? 'bg-amber-400 text-slate-950 font-black shadow-md' : 'text-purple-200 hover:text-white hover:bg-purple-800/60'
+            className={`px-3.5 py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5 whitespace-nowrap cursor-pointer ${
+              activeTab === 'users' ? 'bg-slate-900 text-white font-black shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
             }`}
           >
             <Users className="w-3.5 h-3.5" />
@@ -803,8 +803,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('logo')}
-            className={`px-3.5 py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5 whitespace-nowrap ${
-              activeTab === 'logo' ? 'bg-amber-400 text-slate-950 font-black shadow-md' : 'text-purple-200 hover:text-white hover:bg-purple-800/60'
+            className={`px-3.5 py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5 whitespace-nowrap cursor-pointer ${
+              activeTab === 'logo' ? 'bg-slate-900 text-white font-black shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
             }`}
           >
             <ImageIcon className="w-3.5 h-3.5" />
@@ -818,11 +818,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         <div className="space-y-8">
           {/* Key Metrics Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div className="p-5 rounded-3xl bg-white border border-purple-100 shadow-xl space-y-2">
+            <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-xl space-y-2">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
                 Total Revenue
               </span>
-              <span className="text-2xl font-black text-purple-950 font-display block">
+              <span className="text-2xl font-black text-slate-900 font-display block">
                 {formatCurrency(totalRevenue)}
               </span>
               <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded inline-block">
@@ -830,31 +830,31 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </span>
             </div>
 
-            <div className="p-5 rounded-3xl bg-white border border-purple-100 shadow-xl space-y-2">
+            <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-xl space-y-2">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
                 Total Inventory Quantity
               </span>
-              <span className="text-2xl font-black text-purple-900 font-display block">
+              <span className="text-2xl font-black text-slate-900 font-display block">
                 {totalInventoryQuantity} Units
               </span>
-              <span className="text-[11px] font-bold text-purple-800 bg-purple-50 px-2 py-0.5 rounded inline-block">
+              <span className="text-[11px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded inline-block">
                 {products.length} Active Tyre SKUs
               </span>
             </div>
 
-            <div className="p-5 rounded-3xl bg-white border border-purple-100 shadow-xl space-y-2">
+            <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-xl space-y-2">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
                 Orders Processed
               </span>
               <span className="text-2xl font-black text-slate-900 font-display block">
                 {orders.length}
               </span>
-              <span className="text-[11px] font-bold text-purple-800 bg-purple-50 px-2 py-0.5 rounded inline-block">
+              <span className="text-[11px] font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded inline-block">
                 100% On-Time Dispatch
               </span>
             </div>
 
-            <div className="p-5 rounded-3xl bg-white border border-purple-100 shadow-xl space-y-2">
+            <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-xl space-y-2">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
                 Total Tyres Sold
               </span>
@@ -866,7 +866,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </span>
             </div>
 
-            <div className="p-5 rounded-3xl bg-white border border-purple-100 shadow-xl space-y-2">
+            <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-xl space-y-2">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
                 Low Stock Alerts
               </span>
@@ -880,7 +880,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
 
           {/* Recent Activity Table */}
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-100 shadow-xl space-y-4">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl space-y-4">
             <h3 className="text-lg font-extrabold text-slate-900 font-display">
               Recent Sales & Dispatch Overview
             </h3>
@@ -888,7 +888,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="bg-purple-50 text-purple-900 font-extrabold uppercase">
+                  <tr className="bg-slate-100 text-slate-900 font-extrabold uppercase">
                     <th className="p-3 rounded-l-xl">Order ID</th>
                     <th className="p-3">Customer</th>
                     <th className="p-3">Date</th>
@@ -897,22 +897,22 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     <th className="p-3 rounded-r-xl">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-purple-100 font-semibold text-slate-800">
+                <tbody className="divide-y divide-slate-200 font-semibold text-slate-800">
                   {orders.slice(0, 5).map((ord, idx) => (
-                    <tr key={`${ord.id}-${ord.orderNumber}-${idx}`} className="hover:bg-purple-50/50">
-                      <td className="p-3 font-mono font-bold text-purple-900">{ord.orderNumber}</td>
+                    <tr key={`${ord.id}-${ord.orderNumber}-${idx}`} className="hover:bg-slate-50">
+                      <td className="p-3 font-mono font-bold text-slate-900">{ord.orderNumber}</td>
                       <td className="p-3 font-bold">{ord.customerName}</td>
                       <td className="p-3 text-slate-500">{ord.date}</td>
                       <td className="p-3 font-black">{formatCurrency(ord.totalAmount)}</td>
                       <td className="p-3">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-purple-900 text-white">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-slate-900 text-white">
                           {ord.orderStatus}
                         </span>
                       </td>
                       <td className="p-3">
                         <button
                           onClick={() => onViewInvoice(ord)}
-                          className="text-purple-800 hover:underline font-bold"
+                          className="text-slate-800 hover:underline font-bold"
                         >
                           Invoice
                         </button>
@@ -928,15 +928,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
       {/* Product Management Module */}
       {activeTab === 'products' && (
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-100 shadow-xl space-y-6">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl space-y-6">
           {/* Header & Main Actions */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-purple-100">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-slate-200">
             <div>
               <div className="flex items-center space-x-2">
                 <h2 className="text-xl font-black text-slate-900 font-display">
                   Product Management & Catalog
                 </h2>
-                <span className="px-2.5 py-0.5 rounded-full bg-purple-900 text-white text-[10px] font-black uppercase tracking-wider">
+                <span className="px-2.5 py-0.5 rounded-full bg-slate-900 text-white text-[10px] font-black uppercase tracking-wider">
                   Admin Console Active
                 </span>
               </div>
@@ -947,7 +947,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
             <button
               onClick={openNewProductModal}
-              className="px-5 py-2.5 rounded-xl bg-purple-900 hover:bg-purple-950 text-white text-xs font-bold shadow-lg flex items-center space-x-2 transition-transform active:scale-95 shrink-0"
+              className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-lg flex items-center space-x-2 transition-transform active:scale-95 shrink-0"
             >
               <Plus className="w-4 h-4 text-amber-300" />
               <span>Add New Product</span>
@@ -956,9 +956,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
           {/* Quick Summary Metrics Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-            <div className="p-3.5 rounded-2xl bg-purple-50/70 border border-purple-100 text-center">
+            <div className="p-3.5 rounded-2xl bg-slate-50/70 border border-slate-200 text-center">
               <span className="text-[10px] font-extrabold text-slate-500 block uppercase tracking-wider">Total SKUs</span>
-              <span className="text-xl font-black text-purple-950">{totalProductsCount} Products</span>
+              <span className="text-xl font-black text-slate-950">{totalProductsCount} Products</span>
             </div>
             <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-100 text-center">
               <span className="text-[10px] font-extrabold text-emerald-800 block uppercase tracking-wider">Active Catalog</span>
@@ -979,17 +979,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
 
           {/* Search, Filter & Sort Controls Bar */}
-          <div className="space-y-3 bg-purple-50/40 p-4 rounded-2xl border border-purple-100">
+          <div className="space-y-3 bg-slate-50/60 p-4 rounded-2xl border border-slate-200">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {/* Live Search */}
               <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-2.5 text-purple-400" />
+                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
                 <input
                   type="text"
                   placeholder="Search by SKU, Name, Brand, Code..."
                   value={pSearch}
                   onChange={(e) => { setPSearch(e.target.value); setCurrentPage(1); }}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-white border border-purple-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-purple-600"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-white border border-slate-300 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-slate-900"
                 />
                 {pSearch && (
                   <button onClick={() => setPSearch('')} className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600">
@@ -1003,7 +1003,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <select
                   value={pCategoryFilter}
                   onChange={(e) => { setPCategoryFilter(e.target.value); setCurrentPage(1); }}
-                  className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-slate-900 focus:outline-none"
                 >
                   <option value="all">All Vehicle Categories</option>
                   <option value="Car">Car</option>
@@ -1019,7 +1019,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <select
                   value={pBrandFilter}
                   onChange={(e) => { setPBrandFilter(e.target.value); setCurrentPage(1); }}
-                  className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-slate-900 focus:outline-none"
                 >
                   <option value="all">All Brands</option>
                   {['MRF', 'Apollo', 'CEAT', 'Michelin', 'Bridgestone', 'Goodyear', 'JK Tyre', 'Pirelli'].map(b => (
@@ -1033,7 +1033,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <select
                   value={pStatusFilter}
                   onChange={(e) => { setPStatusFilter(e.target.value); setCurrentPage(1); }}
-                  className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-slate-900 focus:outline-none"
                 >
                   <option value="all">All Statuses (Active & Archived)</option>
                   <option value="Active">Active Only</option>
@@ -1044,15 +1044,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             </div>
 
             {/* Secondary Row: Stock Filter, Sort, View Toggle */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-purple-100">
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-200">
               <div className="flex flex-wrap items-center gap-2">
                 {/* Stock Quick Filters */}
                 <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Stock:</span>
-                <div className="flex bg-white p-1 rounded-xl border border-purple-200 text-xs font-bold space-x-1">
+                <div className="flex bg-white p-1 rounded-xl border border-slate-300 text-xs font-bold space-x-1">
                   <button
                     onClick={() => { setPStockFilter('all'); setCurrentPage(1); }}
                     className={`px-2.5 py-1 rounded-lg transition-all ${
-                      pStockFilter === 'all' ? 'bg-purple-900 text-white shadow' : 'text-slate-600 hover:text-purple-900'
+                      pStockFilter === 'all' ? 'bg-slate-900 text-white shadow' : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     All ({products.length})
@@ -1087,11 +1087,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               <div className="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-end">
                 {/* Sorting */}
                 <div className="flex items-center space-x-1.5">
-                  <ArrowUpDown className="w-3.5 h-3.5 text-purple-600" />
+                  <ArrowUpDown className="w-3.5 h-3.5 text-slate-600" />
                   <select
                     value={pSortBy}
                     onChange={(e) => setPSortBy(e.target.value as any)}
-                    className="px-2.5 py-1.5 rounded-xl bg-white border border-purple-200 text-xs font-bold text-slate-700"
+                    className="px-2.5 py-1.5 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-700"
                   >
                     <option value="newest">Newest First</option>
                     <option value="name-asc">Name (A &rarr; Z)</option>
@@ -1104,12 +1104,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </div>
 
                 {/* View Mode Switcher */}
-                <div className="flex bg-white p-1 rounded-xl border border-purple-200 space-x-1">
+                <div className="flex bg-white p-1 rounded-xl border border-slate-300 space-x-1">
                   <button
                     onClick={() => setPViewMode('table')}
                     title="Table View"
                     className={`p-1.5 rounded-lg transition-all ${
-                      pViewMode === 'table' ? 'bg-purple-900 text-white shadow' : 'text-slate-600'
+                      pViewMode === 'table' ? 'bg-slate-900 text-white shadow' : 'text-slate-600'
                     }`}
                   >
                     <List className="w-4 h-4" />
@@ -1118,7 +1118,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     onClick={() => setPViewMode('grid')}
                     title="Grid View"
                     className={`p-1.5 rounded-lg transition-all ${
-                      pViewMode === 'grid' ? 'bg-purple-900 text-white shadow' : 'text-slate-600'
+                      pViewMode === 'grid' ? 'bg-slate-900 text-white shadow' : 'text-slate-600'
                     }`}
                   >
                     <Grid className="w-4 h-4" />
@@ -1130,7 +1130,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
           {/* Bulk Actions Bar */}
           {selectedProductIds.length > 0 && (
-            <div className="p-3 bg-purple-900 text-white rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-lg animate-fadeIn">
+            <div className="p-3 bg-slate-900 text-white rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-lg animate-fadeIn">
               <div className="flex items-center space-x-2">
                 <span className="px-2.5 py-1 rounded-lg bg-amber-400 text-slate-950 font-black text-xs">
                   {selectedProductIds.length} Selected
@@ -1159,7 +1159,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </button>
                 <button
                   onClick={() => handleBulkAddStock(10)}
-                  className="px-3 py-1.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white"
+                  className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white"
                 >
                   +10 Stock All
                 </button>
@@ -1172,7 +1172,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </button>
                 <button
                   onClick={() => setSelectedProductIds([])}
-                  className="px-2.5 py-1.5 rounded-xl bg-purple-950 hover:bg-slate-900 text-slate-300 ml-2"
+                  className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 ml-2"
                 >
                   Deselect
                 </button>
@@ -1182,16 +1182,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
           {/* TABLE VIEW */}
           {pViewMode === 'table' && (
-            <div className="overflow-x-auto border border-purple-100 rounded-2xl shadow-sm">
+            <div className="overflow-x-auto border border-slate-200 rounded-2xl shadow-sm">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="bg-purple-900 text-white font-black uppercase tracking-wider">
+                  <tr className="bg-slate-900 text-white font-black uppercase tracking-wider">
                     <th className="p-3.5 text-center w-10">
                       <input
                         type="checkbox"
                         checked={selectedProductIds.length === paginatedProducts.length && paginatedProducts.length > 0}
                         onChange={toggleSelectAll}
-                        className="rounded border-purple-300 text-purple-900 focus:ring-purple-500 h-4 w-4"
+                        className="rounded border-slate-400 text-slate-900 focus:ring-slate-500 h-4 w-4"
                       />
                     </th>
                     <th className="p-3.5">Product & Identifiers</th>
@@ -1203,7 +1203,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     <th className="p-3.5 text-right rounded-tr-xl">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-purple-100 font-semibold text-slate-800">
+                <tbody className="divide-y divide-slate-200 font-semibold text-slate-800">
                   {isProductsLoading ? (
                     <tr>
                       <td colSpan={8} className="p-8 text-center">
@@ -1213,7 +1213,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   ) : paginatedProducts.length === 0 ? (
                     <tr>
                       <td colSpan={8} className="p-12 text-center text-slate-400 font-bold space-y-2">
-                        <AlertCircle className="w-8 h-8 text-purple-300 mx-auto" />
+                        <AlertCircle className="w-8 h-8 text-slate-300 mx-auto" />
                         <p className="text-sm">
                           {products.length === 0
                             ? 'No products exist in the database. Click "+ Add New Product" above to add one.'
@@ -1230,7 +1230,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       return (
                         <tr
                           key={prod.id}
-                          className={`hover:bg-purple-50/60 transition-colors ${isSelected ? 'bg-purple-50/80' : ''}`}
+                          className={`hover:bg-slate-50 transition-colors ${isSelected ? 'bg-slate-100' : ''}`}
                         >
                           {/* Checkbox */}
                           <td className="p-3.5 text-center">
@@ -1238,7 +1238,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               type="checkbox"
                               checked={isSelected}
                               onChange={() => toggleSelectProduct(prod.id)}
-                              className="rounded border-purple-300 text-purple-900 focus:ring-purple-500 h-4 w-4"
+                              className="rounded border-slate-400 text-slate-900 focus:ring-slate-500 h-4 w-4"
                             />
                           </td>
 
@@ -1248,18 +1248,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               <img
                                 src={prod.image || (prod.images && prod.images[0]) || 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800'}
                                 alt={prod.name}
-                                className="w-12 h-12 object-cover rounded-xl border border-purple-100 bg-white shadow-sm shrink-0"
+                                className="w-12 h-12 object-cover rounded-xl border border-slate-200 bg-white shadow-sm shrink-0"
                               />
                               <div>
                                 <span className="font-black text-slate-900 text-sm block line-clamp-1">{prod.name}</span>
                                 <div className="flex flex-wrap items-center gap-1.5 mt-0.5 text-[11px]">
-                                  <span className="text-purple-900 font-bold font-mono">SKU: {prod.sku || 'N/A'}</span>
+                                  <span className="text-slate-900 font-bold font-mono">SKU: {prod.sku || 'N/A'}</span>
                                   <span className="text-slate-400">|</span>
                                   <span className="text-slate-500 font-bold">Size: {prod.width}/{prod.aspectRatio} R{prod.rimSize}</span>
                                   {prod.pattern && (
                                     <>
                                       <span className="text-slate-400">|</span>
-                                      <span className="text-purple-700 font-semibold">{prod.pattern}</span>
+                                      <span className="text-slate-700 font-semibold">{prod.pattern}</span>
                                     </>
                                   )}
                                 </div>
@@ -1277,7 +1277,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                           {/* Brand & Category */}
                           <td className="p-3.5">
-                            <span className="px-2.5 py-1 rounded-lg bg-purple-100 text-purple-950 font-black text-[10px] uppercase block w-fit mb-1">
+                            <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-950 font-black text-[10px] uppercase block w-fit mb-1">
                               {prod.brand}
                             </span>
                             <span className="text-xs font-bold text-slate-600 block">{prod.category}</span>
@@ -1297,18 +1297,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                           {/* GST Rate */}
                           <td className="p-3.5">
-                            <span className="px-2 py-1 rounded-lg bg-purple-50 border border-purple-200 text-purple-900 font-extrabold text-[11px]">
+                            <span className="px-2 py-1 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 font-extrabold text-[11px]">
                               {prod.gstRate ?? 18}% GST
                             </span>
                           </td>
 
                           {/* Stock Control */}
                           <td className="p-3.5">
-                            <div className="flex items-center justify-center space-x-1 bg-purple-50 p-1 rounded-xl border border-purple-200">
+                            <div className="flex items-center justify-center space-x-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
                               <button
                                 onClick={() => handleAdjustQuantity(prod, -1)}
                                 title="Decrease Stock"
-                                className="p-1 rounded-lg bg-white text-purple-900 hover:bg-purple-200 font-black border border-purple-200 shadow-sm"
+                                className="p-1 rounded-lg bg-white text-slate-900 hover:bg-slate-200 font-black border border-slate-300 shadow-sm"
                               >
                                 <Minus className="w-3.5 h-3.5" />
                               </button>
@@ -1318,20 +1318,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                 min="0"
                                 value={prod.stock}
                                 onChange={(e) => handleSetQuantity(prod, parseInt(e.target.value))}
-                                className="w-14 px-1 py-1 rounded-lg bg-white text-center font-black text-slate-900 border border-purple-200 text-xs focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                                className="w-14 px-1 py-1 rounded-lg bg-white text-center font-black text-slate-900 border border-slate-300 text-xs focus:ring-2 focus:ring-slate-900 focus:outline-none"
                               />
 
                               <button
                                 onClick={() => handleAdjustQuantity(prod, 1)}
                                 title="Increase Stock"
-                                className="p-1 rounded-lg bg-purple-900 text-white hover:bg-purple-950 font-black shadow-sm"
+                                className="p-1 rounded-lg bg-slate-900 text-white hover:bg-slate-800 font-black shadow-sm"
                               >
                                 <Plus className="w-3.5 h-3.5" />
                               </button>
 
                               <button
                                 onClick={() => handleAdjustQuantity(prod, 10)}
-                                className="px-1.5 py-1 rounded-lg bg-purple-200 hover:bg-purple-300 text-purple-950 font-extrabold text-[10px]"
+                                className="px-1.5 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-950 font-extrabold text-[10px]"
                               >
                                 +10
                               </button>
@@ -1369,7 +1369,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               <button
                                 onClick={() => openEditProductModal(prod)}
                                 title="Edit Product"
-                                className="p-1.5 rounded-xl bg-purple-100 text-purple-900 hover:bg-purple-200 font-bold"
+                                className="p-1.5 rounded-xl bg-slate-100 text-slate-900 hover:bg-slate-200 font-bold"
                               >
                                 <Edit2 className="w-3.5 h-3.5" />
                               </button>
@@ -1412,18 +1412,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           {pViewMode === 'grid' && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {paginatedProducts.length === 0 ? (
-                <div className="col-span-full p-12 text-center text-slate-400 font-bold bg-purple-50/50 rounded-2xl">
+                <div className="col-span-full p-12 text-center text-slate-400 font-bold bg-slate-50/50 rounded-2xl">
                   No products found matching your filters.
                 </div>
               ) : (
                 paginatedProducts.map((prod) => (
                   <div
                     key={prod.id}
-                    className="p-5 rounded-2xl bg-white border border-purple-100 flex flex-col justify-between space-y-4 shadow-sm hover:shadow-md transition-shadow relative"
+                    className="p-5 rounded-2xl bg-white border border-slate-200 flex flex-col justify-between space-y-4 shadow-sm hover:shadow-md transition-shadow relative"
                   >
                     <div>
                       <div className="flex justify-between items-start mb-3">
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-purple-900 text-white uppercase">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-slate-900 text-white uppercase">
                           {prod.brand}
                         </span>
                         <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold ${
@@ -1439,13 +1439,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         <img
                           src={prod.image || (prod.images && prod.images[0]) || 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800'}
                           alt={prod.name}
-                          className="w-16 h-16 object-cover rounded-xl border border-purple-100 bg-white"
+                          className="w-16 h-16 object-cover rounded-xl border border-slate-200 bg-white"
                         />
                         <div>
                           <h4 className="text-sm font-extrabold text-slate-900 font-display line-clamp-2">
                             {prod.name}
                           </h4>
-                          <p className="text-xs font-bold text-purple-800 mt-0.5">
+                          <p className="text-xs font-bold text-slate-700 mt-0.5">
                             {prod.width}/{prod.aspectRatio} R{prod.rimSize} | {prod.category}
                           </p>
                           <span className="text-[10px] font-mono font-semibold text-slate-500">
@@ -1455,7 +1455,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       </div>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-purple-50/60 border border-purple-100 space-y-2">
+                    <div className="p-3 rounded-xl bg-slate-50/60 border border-slate-200 space-y-2">
                       <div className="flex justify-between items-center text-xs">
                         <span className="text-slate-500 font-bold">MRP / Dealer</span>
                         <span className="font-black text-slate-900">
@@ -1466,7 +1466,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       <div className="flex items-center space-x-1">
                         <button
                           onClick={() => handleAdjustQuantity(prod, -1)}
-                          className="p-1 rounded-lg bg-white hover:bg-purple-200 text-purple-950 font-black border border-purple-200 text-xs"
+                          className="p-1 rounded-lg bg-white hover:bg-slate-200 text-slate-900 font-black border border-slate-300 text-xs"
                         >
                           <Minus className="w-3.5 h-3.5" />
                         </button>
@@ -1476,22 +1476,22 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           min="0"
                           value={prod.stock}
                           onChange={(e) => handleSetQuantity(prod, parseInt(e.target.value))}
-                          className="w-full px-2 py-1 rounded-lg bg-white text-center font-black text-slate-900 border border-purple-200 text-xs focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                          className="w-full px-2 py-1 rounded-lg bg-white text-center font-black text-slate-900 border border-slate-300 text-xs focus:ring-2 focus:ring-slate-900 focus:outline-none"
                         />
 
                         <button
                           onClick={() => handleAdjustQuantity(prod, 1)}
-                          className="p-1 rounded-lg bg-purple-900 hover:bg-purple-950 text-white font-black text-xs"
+                          className="p-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-black text-xs"
                         >
                           <Plus className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
 
-                    <div className="pt-2 border-t border-purple-100 flex items-center justify-between gap-1">
+                    <div className="pt-2 border-t border-slate-200 flex items-center justify-between gap-1">
                       <button
                         onClick={() => openEditProductModal(prod)}
-                        className="px-3 py-1.5 rounded-xl bg-purple-100 text-purple-900 hover:bg-purple-200 text-xs font-bold flex items-center space-x-1"
+                        className="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-900 hover:bg-slate-200 text-xs font-bold flex items-center space-x-1"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                         <span>Edit SKU</span>
@@ -1522,7 +1522,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           )}
 
           {/* Pagination Bar */}
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-purple-100 text-xs font-bold">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-slate-200 text-xs font-bold">
             <div className="flex items-center space-x-3 text-slate-600">
               <span>Showing {startIndex + 1} - {Math.min(startIndex + pageSize, totalItems)} of {totalItems} items</span>
               <span className="text-slate-300">|</span>
@@ -1530,7 +1530,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               <select
                 value={pageSize}
                 onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
-                className="px-2 py-1 rounded-lg bg-purple-50 border border-purple-200 text-purple-900 font-bold"
+                className="px-2 py-1 rounded-lg bg-slate-50 border border-slate-300 text-slate-900 font-bold"
               >
                 <option value={10}>10</option>
                 <option value={25}>25</option>
@@ -1542,33 +1542,33 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(1)}
-                className="p-1.5 rounded-lg bg-purple-50 text-purple-900 disabled:opacity-40 hover:bg-purple-100"
+                className="p-1.5 rounded-lg bg-slate-100 text-slate-900 disabled:opacity-40 hover:bg-slate-200"
               >
                 <ChevronsLeft className="w-4 h-4" />
               </button>
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                className="p-1.5 rounded-lg bg-purple-50 text-purple-900 disabled:opacity-40 hover:bg-purple-100"
+                className="p-1.5 rounded-lg bg-slate-100 text-slate-900 disabled:opacity-40 hover:bg-slate-200"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
 
-              <span className="px-3 py-1 bg-purple-900 text-white rounded-lg">
+              <span className="px-3 py-1 bg-slate-900 text-white rounded-lg">
                 Page {validPage} of {totalPages}
               </span>
 
               <button
                 disabled={currentPage >= totalPages}
                 onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                className="p-1.5 rounded-lg bg-purple-50 text-purple-900 disabled:opacity-40 hover:bg-purple-100"
+                className="p-1.5 rounded-lg bg-slate-100 text-slate-900 disabled:opacity-40 hover:bg-slate-200"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
               <button
                 disabled={currentPage >= totalPages}
                 onClick={() => setCurrentPage(totalPages)}
-                className="p-1.5 rounded-lg bg-purple-50 text-purple-900 disabled:opacity-40 hover:bg-purple-100"
+                className="p-1.5 rounded-lg bg-slate-100 text-slate-900 disabled:opacity-40 hover:bg-slate-200"
               >
                 <ChevronsRight className="w-4 h-4" />
               </button>
@@ -1579,8 +1579,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
       {/* Orders Tab */}
       {activeTab === 'orders' && (
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-100 shadow-xl space-y-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-purple-100">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-200">
             <div>
               <h2 className="text-xl font-bold text-slate-900 font-display">
                 Customer Order Management
@@ -1602,11 +1602,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             {orders.map((ord, idx) => (
               <div
                 key={`${ord.id}-${ord.orderNumber}-${idx}`}
-                className="p-5 rounded-2xl bg-purple-50/30 border border-purple-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+                className="p-5 rounded-2xl bg-slate-50/60 border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
               >
                 <div className="space-y-1">
                   <div className="flex items-center space-x-2">
-                    <span className="text-base font-black text-purple-950 font-display">{ord.orderNumber}</span>
+                    <span className="text-base font-black text-slate-900 font-display">{ord.orderNumber}</span>
                     <span className="text-xs text-slate-500">| {ord.date}</span>
                   </div>
                   <p className="text-xs font-bold text-slate-800">
@@ -1621,7 +1621,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   <select
                     value={ord.orderStatus}
                     onChange={(e) => onUpdateOrderStatus(ord.id, e.target.value as any)}
-                    className="px-3 py-1.5 rounded-xl bg-purple-900 text-white font-bold text-xs"
+                    className="px-3 py-1.5 rounded-xl bg-slate-900 text-white font-bold text-xs"
                   >
                     <option value="Confirmed">Confirmed</option>
                     <option value="Warehouse Processing">Warehouse Processing</option>
@@ -1632,7 +1632,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                   <button
                     onClick={() => onViewInvoice(ord)}
-                    className="px-3 py-1.5 rounded-xl bg-purple-100 text-purple-900 text-xs font-bold"
+                    className="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-900 hover:bg-slate-200 text-xs font-bold"
                   >
                     View Invoice
                   </button>
@@ -1645,10 +1645,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
       {/* Payments Tab */}
       {activeTab === 'payments' && (
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-100 shadow-xl space-y-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-purple-100">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-200">
             <div>
-              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-purple-100 text-purple-900 text-xs font-bold mb-1">
+              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-900 text-xs font-bold mb-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-amber-500" />
                 <span>Admin Audit Log (Read-Only)</span>
               </div>
@@ -1661,14 +1661,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             </div>
             <div className="text-right">
               <span className="text-xs text-slate-400 font-bold block uppercase">Total Processed</span>
-              <span className="text-xl font-black text-purple-950 font-display">
+              <span className="text-xl font-black text-slate-900 font-display">
                 {formatCurrency(payments.reduce((sum, p) => sum + p.amount, 0))}
               </span>
             </div>
           </div>
 
-          <div className="flex items-center space-x-2.5 bg-purple-50 border border-purple-200 rounded-2xl p-4 text-xs text-purple-900 font-semibold">
-            <ShieldCheck className="w-5 h-5 text-purple-600 shrink-0" />
+          <div className="flex items-center space-x-2.5 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-slate-800 font-semibold">
+            <ShieldCheck className="w-5 h-5 text-slate-600 shrink-0" />
             <span>
               <strong>Read-Only Notice:</strong> Admin payment processing is disabled. Payment execution is handled exclusively through customer-facing checkout channels.
             </span>
@@ -1677,7 +1677,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="bg-purple-50 text-purple-900 font-extrabold uppercase">
+                <tr className="bg-slate-100 text-slate-900 font-extrabold uppercase">
                   <th className="p-3 rounded-l-xl">Payment ID</th>
                   <th className="p-3">Order Number</th>
                   <th className="p-3">Customer</th>
@@ -1687,13 +1687,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   <th className="p-3 rounded-r-xl">Date & Time</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-purple-100 font-semibold text-slate-800">
+              <tbody className="divide-y divide-slate-200 font-semibold text-slate-800">
                 {payments.map((p, idx) => (
-                  <tr key={`${p.id}-${p.paymentId}-${idx}`} className="hover:bg-purple-50/50">
-                    <td className="p-3 font-mono font-bold text-purple-900">{p.paymentId}</td>
+                  <tr key={`${p.id}-${p.paymentId}-${idx}`} className="hover:bg-slate-50">
+                    <td className="p-3 font-mono font-bold text-slate-900">{p.paymentId}</td>
                     <td className="p-3 font-mono font-bold text-slate-900">{p.orderId}</td>
                     <td className="p-3 font-bold">{p.customerName}</td>
-                    <td className="p-3 font-black text-purple-950">{formatCurrency(p.amount)}</td>
+                    <td className="p-3 font-black text-slate-950">{formatCurrency(p.amount)}</td>
                     <td className="p-3 font-bold text-slate-700">{p.method}</td>
                     <td className="p-3">
                       <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-900 border border-emerald-300">
@@ -1721,11 +1721,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
       {/* Upgraded Customer Accounts Tab */}
       {activeTab === 'users' && (
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-100 shadow-xl space-y-6">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl space-y-6">
           {/* Header */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-purple-100">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-slate-200">
             <div>
-              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-purple-100 text-purple-900 text-xs font-bold mb-1">
+              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-900 text-xs font-bold mb-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-amber-500" />
                 <span>Admin Restricted Portal & Pricing Engine</span>
               </div>
@@ -1748,9 +1748,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
           {/* Quick Stats Banner */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-            <div className="p-3.5 rounded-2xl bg-purple-50/60 border border-purple-100">
-              <span className="text-[10px] font-black uppercase text-purple-800 tracking-wider block">Total Accounts</span>
-              <span className="text-xl font-black text-purple-950">{customerAccounts.length}</span>
+            <div className="p-3.5 rounded-2xl bg-slate-50/60 border border-slate-200">
+              <span className="text-[10px] font-black uppercase text-slate-800 tracking-wider block">Total Accounts</span>
+              <span className="text-xl font-black text-slate-950">{customerAccounts.length}</span>
               <span className="text-[10px] text-slate-500 block">Registered Dealers</span>
             </div>
 
@@ -1788,7 +1788,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
 
           {/* Search & Multi-Filter Controls */}
-          <div className="p-4 rounded-2xl bg-purple-50/40 border border-purple-100 space-y-3">
+          <div className="p-4 rounded-2xl bg-slate-50/60 border border-slate-200 space-y-3">
             <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
               {/* Search Bar */}
               <div className="relative flex-1">
@@ -1798,7 +1798,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   placeholder="Search by customer name, company, email, phone, or GSTIN..."
                   value={customerSearch}
                   onChange={(e) => setCustomerSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-purple-200 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-900"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
                 />
                 {customerSearch && (
                   <button
@@ -1817,7 +1817,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   <select
                     value={cPricingFilter}
                     onChange={(e) => setCPricingFilter(e.target.value as any)}
-                    className="w-full px-3 py-2.5 rounded-xl bg-white border border-purple-200 text-xs font-extrabold text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-900"
+                    className="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-300 text-xs font-extrabold text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900"
                   >
                     <option value="all">All Pricing Types</option>
                     <option value="gst">🏷️ GST Pricing</option>
@@ -1831,7 +1831,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   <select
                     value={cStatusFilter}
                     onChange={(e) => setCStatusFilter(e.target.value as any)}
-                    className="w-full px-3 py-2.5 rounded-xl bg-white border border-purple-200 text-xs font-extrabold text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-900"
+                    className="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-300 text-xs font-extrabold text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900"
                   >
                     <option value="all">All Statuses</option>
                     <option value="Active">Active</option>
@@ -1846,7 +1846,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   <select
                     value={cCreditFilter}
                     onChange={(e) => setCCreditFilter(e.target.value as any)}
-                    className="w-full px-3 py-2.5 rounded-xl bg-white border border-purple-200 text-xs font-extrabold text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-900"
+                    className="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-300 text-xs font-extrabold text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900"
                   >
                     <option value="all">All Credit Statuses</option>
                     <option value="enabled">Credit Facility Enabled</option>
@@ -1858,8 +1858,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
             {/* Reset Filters trigger if any filter active */}
             {(customerSearch || cPricingFilter !== 'all' || cStatusFilter !== 'all' || cCreditFilter !== 'all') && (
-              <div className="flex items-center justify-between pt-1 border-t border-purple-200/60 text-xs">
-                <span className="text-purple-900 font-bold">
+              <div className="flex items-center justify-between pt-1 border-t border-slate-200 text-xs">
+                <span className="text-slate-900 font-bold">
                   Showing filtered results ({customerAccounts.filter(c => {
                     if (customerSearch.trim()) {
                       const q = customerSearch.toLowerCase().trim();
@@ -1889,7 +1889,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     setCStatusFilter('all');
                     setCCreditFilter('all');
                   }}
-                  className="text-purple-700 hover:text-purple-950 font-black flex items-center space-x-1 underline cursor-pointer"
+                  className="text-slate-700 hover:text-slate-950 font-black flex items-center space-x-1 underline cursor-pointer"
                 >
                   <RotateCcw className="w-3 h-3" />
                   <span>Clear All Filters</span>
@@ -1899,10 +1899,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
 
           {/* Customer Accounts Data Table */}
-          <div className="overflow-x-auto rounded-2xl border border-purple-100 shadow-sm">
+          <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-sm">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-purple-900 text-white font-black uppercase text-[11px] tracking-wider">
+                <tr className="bg-slate-900 text-white font-black uppercase text-[11px] tracking-wider">
                   <th className="p-3.5">Customer / Company</th>
                   <th className="p-3.5">GSTIN & Contact</th>
                   <th className="p-3.5">Active Pricing Type</th>
@@ -1911,7 +1911,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   <th className="p-3.5 text-right">Profile Editor & Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-purple-100 bg-white font-medium">
+              <tbody className="divide-y divide-slate-200 bg-white font-medium">
                 {customerAccounts
                   .filter(c => {
                     if (customerSearch.trim()) {
@@ -1941,7 +1941,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     return (
                       <tr 
                         key={cust.id} 
-                        className="hover:bg-purple-50/60 transition-all group cursor-pointer"
+                        className="hover:bg-slate-50 transition-all group cursor-pointer"
                         onClick={(e) => {
                           // Prevent triggering row click if clicking action button
                           if ((e.target as HTMLElement).closest('button')) return;
@@ -1950,12 +1950,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       >
                         <td className="p-3.5">
                           <div className="flex items-start space-x-3">
-                            <div className="w-10 h-10 rounded-2xl bg-purple-900 text-white flex items-center justify-center font-black text-xs uppercase shadow-sm shrink-0 group-hover:scale-105 transition-transform">
+                            <div className="w-10 h-10 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-black text-xs uppercase shadow-sm shrink-0 group-hover:scale-105 transition-transform">
                               {cust.username.slice(0, 2)}
                             </div>
                             <div className="space-y-0.5">
                               <div className="flex items-center space-x-2">
-                                <span className="font-black text-slate-900 text-sm group-hover:text-purple-900 transition-colors">
+                                <span className="font-black text-slate-900 text-sm group-hover:text-slate-700 transition-colors">
                                   {cust.companyName || cust.username}
                                 </span>
                                 {cust.accountStatus === 'VIP' && (
@@ -1969,7 +1969,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                   </span>
                                 )}
                               </div>
-                              <div className="text-xs font-bold text-purple-900 flex items-center space-x-1">
+                              <div className="text-xs font-bold text-slate-700 flex items-center space-x-1">
                                 <span>User: @{cust.username}</span>
                                 {cust.customerName && <span className="text-slate-400">({cust.customerName})</span>}
                               </div>
@@ -1978,7 +1978,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         </td>
 
                         <td className="p-3.5 space-y-1">
-                          <div className="font-mono bg-purple-50 px-2 py-0.5 rounded text-purple-950 font-bold text-[11px] inline-block border border-purple-200">
+                          <div className="font-mono bg-slate-100 px-2 py-0.5 rounded text-slate-900 font-bold text-[11px] inline-block border border-slate-200">
                             GSTIN: {cust.gstNumber || 'N/A'}
                           </div>
                           <div className="text-slate-700 font-bold">{cust.email}</div>
@@ -1998,14 +1998,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               </span>
                             )}
                             {pType === 'custom' && (
-                              <span className="px-2.5 py-1 rounded-xl bg-purple-900 text-amber-300 font-black text-xs inline-flex items-center space-x-1.5 shadow-xs">
+                              <span className="px-2.5 py-1 rounded-xl bg-slate-900 text-amber-300 font-black text-xs inline-flex items-center space-x-1.5 shadow-xs">
                                 <Zap className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
                                 <span>Custom Pricing</span>
                               </span>
                             )}
 
                             {customOverridesCount > 0 && (
-                              <div className="text-[10px] font-bold text-purple-800 bg-purple-50 px-2 py-0.5 rounded-lg border border-purple-200 inline-block">
+                              <div className="text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200 inline-block">
                                 {customOverridesCount} Custom Product {customOverridesCount === 1 ? 'Override' : 'Overrides'} Active
                               </div>
                             )}
@@ -2042,7 +2042,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                         <td className="p-3.5">
                           {cust.productVisibilityMode === 'selected' ? (
-                            <span className="px-2 py-1 rounded bg-purple-100 text-purple-900 font-bold text-[11px]">
+                            <span className="px-2 py-1 rounded bg-slate-200 text-slate-900 font-bold text-[11px]">
                               {cust.allowedProductIds?.length || 0} Selected Products
                             </span>
                           ) : (
@@ -2055,7 +2055,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         <td className="p-3.5 text-right space-x-1.5">
                           <button
                             onClick={() => handleOpenCustomerEditor(cust)}
-                            className="px-3 py-2 rounded-xl bg-purple-900 text-white hover:bg-purple-950 font-black text-xs inline-flex items-center space-x-1.5 shadow-md transition-all cursor-pointer"
+                            className="px-3 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 font-black text-xs inline-flex items-center space-x-1.5 shadow-md transition-all cursor-pointer"
                             title="Open Customer Profile Editor"
                           >
                             <Edit2 className="w-3.5 h-3.5 text-amber-300" />
@@ -2069,7 +2069,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               if (showToast) showToast(`Credentials for @${cust.username} copied!`);
                               setTimeout(() => setCopiedAccount(null), 2000);
                             }}
-                            className="px-2.5 py-2 rounded-xl bg-purple-100 text-purple-950 hover:bg-purple-200 font-bold text-[11px] inline-flex items-center space-x-1 cursor-pointer"
+                            className="px-2.5 py-2 rounded-xl bg-slate-100 text-slate-900 hover:bg-slate-200 font-bold text-[11px] inline-flex items-center space-x-1 cursor-pointer"
                           >
                             {copiedAccount === cust.id ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                             <span>{copiedAccount === cust.id ? 'Copied' : 'Info'}</span>
@@ -2087,12 +2087,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       {/* DEDICATED CUSTOMER PROFILE EDITOR MODAL */}
       {editingCustomer && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
-          <div className="w-full max-w-5xl bg-white rounded-3xl p-5 sm:p-7 border border-purple-100 shadow-2xl space-y-5 max-h-[92vh] overflow-y-auto">
+          <div className="w-full max-w-5xl bg-white rounded-3xl p-5 sm:p-7 border border-slate-200 shadow-2xl space-y-5 max-h-[92vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4 border-b border-purple-100">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4 border-b border-slate-200">
               <div>
                 <div className="flex items-center space-x-2 mb-1">
-                  <span className="px-2.5 py-0.5 rounded-full bg-purple-900 text-amber-300 text-[10px] font-black uppercase tracking-wider">
+                  <span className="px-2.5 py-0.5 rounded-full bg-slate-900 text-amber-300 text-[10px] font-black uppercase tracking-wider">
                     Customer Profile & Pricing Engine
                   </span>
                   <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold font-mono">
@@ -2102,7 +2102,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                 <h3 className="text-2xl font-black text-slate-900 font-display flex items-center space-x-2">
                   <span>{editingCustomer.companyName || editingCustomer.username}</span>
-                  <span className="text-sm font-bold text-purple-800">(@{editingCustomer.username})</span>
+                  <span className="text-sm font-bold text-slate-600">(@{editingCustomer.username})</span>
                 </h3>
                 <p className="text-xs text-slate-500">
                   Configure customer credentials, GST registration details, active pricing rules (GST/Credit/Custom), product catalog visibility, custom product prices, and credit line limits.
@@ -2121,7 +2121,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             </div>
 
             {/* Currently Active Pricing Banner */}
-            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-900 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md">
+            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black shrink-0">
                   <Zap className="w-5 h-5 text-slate-950 fill-slate-950" />
@@ -2138,7 +2138,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
 
               <div className="flex items-center space-x-2 text-xs">
-                <span className="font-bold text-purple-200">Account Status:</span>
+                <span className="font-bold text-slate-300">Account Status:</span>
                 <select
                   value={editingCustomer.accountStatus || 'Active'}
                   onChange={(e) => setEditingCustomer(prev => prev ? ({ ...prev, accountStatus: e.target.value as any }) : null)}
@@ -2153,13 +2153,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             </div>
 
             {/* Editor Tabs Navigation */}
-            <div className="flex border-b border-purple-100 overflow-x-auto space-x-1">
+            <div className="flex border-b border-slate-200 overflow-x-auto space-x-1">
               <button
                 type="button"
                 onClick={() => setProfileActiveTab('info')}
                 className={`px-4 py-2.5 font-black text-xs border-b-2 transition-all flex items-center space-x-2 shrink-0 cursor-pointer ${
                   profileActiveTab === 'info'
-                    ? 'border-purple-900 text-purple-900 bg-purple-50/50 rounded-t-xl'
+                    ? 'border-slate-900 text-slate-900 bg-slate-100 rounded-t-xl'
                     : 'border-transparent text-slate-500 hover:text-slate-900'
                 }`}
               >
@@ -2172,7 +2172,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 onClick={() => setProfileActiveTab('pricing')}
                 className={`px-4 py-2.5 font-black text-xs border-b-2 transition-all flex items-center space-x-2 shrink-0 cursor-pointer ${
                   profileActiveTab === 'pricing'
-                    ? 'border-purple-900 text-purple-900 bg-purple-50/50 rounded-t-xl'
+                    ? 'border-slate-900 text-slate-900 bg-slate-100 rounded-t-xl'
                     : 'border-transparent text-slate-500 hover:text-slate-900'
                 }`}
               >
@@ -2185,7 +2185,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 onClick={() => setProfileActiveTab('products')}
                 className={`px-4 py-2.5 font-black text-xs border-b-2 transition-all flex items-center space-x-2 shrink-0 cursor-pointer ${
                   profileActiveTab === 'products'
-                    ? 'border-purple-900 text-purple-900 bg-purple-50/50 rounded-t-xl'
+                    ? 'border-slate-900 text-slate-900 bg-slate-100 rounded-t-xl'
                     : 'border-transparent text-slate-500 hover:text-slate-900'
                 }`}
               >
@@ -2198,7 +2198,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 onClick={() => setProfileActiveTab('credit')}
                 className={`px-4 py-2.5 font-black text-xs border-b-2 transition-all flex items-center space-x-2 shrink-0 cursor-pointer ${
                   profileActiveTab === 'credit'
-                    ? 'border-purple-900 text-purple-900 bg-purple-50/50 rounded-t-xl'
+                    ? 'border-slate-900 text-slate-900 bg-slate-100 rounded-t-xl'
                     : 'border-transparent text-slate-500 hover:text-slate-900'
                 }`}
               >
@@ -2210,8 +2210,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             {/* TAB 1: CUSTOMER & GST INFORMATION */}
             {profileActiveTab === 'info' && (
               <div className="space-y-4 text-xs">
-                <div className="p-4 rounded-2xl bg-purple-50/40 border border-purple-100 space-y-3">
-                  <h4 className="font-black text-purple-950 uppercase tracking-wider text-[11px]">Primary Identity & Contact Details</h4>
+                <div className="p-4 rounded-2xl bg-slate-50/60 border border-slate-200 space-y-3">
+                  <h4 className="font-black text-slate-900 uppercase tracking-wider text-[11px]">Primary Identity & Contact Details</h4>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
@@ -2221,7 +2221,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         required
                         value={editingCustomer.username}
                         onChange={(e) => setEditingCustomer(prev => prev ? ({ ...prev, username: e.target.value }) : null)}
-                        className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900"
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900"
                       />
                     </div>
 
@@ -2232,7 +2232,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         value={editingCustomer.customerName || ''}
                         onChange={(e) => setEditingCustomer(prev => prev ? ({ ...prev, customerName: e.target.value }) : null)}
                         placeholder="e.g. Sunil Singh"
-                        className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900"
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900"
                       />
                     </div>
                   </div>
@@ -2245,7 +2245,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         value={editingCustomer.companyName}
                         onChange={(e) => setEditingCustomer(prev => prev ? ({ ...prev, companyName: e.target.value }) : null)}
                         placeholder="e.g. SS Roadways Logistics"
-                        className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900"
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900"
                       />
                     </div>
 
@@ -2256,7 +2256,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         required
                         value={editingCustomer.email}
                         onChange={(e) => setEditingCustomer(prev => prev ? ({ ...prev, email: e.target.value }) : null)}
-                        className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900"
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900"
                       />
                     </div>
                   </div>
@@ -2268,13 +2268,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       value={editingCustomer.phone}
                       onChange={(e) => setEditingCustomer(prev => prev ? ({ ...prev, phone: e.target.value }) : null)}
                       placeholder="+91 98350 78910"
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900"
                     />
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-purple-50/40 border border-purple-100 space-y-3">
-                  <h4 className="font-black text-purple-950 uppercase tracking-wider text-[11px]">GST Details & Location</h4>
+                <div className="p-4 rounded-2xl bg-slate-50/60 border border-slate-200 space-y-3">
+                  <h4 className="font-black text-slate-900 uppercase tracking-wider text-[11px]">GST Details & Location</h4>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
@@ -2284,7 +2284,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         value={editingCustomer.gstNumber}
                         onChange={(e) => setEditingCustomer(prev => prev ? ({ ...prev, gstNumber: e.target.value.toUpperCase() }) : null)}
                         placeholder="10AAACS7890R1Z4"
-                        className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-mono font-bold text-slate-900 uppercase"
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-mono font-bold text-slate-900 uppercase"
                       />
                     </div>
 
@@ -2293,7 +2293,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       <select
                         value={editingCustomer.gstType || 'Regular'}
                         onChange={(e) => setEditingCustomer(prev => prev ? ({ ...prev, gstType: e.target.value as any }) : null)}
-                        className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900"
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900"
                       >
                         <option value="Regular">Regular Taxpayer</option>
                         <option value="Composition">Composition Scheme</option>
@@ -2307,7 +2307,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         type="text"
                         value={editingCustomer.billingState || 'Bihar (10)'}
                         onChange={(e) => setEditingCustomer(prev => prev ? ({ ...prev, billingState: e.target.value }) : null)}
-                        className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900"
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900"
                       />
                     </div>
                   </div>
@@ -2319,7 +2319,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       value={editingCustomer.deliveryLocation}
                       onChange={(e) => setEditingCustomer(prev => prev ? ({ ...prev, deliveryLocation: e.target.value }) : null)}
                       placeholder="e.g. Transport Nagar, Patna"
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900"
                     />
                   </div>
 
@@ -2329,7 +2329,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       rows={2}
                       value={editingCustomer.address}
                       onChange={(e) => setEditingCustomer(prev => prev ? ({ ...prev, address: e.target.value }) : null)}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900"
                     />
                   </div>
                 </div>
@@ -2339,8 +2339,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             {/* TAB 2: PRICING TIER & DISCOUNTS */}
             {profileActiveTab === 'pricing' && (
               <div className="space-y-4 text-xs">
-                <div className="p-4 rounded-2xl bg-purple-50/40 border border-purple-100 space-y-3">
-                  <h4 className="font-black text-purple-950 uppercase tracking-wider text-[11px]">Select Active Pricing Rule Strategy</h4>
+                <div className="p-4 rounded-2xl bg-slate-50/60 border border-slate-200 space-y-3">
+                  <h4 className="font-black text-slate-900 uppercase tracking-wider text-[11px]">Select Active Pricing Rule Strategy</h4>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {/* GST PRICING CARD */}
@@ -2349,7 +2349,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       className={`p-4 rounded-2xl border-2 transition-all cursor-pointer ${
                         editingCustomer.pricingType === 'gst'
                           ? 'bg-emerald-50 border-emerald-600 shadow-md ring-2 ring-emerald-500/20'
-                          : 'bg-white border-purple-100 hover:border-purple-300'
+                          : 'bg-white border-slate-200 hover:border-slate-300'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-2">
@@ -2372,7 +2372,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       className={`p-4 rounded-2xl border-2 transition-all cursor-pointer ${
                         editingCustomer.pricingType === 'credit'
                           ? 'bg-indigo-50 border-indigo-600 shadow-md ring-2 ring-indigo-500/20'
-                          : 'bg-white border-purple-100 hover:border-purple-300'
+                          : 'bg-white border-slate-200 hover:border-slate-300'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-2">
@@ -2394,12 +2394,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       onClick={() => setEditingCustomer(prev => prev ? ({ ...prev, pricingType: 'custom' }) : null)}
                       className={`p-4 rounded-2xl border-2 transition-all cursor-pointer ${
                         editingCustomer.pricingType === 'custom'
-                          ? 'bg-purple-900 text-white border-purple-950 shadow-lg ring-2 ring-purple-600/30'
-                          : 'bg-white border-purple-100 hover:border-purple-300'
+                          ? 'bg-slate-900 text-white border-slate-950 shadow-lg ring-2 ring-slate-600/30'
+                          : 'bg-white border-slate-200 hover:border-slate-300'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <Zap className={`w-5 h-5 ${editingCustomer.pricingType === 'custom' ? 'text-amber-300 fill-amber-300' : 'text-purple-700'}`} />
+                        <Zap className={`w-5 h-5 ${editingCustomer.pricingType === 'custom' ? 'text-amber-300 fill-amber-300' : 'text-slate-700'}`} />
                         {editingCustomer.pricingType === 'custom' && (
                           <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[10px] uppercase">
                             Active
@@ -2409,7 +2409,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       <h5 className={`font-black text-sm ${editingCustomer.pricingType === 'custom' ? 'text-white' : 'text-slate-900'}`}>
                         Custom Pricing
                       </h5>
-                      <p className={`text-[11px] mt-1 leading-snug ${editingCustomer.pricingType === 'custom' ? 'text-purple-200' : 'text-slate-600'}`}>
+                      <p className={`text-[11px] mt-1 leading-snug ${editingCustomer.pricingType === 'custom' ? 'text-slate-300' : 'text-slate-600'}`}>
                         Uses customer-specific tailored prices set in Product Access tab. Highest priority override.
                       </p>
                     </div>
@@ -2445,9 +2445,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             {profileActiveTab === 'products' && (
               <div className="space-y-4 text-xs">
                 {/* Portal Mode & Global Controls */}
-                <div className="p-4 rounded-2xl bg-purple-50/40 border border-purple-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                <div className="p-4 rounded-2xl bg-slate-50/60 border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
                   <div className="space-y-1">
-                    <h4 className="font-black text-purple-950 text-xs">Customer Portal Product Access Mode</h4>
+                    <h4 className="font-black text-slate-900 text-xs">Customer Portal Product Access Mode</h4>
                     <div className="flex items-center space-x-4">
                       <label className="flex items-center space-x-2 font-bold text-slate-800 cursor-pointer">
                         <input
@@ -2455,7 +2455,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           name="productVisibilityMode"
                           checked={editingCustomer.productVisibilityMode !== 'selected'}
                           onChange={() => setEditingCustomer(prev => prev ? ({ ...prev, productVisibilityMode: 'all' }) : null)}
-                          className="text-purple-900 focus:ring-purple-900"
+                          className="text-slate-900 focus:ring-slate-900"
                         />
                         <span>Show All Catalog Products</span>
                       </label>
@@ -2466,7 +2466,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           name="productVisibilityMode"
                           checked={editingCustomer.productVisibilityMode === 'selected'}
                           onChange={() => setEditingCustomer(prev => prev ? ({ ...prev, productVisibilityMode: 'selected' }) : null)}
-                          className="text-purple-900 focus:ring-purple-900"
+                          className="text-slate-900 focus:ring-slate-900"
                         />
                         <span>Show Only Selected Products</span>
                       </label>
@@ -2491,14 +2491,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     placeholder="Search tyres by brand, name, or SKU to adjust prices..."
                     value={editorProductSearch}
                     onChange={(e) => setEditorProductSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-purple-200 text-xs font-bold text-slate-900"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-900"
                   />
                 </div>
 
                 {/* Product Catalog Pricing Table */}
-                <div className="overflow-x-auto rounded-2xl border border-purple-100 max-h-80 overflow-y-auto">
+                <div className="overflow-x-auto rounded-2xl border border-slate-200 max-h-80 overflow-y-auto">
                   <table className="w-full text-left border-collapse text-xs">
-                    <thead className="sticky top-0 bg-purple-900 text-white font-black text-[11px] z-10">
+                    <thead className="sticky top-0 bg-slate-900 text-white font-black text-[11px] z-10">
                       <tr>
                         <th className="p-3">Portal Access</th>
                         <th className="p-3">Product Info</th>
@@ -2510,7 +2510,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         <th className="p-3 text-center">Reset</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-purple-100 bg-white font-medium">
+                    <tbody className="divide-y divide-slate-200 bg-white font-medium">
                       {products
                         .filter(p => {
                           if (!editorProductSearch.trim()) return true;
@@ -2531,7 +2531,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           const computed = getCustomerEffectivePrice(prod, editingCustomer);
 
                           return (
-                            <tr key={prod.id} className={`hover:bg-purple-50/50 transition-colors ${!isVisible ? 'bg-slate-50 opacity-60' : ''}`}>
+                            <tr key={prod.id} className={`hover:bg-slate-50 transition-colors ${!isVisible ? 'bg-slate-50 opacity-60' : ''}`}>
                               <td className="p-3">
                                 <button
                                   type="button"
@@ -2558,7 +2558,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                               <td className="p-3">
                                 <div className="flex items-center space-x-2">
-                                  <img src={prod.image} alt={prod.name} className="w-8 h-8 rounded-lg object-cover border border-purple-100 shrink-0" />
+                                  <img src={prod.image} alt={prod.name} className="w-8 h-8 rounded-lg object-cover border border-slate-200 shrink-0" />
                                   <div>
                                     <span className="font-bold text-slate-900 block truncate max-w-xs">{prod.name}</span>
                                     <span className="text-[10px] text-slate-500 font-mono">{prod.brand} • SKU: {prod.sku || prod.id}</span>
@@ -2585,8 +2585,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                   }}
                                   className={`w-28 px-2 py-1 rounded-lg border text-xs font-black text-center ${
                                     override?.customPrice
-                                      ? 'bg-purple-100 border-purple-600 text-purple-950 font-bold'
-                                      : 'bg-slate-50 border-purple-200 text-slate-900'
+                                      ? 'bg-slate-100 border-slate-900 text-slate-950 font-bold'
+                                      : 'bg-slate-50 border-slate-300 text-slate-900'
                                   }`}
                                 />
                               </td>
@@ -2602,7 +2602,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                     const val = e.target.value === '' ? undefined : Number(e.target.value);
                                     handleUpdateProductOverrideField(prod.id, 'discountPercent', val);
                                   }}
-                                  className="w-16 px-2 py-1 rounded-lg bg-slate-50 border border-purple-200 text-xs font-bold text-slate-900 text-center"
+                                  className="w-16 px-2 py-1 rounded-lg bg-slate-50 border border-slate-300 text-xs font-bold text-slate-900 text-center"
                                 />
                               </td>
 
@@ -2610,7 +2610,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                 <span className={`font-mono font-black text-xs px-2 py-1 rounded-lg ${
                                   computed.hasCustomOverride
                                     ? 'bg-amber-100 text-amber-950 border border-amber-300'
-                                    : 'bg-purple-50 text-purple-950'
+                                    : 'bg-slate-100 text-slate-950'
                                 }`}>
                                   {formatCurrency(computed.effectivePrice)}
                                 </span>
@@ -2642,10 +2642,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             {/* TAB 4: CREDIT SETTINGS & PAYMENT TERMS */}
             {profileActiveTab === 'credit' && (
               <div className="space-y-4 text-xs">
-                <div className="p-4 rounded-2xl bg-purple-50/40 border border-purple-100 space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-purple-200/60">
+                <div className="p-4 rounded-2xl bg-slate-50/60 border border-slate-200 space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-200">
                     <div>
-                      <h4 className="font-black text-purple-950 text-sm">Credit Facility Authorization</h4>
+                      <h4 className="font-black text-slate-900 text-sm">Credit Facility Authorization</h4>
                       <p className="text-slate-500 text-xs">Enable or disable buy-now-pay-later credit terms for this customer account.</p>
                     </div>
 
@@ -2656,7 +2656,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         onChange={(e) => setEditingCustomer(prev => prev ? ({ ...prev, creditEnabled: e.target.checked }) : null)}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-900"></div>
+                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-slate-900"></div>
                     </label>
                   </div>
 
@@ -2671,7 +2671,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                             step="25000"
                             value={editingCustomer.creditLimit || 0}
                             onChange={(e) => setEditingCustomer(prev => prev ? ({ ...prev, creditLimit: Number(e.target.value) }) : null)}
-                            className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-mono font-black text-slate-900 text-sm"
+                            className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-mono font-black text-slate-900 text-sm"
                           />
                         </div>
 
@@ -2682,7 +2682,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                             min="0"
                             value={editingCustomer.usedCredit || 0}
                             onChange={(e) => setEditingCustomer(prev => prev ? ({ ...prev, usedCredit: Number(e.target.value) }) : null)}
-                            className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-mono font-bold text-slate-900 text-sm"
+                            className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-mono font-bold text-slate-900 text-sm"
                           />
                         </div>
                       </div>
@@ -2693,7 +2693,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           <select
                             value={editingCustomer.paymentTermsDays || 30}
                             onChange={(e) => setEditingCustomer(prev => prev ? ({ ...prev, paymentTermsDays: Number(e.target.value) }) : null)}
-                            className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900"
+                            className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900"
                           >
                             <option value={7}>Net 7 Days</option>
                             <option value={15}>Net 15 Days</option>
@@ -2711,7 +2711,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                             min="0"
                             value={editingCustomer.dueDaysGrace || 5}
                             onChange={(e) => setEditingCustomer(prev => prev ? ({ ...prev, dueDaysGrace: Number(e.target.value) }) : null)}
-                            className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900"
+                            className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900"
                           />
                         </div>
                       </div>
@@ -2733,7 +2733,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             )}
 
             {/* Modal Controls Footer */}
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-4 border-t border-purple-100">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-4 border-t border-slate-200">
               <button
                 type="button"
                 onClick={handleResetCustomerPricingToDefault}
@@ -2755,7 +2755,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <button
                   type="button"
                   onClick={handleSaveCustomerProfile}
-                  className="px-6 py-2.5 rounded-xl bg-purple-900 hover:bg-purple-950 text-white font-black text-xs shadow-lg flex items-center space-x-2 cursor-pointer"
+                  className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs shadow-lg flex items-center space-x-2 cursor-pointer"
                 >
                   <CheckCircle2 className="w-4 h-4 text-amber-300" />
                   <span>Save Customer Profile</span>
@@ -2770,7 +2770,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       {/* Create Customer Account Modal */}
       {isCustomerModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-xl bg-white rounded-3xl p-6 sm:p-8 border border-purple-100 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-xl bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-start">
               <div>
                 <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-black mb-1">
@@ -2815,7 +2815,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       placeholder="e.g. ssroadways"
                       value={cUsername}
                       onChange={(e) => setCUsername(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 font-bold text-slate-900"
+                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 border border-slate-300 font-bold text-slate-900"
                     />
                   </div>
                 </div>
@@ -2832,7 +2832,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       placeholder="e.g. ssroadways@gmail.com"
                       value={cEmail}
                       onChange={(e) => setCEmail(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 font-bold text-slate-900"
+                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 border border-slate-300 font-bold text-slate-900"
                     />
                   </div>
                 </div>
@@ -2851,7 +2851,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       placeholder="Magadh@123"
                       value={cPassword}
                       onChange={(e) => setCPassword(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 font-bold text-slate-900 font-mono"
+                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 border border-slate-300 font-bold text-slate-900 font-mono"
                     />
                   </div>
                 </div>
@@ -2867,7 +2867,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       placeholder="e.g. SS Roadways Logistics"
                       value={cCompanyName}
                       onChange={(e) => setCCompanyName(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 font-medium text-slate-900"
+                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 border border-slate-300 font-medium text-slate-900"
                     />
                   </div>
                 </div>
@@ -2885,7 +2885,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       placeholder="+91 98350 78910"
                       value={cPhone}
                       onChange={(e) => setCPhone(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 font-medium text-slate-900"
+                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 border border-slate-300 font-medium text-slate-900"
                     />
                   </div>
                 </div>
@@ -2899,7 +2899,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     placeholder="10AAACS7890R1Z4"
                     value={cGstNumber}
                     onChange={(e) => setCGstNumber(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 font-medium text-slate-900 font-mono uppercase"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 font-medium text-slate-900 font-mono uppercase"
                   />
                 </div>
               </div>
@@ -2915,7 +2915,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     placeholder="e.g. Transport Nagar, Patna"
                     value={cDeliveryLocation}
                     onChange={(e) => setCDeliveryLocation(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 font-medium text-slate-900"
+                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 border border-slate-300 font-medium text-slate-900"
                   />
                 </div>
               </div>
@@ -2929,11 +2929,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   placeholder="Plot 45, Transport Nagar, Bypass Road, Patna, Bihar - 800026"
                   value={cAddress}
                   onChange={(e) => setCAddress(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 font-medium text-slate-900"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 font-medium text-slate-900"
                 />
               </div>
 
-              <div className="flex justify-end space-x-3 pt-3 border-t border-purple-100">
+              <div className="flex justify-end space-x-3 pt-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsCustomerModalOpen(false)}
@@ -2945,7 +2945,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <button
                   type="submit"
                   disabled={cLoading}
-                  className="px-6 py-2.5 rounded-xl bg-purple-900 text-white font-bold hover:bg-purple-950 shadow-md flex items-center space-x-2 disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 shadow-md flex items-center space-x-2 disabled:opacity-50"
                 >
                   {cLoading ? (
                     <RefreshCw className="w-4 h-4 animate-spin text-amber-400" />
@@ -2963,11 +2963,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       {/* Product Edit / Add Comprehensive Modal */}
       {isProductModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-4xl bg-white rounded-3xl p-6 sm:p-8 border border-purple-100 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-4xl bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="flex justify-between items-start pb-3 border-b border-purple-100">
+            <div className="flex justify-between items-start pb-3 border-b border-slate-200">
               <div>
-                <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-purple-100 text-purple-900 text-xs font-black mb-1">
+                <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-900 text-xs font-black mb-1">
                   <Package className="w-3.5 h-3.5" />
                   <span>{editingProduct ? 'Inventory Product Specification Editor' : 'Catalog Product Provisioning'}</span>
                 </div>
@@ -2998,8 +2998,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
             <form onSubmit={handleSaveProduct} className="space-y-5 text-xs">
               {/* Section 1: Basic Identifiers */}
-              <div className="space-y-3 p-4 bg-purple-50/40 rounded-2xl border border-purple-100">
-                <h4 className="text-xs font-black text-purple-950 uppercase tracking-wider">1. Core Identification & Taxonomy</h4>
+              <div className="space-y-3 p-4 bg-slate-50/60 rounded-2xl border border-slate-200">
+                <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">1. Core Identification & Taxonomy</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="sm:col-span-2">
                     <label className="block font-extrabold text-slate-700 mb-1">
@@ -3011,7 +3011,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       placeholder="e.g. MRF ZTX Super 195/65 R15 91H All-Season Tyre"
                       value={formName}
                       onChange={(e) => setFormName(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900 focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900 focus:ring-2 focus:ring-slate-900 focus:outline-none"
                     />
                   </div>
 
@@ -3022,7 +3022,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     <select
                       value={formBrand}
                       onChange={(e) => setFormBrand(e.target.value as any)}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900 focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900 focus:ring-2 focus:ring-slate-900 focus:outline-none"
                     >
                       {['MRF', 'Apollo', 'CEAT', 'Michelin', 'Bridgestone', 'Goodyear', 'JK Tyre', 'Pirelli'].map(b => (
                         <option key={b} value={b}>{b}</option>
@@ -3041,7 +3041,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       placeholder="e.g. MRF-ZTX-19565R15"
                       value={formSku}
                       onChange={(e) => setFormSku(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-mono font-bold text-slate-900 focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-mono font-bold text-slate-900 focus:ring-2 focus:ring-slate-900 focus:outline-none"
                     />
                   </div>
 
@@ -3054,7 +3054,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       placeholder="e.g. HSN-401110"
                       value={formProductCode}
                       onChange={(e) => setFormProductCode(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-mono font-bold text-slate-900 focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-mono font-bold text-slate-900 focus:ring-2 focus:ring-slate-900 focus:outline-none"
                     />
                   </div>
 
@@ -3065,7 +3065,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     <select
                       value={formCategory}
                       onChange={(e) => setFormCategory(e.target.value as any)}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900 focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900 focus:ring-2 focus:ring-slate-900 focus:outline-none"
                     >
                       {['Car', 'SUV', 'Bike', 'Truck', 'EV'].map(c => (
                         <option key={c} value={c}>{c}</option>
@@ -3082,15 +3082,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       placeholder="e.g. Sedan / Hatchback / SUV"
                       value={formVehicleType}
                       onChange={(e) => setFormVehicleType(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900 focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900 focus:ring-2 focus:ring-slate-900 focus:outline-none"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Section 2: Technical Tyre Specs */}
-              <div className="space-y-3 p-4 bg-purple-50/40 rounded-2xl border border-purple-100">
-                <h4 className="text-xs font-black text-purple-950 uppercase tracking-wider">2. Technical Tyre Specifications</h4>
+              <div className="space-y-3 p-4 bg-slate-50/60 rounded-2xl border border-slate-200">
+                <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">2. Technical Tyre Specifications</h4>
                 <div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
                   <div>
                     <label className="block font-extrabold text-slate-700 mb-1">Width (mm)</label>
@@ -3099,7 +3099,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       required
                       value={formWidth}
                       onChange={(e) => setFormWidth(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-center"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-center"
                     />
                   </div>
                   <div>
@@ -3109,7 +3109,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       required
                       value={formAspectRatio}
                       onChange={(e) => setFormAspectRatio(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-center"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-center"
                     />
                   </div>
                   <div>
@@ -3119,7 +3119,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       required
                       value={formRimSize}
                       onChange={(e) => setFormRimSize(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-center"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-center"
                     />
                   </div>
                   <div>
@@ -3129,7 +3129,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       placeholder="195/65 R15"
                       value={formTyreSize}
                       onChange={(e) => setFormTyreSize(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-center"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-center"
                     />
                   </div>
                   <div>
@@ -3139,7 +3139,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       placeholder="e.g. 91"
                       value={formLoadIndex}
                       onChange={(e) => setFormLoadIndex(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-center"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-center"
                     />
                   </div>
                   <div>
@@ -3149,7 +3149,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       placeholder="e.g. H / V / W"
                       value={formSpeedRating}
                       onChange={(e) => setFormSpeedRating(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-center uppercase"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-center uppercase"
                     />
                   </div>
                 </div>
@@ -3160,8 +3160,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     <div className="flex items-center space-x-2 pt-0.5">
                       <label className={`flex-1 flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl border text-xs font-extrabold cursor-pointer transition-all ${
                         formTireType === 'Radial'
-                          ? 'bg-purple-900 text-white border-purple-900 shadow-xs'
-                          : 'bg-white text-slate-700 border-purple-200 hover:bg-purple-50'
+                          ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                          : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
                       }`}>
                         <input
                           type="radio"
@@ -3170,14 +3170,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           required
                           checked={formTireType === 'Radial'}
                           onChange={() => setFormTireType('Radial')}
-                          className="w-3.5 h-3.5 accent-purple-800"
+                          className="w-3.5 h-3.5 accent-slate-900"
                         />
                         <span>Radial</span>
                       </label>
                       <label className={`flex-1 flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl border text-xs font-extrabold cursor-pointer transition-all ${
                         formTireType === 'Non-Radial'
-                          ? 'bg-purple-900 text-white border-purple-900 shadow-xs'
-                          : 'bg-white text-slate-700 border-purple-200 hover:bg-purple-50'
+                          ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                          : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
                       }`}>
                         <input
                           type="radio"
@@ -3186,7 +3186,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           required
                           checked={formTireType === 'Non-Radial'}
                           onChange={() => setFormTireType('Non-Radial')}
-                          className="w-3.5 h-3.5 accent-purple-800"
+                          className="w-3.5 h-3.5 accent-slate-900"
                         />
                         <span>Non-Radial</span>
                       </label>
@@ -3200,7 +3200,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       placeholder="e.g. Asymmetric All-Season Compound Tread"
                       value={formPattern}
                       onChange={(e) => setFormPattern(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900"
                     />
                   </div>
 
@@ -3211,15 +3211,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       placeholder="e.g. Tube & Flap"
                       value={formIncludedComponents}
                       onChange={(e) => setFormIncludedComponents(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-amber-900 bg-amber-50/50"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-amber-900 bg-amber-50/50"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Section 3: Pricing, Tax & Inventory */}
-              <div className="space-y-3 p-4 bg-purple-50/40 rounded-2xl border border-purple-100">
-                <h4 className="text-xs font-black text-purple-950 uppercase tracking-wider">3. Commercial Pricing, Tax & Stock Levels</h4>
+              <div className="space-y-3 p-4 bg-slate-50/60 rounded-2xl border border-slate-200">
+                <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">3. Commercial Pricing, Tax & Stock Levels</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                   <div>
                     <label className="block font-extrabold text-slate-700 mb-1">MRP / Retail Price (₹) *</label>
@@ -3229,7 +3229,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       min="0"
                       value={formMrp}
                       onChange={(e) => setFormMrp(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-black text-slate-900 focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-black text-slate-900 focus:ring-2 focus:ring-slate-900 focus:outline-none"
                     />
                   </div>
 
@@ -3241,7 +3241,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       min="0"
                       value={formDealerPrice}
                       onChange={(e) => setFormDealerPrice(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-black text-emerald-800 focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-black text-emerald-800 focus:ring-2 focus:ring-slate-900 focus:outline-none"
                     />
                   </div>
 
@@ -3250,7 +3250,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     <select
                       value={formGstRate}
                       onChange={(e) => setFormGstRate(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900 focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900 focus:ring-2 focus:ring-slate-900 focus:outline-none"
                     >
                       <option value={5}>5% GST</option>
                       <option value={12}>12% GST</option>
@@ -3264,7 +3264,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     <select
                       value={formStatus}
                       onChange={(e) => setFormStatus(e.target.value as any)}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900 focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900 focus:ring-2 focus:ring-slate-900 focus:outline-none"
                     >
                       <option value="Active">Active (Visible in Catalog)</option>
                       <option value="Inactive">Inactive (Hidden)</option>
@@ -3282,7 +3282,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       <button
                         type="button"
                         onClick={() => setFormStock(prev => Math.max(0, prev - 1))}
-                        className="px-3.5 py-2 rounded-xl bg-purple-100 text-purple-900 font-black hover:bg-purple-200"
+                        className="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-900 font-black hover:bg-slate-200"
                       >
                         -
                       </button>
@@ -3291,12 +3291,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         min="0"
                         value={formStock}
                         onChange={(e) => setFormStock(Math.max(0, parseInt(e.target.value) || 0))}
-                        className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-black text-slate-900 text-center text-sm"
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-black text-slate-900 text-center text-sm"
                       />
                       <button
                         type="button"
                         onClick={() => setFormStock(prev => prev + 1)}
-                        className="px-3.5 py-2 rounded-xl bg-purple-900 text-white font-black hover:bg-purple-950"
+                        className="px-3.5 py-2 rounded-xl bg-slate-900 text-white font-black hover:bg-slate-800"
                       >
                         +
                       </button>
@@ -3312,7 +3312,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       min="0"
                       value={formMinStockLevel}
                       onChange={(e) => setFormMinStockLevel(Math.max(0, parseInt(e.target.value) || 0))}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-bold text-slate-900"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-bold text-slate-900"
                     />
                     <p className="text-[10px] text-slate-500 mt-1">Triggers low-stock warnings when inventory drops below this number.</p>
                   </div>
@@ -3320,10 +3320,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
 
               {/* Section 4: Product Images & Multi-Angle Media */}
-              <div className="space-y-3 p-4 bg-purple-50/40 rounded-2xl border border-purple-100">
+              <div className="space-y-3 p-4 bg-slate-50/60 rounded-2xl border border-slate-200">
                 <div className="flex justify-between items-center">
-                  <h4 className="text-xs font-black text-purple-950 uppercase tracking-wider">4. Product Images & Gallery</h4>
-                  <label className="px-3 py-1 bg-purple-900 hover:bg-purple-950 text-white rounded-xl text-[11px] font-bold cursor-pointer inline-flex items-center space-x-1 shadow-sm">
+                  <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">4. Product Images & Gallery</h4>
+                  <label className="px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-[11px] font-bold cursor-pointer inline-flex items-center space-x-1 shadow-sm">
                     <Upload className="w-3.5 h-3.5 text-amber-300" />
                     <span>Upload Image File</span>
                     <input
@@ -3341,12 +3341,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     placeholder="Paste image URL (https://...)"
                     value={formNewImageUrl}
                     onChange={(e) => setFormNewImageUrl(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-medium text-slate-900"
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-medium text-slate-900"
                   />
                   <button
                     type="button"
                     onClick={handleAddImageUrl}
-                    className="px-4 py-2 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-950 font-bold shrink-0"
+                    className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold shrink-0"
                   >
                     Add URL
                   </button>
@@ -3356,7 +3356,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 {formImages.length > 0 && (
                   <div className="grid grid-cols-4 sm:grid-cols-6 gap-3 pt-2">
                     {formImages.map((imgUrl, idx) => (
-                      <div key={idx} className="relative group rounded-xl overflow-hidden border border-purple-200 bg-white aspect-square shadow-sm">
+                      <div key={idx} className="relative group rounded-xl overflow-hidden border border-slate-200 bg-white aspect-square shadow-sm">
                         <img src={imgUrl} alt={`Product ${idx}`} className="w-full h-full object-cover" />
                         <button
                           type="button"
@@ -3366,7 +3366,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           <X className="w-3 h-3" />
                         </button>
                         {idx === 0 && (
-                          <span className="absolute bottom-0 inset-x-0 bg-purple-900/90 text-white text-[9px] font-black text-center py-0.5 uppercase">
+                          <span className="absolute bottom-0 inset-x-0 bg-slate-900/90 text-white text-[9px] font-black text-center py-0.5 uppercase">
                             Primary
                           </span>
                         )}
@@ -3377,8 +3377,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
 
               {/* Section 5: Description & Search Tags */}
-              <div className="space-y-3 p-4 bg-purple-50/40 rounded-2xl border border-purple-100">
-                <h4 className="text-xs font-black text-purple-950 uppercase tracking-wider">5. Description & Search Tags</h4>
+              <div className="space-y-3 p-4 bg-slate-50/60 rounded-2xl border border-slate-200">
+                <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">5. Description & Search Tags</h4>
                 <div>
                   <label className="block font-extrabold text-slate-700 mb-1">Product Description</label>
                   <textarea
@@ -3386,7 +3386,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     placeholder="Provide a comprehensive product description detailing tread life, wet grip handling, low-noise technology, and warranty information..."
                     value={formDescription}
                     onChange={(e) => setFormDescription(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-medium text-slate-900 focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-medium text-slate-900 focus:ring-2 focus:ring-slate-900 focus:outline-none"
                   />
                 </div>
 
@@ -3399,12 +3399,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       value={formNewTagInput}
                       onChange={(e) => setFormNewTagInput(e.target.value)}
                       onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddTag(); } }}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-purple-200 font-medium text-slate-900"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-medium text-slate-900"
                     />
                     <button
                       type="button"
                       onClick={handleAddTag}
-                      className="px-4 py-2 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-950 font-bold shrink-0"
+                      className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold shrink-0"
                     >
                       Add Tag
                     </button>
@@ -3412,7 +3412,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                   <div className="flex flex-wrap gap-1.5">
                     {formTags.map((tag) => (
-                      <span key={tag} className="px-2.5 py-1 rounded-lg bg-purple-100 text-purple-950 font-bold text-xs flex items-center space-x-1 border border-purple-200">
+                      <span key={tag} className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-900 font-bold text-xs flex items-center space-x-1 border border-slate-200">
                         <span>#{tag}</span>
                         <button type="button" onClick={() => handleRemoveTag(tag)} className="text-slate-400 hover:text-rose-600 ml-1">
                           <X className="w-3 h-3" />
@@ -3423,11 +3423,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </div>
 
                 {/* Section 6: Dynamic Product Components & Accessories */}
-                <div className="space-y-4 p-4 bg-purple-50/50 rounded-2xl border border-purple-200 mt-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-purple-200 pb-3">
+                <div className="space-y-4 p-4 bg-slate-50/60 rounded-2xl border border-slate-200 mt-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
                     <div>
-                      <h4 className="text-xs font-black text-purple-950 uppercase tracking-wider flex items-center gap-1.5">
-                        <Layers className="w-4 h-4 text-purple-700" />
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                        <Layers className="w-4 h-4 text-slate-700" />
                         <span>6. Dynamic Product Components & Accessories</span>
                       </h4>
                       <p className="text-[11px] text-slate-500 mt-0.5">
@@ -3438,7 +3438,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     <button
                       type="button"
                       onClick={handleAddComponentRow}
-                      className="px-3.5 py-2 rounded-xl bg-purple-900 hover:bg-purple-950 text-white font-extrabold text-xs inline-flex items-center space-x-1.5 shadow-md shrink-0 cursor-pointer transition-all"
+                      className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs inline-flex items-center space-x-1.5 shadow-md shrink-0 cursor-pointer transition-all"
                     >
                       <Plus className="w-4 h-4 text-amber-300" />
                       <span>+ Add Component</span>
@@ -3446,9 +3446,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   </div>
 
                   {formComponents.length === 0 ? (
-                    <div className="p-4 rounded-xl border border-dashed border-purple-200 bg-white text-center text-xs text-slate-500 space-y-1">
+                    <div className="p-4 rounded-xl border border-dashed border-slate-300 bg-white text-center text-xs text-slate-500 space-y-1">
                       <p className="font-bold text-slate-700">No components attached to this product yet.</p>
-                      <p className="text-[11px]">Click <span className="font-bold text-purple-900">+ Add Component</span> above to link an existing tube, flap, rim, valve, or accessory.</p>
+                      <p className="text-[11px]">Click <span className="font-bold text-slate-900">+ Add Component</span> above to link an existing tube, flap, rim, valve, or accessory.</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -3458,18 +3458,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         return (
                           <div
                             key={comp.id || idx}
-                            className="p-3.5 rounded-xl bg-white border border-purple-200 shadow-sm space-y-3"
+                            className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-sm space-y-3"
                           >
                             <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
                               {/* Catalog Source Selection */}
                               <div className="sm:col-span-5">
-                                <label className="block text-[10px] font-black uppercase text-purple-900 mb-1">
+                                <label className="block text-[10px] font-black uppercase text-slate-800 mb-1">
                                   Catalog Link / Source *
                                 </label>
                                 <select
                                   value={isCustom ? 'custom' : comp.productId}
                                   onChange={(e) => handleUpdateComponentRow(comp.id, 'productId', e.target.value)}
-                                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-purple-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-purple-600"
+                                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-slate-900"
                                 >
                                   <option value="custom">✏️ Custom Accessory / Manual Entry</option>
                                   {products
@@ -3484,7 +3484,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                               {/* Component Name */}
                               <div className="sm:col-span-4">
-                                <label className="block text-[10px] font-black uppercase text-purple-900 mb-1">
+                                <label className="block text-[10px] font-black uppercase text-slate-800 mb-1">
                                   Component Name *
                                 </label>
                                 <input
@@ -3492,13 +3492,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                   value={comp.productName || ''}
                                   onChange={(e) => handleUpdateComponentRow(comp.id, 'productName', e.target.value)}
                                   placeholder="e.g. Heavy Duty Butyl Tube 195/65 R15"
-                                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-purple-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-purple-600"
+                                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-slate-900"
                                 />
                               </div>
 
                               {/* Brand */}
                               <div className="sm:col-span-3">
-                                <label className="block text-[10px] font-black uppercase text-purple-900 mb-1">
+                                <label className="block text-[10px] font-black uppercase text-slate-800 mb-1">
                                   Brand
                                 </label>
                                 <input
@@ -3506,15 +3506,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                   value={comp.brand || ''}
                                   onChange={(e) => handleUpdateComponentRow(comp.id, 'brand', e.target.value)}
                                   placeholder="e.g. MRF"
-                                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-purple-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-purple-600"
+                                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-slate-900"
                                 />
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center pt-1 border-t border-purple-100">
+                            <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center pt-1 border-t border-slate-200">
                               {/* Price */}
                               <div className="sm:col-span-3">
-                                <label className="block text-[10px] font-black uppercase text-purple-900 mb-1">
+                                <label className="block text-[10px] font-black uppercase text-slate-800 mb-1">
                                   Price per Unit (₹)
                                 </label>
                                 <input
@@ -3522,13 +3522,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                   min="0"
                                   value={comp.price || 0}
                                   onChange={(e) => handleUpdateComponentRow(comp.id, 'price', Number(e.target.value))}
-                                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-purple-200 text-xs font-black text-slate-900 text-center"
+                                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-black text-slate-900 text-center"
                                 />
                               </div>
 
                               {/* Quantity per unit */}
                               <div className="sm:col-span-3">
-                                <label className="block text-[10px] font-black uppercase text-purple-900 mb-1">
+                                <label className="block text-[10px] font-black uppercase text-slate-800 mb-1">
                                   Qty per Tyre Unit
                                 </label>
                                 <input
@@ -3536,19 +3536,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                   min="1"
                                   value={comp.quantity}
                                   onChange={(e) => handleUpdateComponentRow(comp.id, 'quantity', Math.max(1, parseInt(e.target.value) || 1))}
-                                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-purple-200 text-xs font-bold text-slate-900 text-center"
+                                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-bold text-slate-900 text-center"
                                 />
                               </div>
 
                               {/* Requirement Rule */}
                               <div className="sm:col-span-5">
-                                <label className="block text-[10px] font-black uppercase text-purple-900 mb-1">
+                                <label className="block text-[10px] font-black uppercase text-slate-800 mb-1">
                                   Requirement Rule
                                 </label>
                                 <select
                                   value={comp.isMandatory ? 'mandatory' : 'optional'}
                                   onChange={(e) => handleUpdateComponentRow(comp.id, 'isMandatory', e.target.value === 'mandatory')}
-                                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-purple-200 text-xs font-bold text-slate-900"
+                                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-bold text-slate-900"
                                 >
                                   <option value="optional">Optional (Customer Can Select/Deselect)</option>
                                   <option value="mandatory">Mandatory (Required & Pre-Selected)</option>
@@ -3576,7 +3576,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
 
               {/* Modal Buttons */}
-              <div className="flex justify-end space-x-3 pt-3 border-t border-purple-100">
+              <div className="flex justify-end space-x-3 pt-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsProductModalOpen(false)}
@@ -3587,7 +3587,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-purple-900 text-white font-bold hover:bg-purple-950 shadow-lg flex items-center space-x-2"
+                  className="px-6 py-2.5 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 shadow-lg flex items-center space-x-2"
                 >
                   <CheckCircle2 className="w-4 h-4 text-amber-300" />
                   <span>{editingProduct ? 'Update Product Details' : 'Save & Publish Product'}</span>
@@ -3601,7 +3601,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       {/* Delete Confirmation Modal for Single Product */}
       {deleteConfirmProduct && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-white rounded-3xl p-6 border border-purple-100 shadow-2xl space-y-4 text-center">
+          <div className="w-full max-w-md bg-white rounded-3xl p-6 border border-slate-200 shadow-2xl space-y-4 text-center">
             <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
               <Trash2 className="w-6 h-6" />
             </div>
@@ -3634,7 +3634,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       {/* Bulk Delete Confirmation Modal */}
       {isBulkDeleteConfirmOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-white rounded-3xl p-6 border border-purple-100 shadow-2xl space-y-4 text-center">
+          <div className="w-full max-w-md bg-white rounded-3xl p-6 border border-slate-200 shadow-2xl space-y-4 text-center">
             <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
               <Trash2 className="w-6 h-6" />
             </div>

@@ -149,15 +149,15 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
   };
 
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-100 shadow-xl space-y-8">
+    <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xs space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-purple-100">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-slate-200">
         <div>
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-purple-100 text-purple-900 text-xs font-bold mb-2">
+          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-800 text-xs font-bold mb-2">
             <ShieldCheck className="w-3.5 h-3.5 text-amber-500" />
             <span>Administrator Control Panel</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 font-display flex items-center gap-2">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-950 font-display flex items-center gap-2">
             Website Logo Asset & Display Manager
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl">
@@ -169,7 +169,7 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
           {isCustom && (
             <button
               onClick={handleDeleteLogo}
-              className="px-4 py-2.5 rounded-2xl bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 text-xs font-bold flex items-center gap-2 transition-all shadow-sm"
+              className="px-4 py-2.5 rounded-2xl bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 text-xs font-bold flex items-center gap-2 transition-all shadow-2xs cursor-pointer"
             >
               <Trash2 className="w-4 h-4 text-rose-600" />
               <span>Delete Logo</span>
@@ -177,7 +177,7 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
           )}
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold flex items-center gap-2 transition-all shadow-md shadow-purple-200 hover:shadow-purple-300"
+            className="px-5 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-2 transition-all shadow-2xs cursor-pointer"
           >
             <Upload className="w-4 h-4" />
             <span>{isCustom ? 'Replace Logo Asset' : 'Upload New Logo'}</span>
@@ -202,20 +202,20 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
           onClick={() => fileInputRef.current?.click()}
           className={`relative border-2 border-dashed rounded-3xl p-6 sm:p-8 text-center cursor-pointer transition-all duration-200 flex flex-col items-center justify-center space-y-2 ${
             isDragging
-              ? 'border-purple-600 bg-purple-50/90 scale-[1.01]'
-              : 'border-purple-200 bg-slate-50/70 hover:bg-purple-50/40 hover:border-purple-400'
+              ? 'border-slate-900 bg-slate-100 scale-[1.01]'
+              : 'border-slate-300 bg-slate-50/70 hover:bg-slate-100/60 hover:border-slate-400'
           }`}
         >
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-100 to-indigo-100 border border-purple-200/80 flex items-center justify-center text-purple-700 shadow-sm">
+          <div className="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 shadow-2xs">
             <Upload className="w-6 h-6" />
           </div>
 
           <div>
             <p className="text-sm font-bold text-slate-800">
-              <span className="text-purple-600 underline decoration-purple-300 underline-offset-2">Click to browse</span> or drag & drop logo file here
+              <span className="text-slate-950 underline decoration-amber-400 underline-offset-2">Click to browse</span> or drag & drop logo file here
             </p>
             <p className="text-xs text-slate-500 mt-0.5">
-              Original file is preserved without AI modifications or quality loss (SVG, PNG, JPEG, WEBP)
+              Original file is preserved without modifications or quality loss (SVG, PNG, JPEG, WEBP)
             </p>
           </div>
         </div>
@@ -229,33 +229,33 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
       </div>
 
       {/* Main Interactive Editor Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Left Column: Resize & Reposition Controls (5 Cols) */}
-        <div className="lg:col-span-5 bg-slate-50 rounded-3xl p-6 border border-purple-100 space-y-6">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+        <div className="lg:col-span-5 bg-slate-50 rounded-3xl p-5 border border-slate-200 space-y-5">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
             <div className="flex items-center space-x-2 text-slate-900">
-              <Sliders className="w-5 h-5 text-purple-600" />
-              <h3 className="text-base font-black font-display">Display Size & Placement</h3>
+              <Sliders className="w-4 h-4 text-slate-700" />
+              <h3 className="text-sm font-black font-display">Display Size & Placement</h3>
             </div>
             <button
               onClick={handleResetDisplay}
-              className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm"
+              className="px-2.5 py-1 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer"
               title="Reset size and offsets to default"
             >
-              <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
-              <span>Reset Controls</span>
+              <RotateCcw className="w-3 h-3 text-slate-500" />
+              <span>Reset</span>
             </button>
           </div>
 
           {/* 1. Resize Controls: Zoom Scale */}
-          <div className="space-y-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+          <div className="space-y-2.5 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
             <div className="flex justify-between items-center text-xs">
               <label className="font-bold text-slate-800 flex items-center gap-1.5">
-                <ZoomIn className="w-4 h-4 text-purple-600" />
+                <ZoomIn className="w-3.5 h-3.5 text-slate-600" />
                 <span>Display Scale (Zoom)</span>
               </label>
-              <span className="font-mono font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md border border-purple-200">
+              <span className="font-mono font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
                 {Math.round((settings.scale || 1) * 100)}%
               </span>
             </div>
@@ -267,7 +267,7 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
               step="0.05"
               value={settings.scale || 1.0}
               onChange={(e) => updateSetting('scale', parseFloat(e.target.value))}
-              className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-600"
+              className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-900"
             />
 
             <div className="flex flex-wrap gap-1.5 pt-1">
@@ -275,9 +275,9 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
                 <button
                   key={preset}
                   onClick={() => updateSetting('scale', preset)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                     settings.scale === preset
-                      ? 'bg-purple-600 text-white shadow'
+                      ? 'bg-slate-900 text-white shadow-2xs'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
@@ -288,13 +288,13 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
           </div>
 
           {/* 2. Base Height Cap */}
-          <div className="space-y-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+          <div className="space-y-2.5 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
             <div className="flex justify-between items-center text-xs">
               <label className="font-bold text-slate-800 flex items-center gap-1.5">
-                <Maximize2 className="w-4 h-4 text-purple-600" />
+                <Maximize2 className="w-3.5 h-3.5 text-slate-600" />
                 <span>Base Display Height</span>
               </label>
-              <span className="font-mono font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md border border-purple-200">
+              <span className="font-mono font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
                 {settings.maxHeight || 36} px
               </span>
             </div>
@@ -306,7 +306,7 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
               step="2"
               value={settings.maxHeight || 36}
               onChange={(e) => updateSetting('maxHeight', parseInt(e.target.value, 10))}
-              className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-600"
+              className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-900"
             />
 
             <div className="flex flex-wrap gap-1.5 pt-1">
@@ -314,9 +314,9 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
                 <button
                   key={h}
                   onClick={() => updateSetting('maxHeight', h)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                     settings.maxHeight === h
-                      ? 'bg-purple-600 text-white shadow'
+                      ? 'bg-slate-900 text-white shadow-2xs'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
@@ -327,22 +327,22 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
           </div>
 
           {/* 3. Repositioning: X & Y Offsets */}
-          <div className="space-y-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+          <div className="space-y-3 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
             <div className="flex justify-between items-center text-xs border-b border-slate-100 pb-2">
               <label className="font-bold text-slate-800 flex items-center gap-1.5">
-                <Move className="w-4 h-4 text-purple-600" />
+                <Move className="w-3.5 h-3.5 text-slate-600" />
                 <span>Position Offsets</span>
               </label>
               <button
                 onClick={() => { updateSetting('offsetX', 0); updateSetting('offsetY', 0); }}
-                className="text-[11px] text-purple-600 hover:underline font-bold"
+                className="text-[11px] text-slate-900 hover:underline font-bold cursor-pointer"
               >
                 Center Position (0,0)
               </button>
             </div>
 
             {/* Horizontal Offset X */}
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               <div className="flex justify-between text-[11px] text-slate-600 font-medium">
                 <span>Horizontal (X):</span>
                 <span className="font-mono font-bold text-slate-900">{settings.offsetX || 0} px</span>
@@ -354,12 +354,12 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
                 step="1"
                 value={settings.offsetX || 0}
                 onChange={(e) => updateSetting('offsetX', parseInt(e.target.value, 10))}
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-900"
               />
             </div>
 
             {/* Vertical Offset Y */}
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               <div className="flex justify-between text-[11px] text-slate-600 font-medium">
                 <span>Vertical (Y):</span>
                 <span className="font-mono font-bold text-slate-900">{settings.offsetY || 0} px</span>
@@ -371,7 +371,7 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
                 step="1"
                 value={settings.offsetY || 0}
                 onChange={(e) => updateSetting('offsetY', parseInt(e.target.value, 10))}
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-900"
               />
             </div>
 
@@ -381,28 +381,28 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
               <div className="inline-flex items-center gap-1 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
                 <button
                   onClick={() => nudge(-2, 0)}
-                  className="p-1.5 hover:bg-white rounded-lg transition-all text-slate-700"
+                  className="p-1.5 hover:bg-white rounded-lg transition-all text-slate-700 cursor-pointer"
                   title="Nudge Left (-2px)"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => nudge(0, -2)}
-                  className="p-1.5 hover:bg-white rounded-lg transition-all text-slate-700"
+                  className="p-1.5 hover:bg-white rounded-lg transition-all text-slate-700 cursor-pointer"
                   title="Nudge Up (-2px)"
                 >
                   <ArrowUp className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => nudge(0, 2)}
-                  className="p-1.5 hover:bg-white rounded-lg transition-all text-slate-700"
+                  className="p-1.5 hover:bg-white rounded-lg transition-all text-slate-700 cursor-pointer"
                   title="Nudge Down (+2px)"
                 >
                   <ArrowDown className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => nudge(2, 0)}
-                  className="p-1.5 hover:bg-white rounded-lg transition-all text-slate-700"
+                  className="p-1.5 hover:bg-white rounded-lg transition-all text-slate-700 cursor-pointer"
                   title="Nudge Right (+2px)"
                 >
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -412,16 +412,16 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
           </div>
 
           {/* 4. Alignment Placement */}
-          <div className="space-y-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+          <div className="space-y-2.5 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
             <label className="text-xs font-bold text-slate-800 block">
               Horizontal Layout Alignment
             </label>
             <div className="grid grid-cols-3 gap-2">
               <button
                 onClick={() => updateSetting('alignment', 'left')}
-                className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all border ${
+                className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all border cursor-pointer ${
                   settings.alignment === 'left'
-                    ? 'bg-purple-600 text-white border-purple-600 shadow-sm'
+                    ? 'bg-slate-900 text-white border-slate-900 shadow-2xs'
                     : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                 }`}
               >
@@ -431,9 +431,9 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
 
               <button
                 onClick={() => updateSetting('alignment', 'center')}
-                className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all border ${
+                className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all border cursor-pointer ${
                   settings.alignment === 'center'
-                    ? 'bg-purple-600 text-white border-purple-600 shadow-sm'
+                    ? 'bg-slate-900 text-white border-slate-900 shadow-2xs'
                     : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                 }`}
               >
@@ -443,9 +443,9 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
 
               <button
                 onClick={() => updateSetting('alignment', 'right')}
-                className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all border ${
+                className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all border cursor-pointer ${
                   settings.alignment === 'right'
-                    ? 'bg-purple-600 text-white border-purple-600 shadow-sm'
+                    ? 'bg-slate-900 text-white border-slate-900 shadow-2xs'
                     : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                 }`}
               >
@@ -457,10 +457,10 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
         </div>
 
         {/* Right Column: Live Interactive Preview Stage (7 Cols) */}
-        <div className="lg:col-span-7 space-y-6 flex flex-col justify-between">
+        <div className="lg:col-span-7 space-y-5 flex flex-col justify-between">
           
           {/* Main Stage Canvas Card */}
-          <div className="bg-slate-900 rounded-3xl p-6 text-white space-y-6 shadow-2xl relative overflow-hidden flex-1 flex flex-col justify-between">
+          <div className="bg-slate-900 rounded-3xl p-6 text-white space-y-5 shadow-xl relative overflow-hidden flex-1 flex flex-col justify-between">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-amber-400" />
@@ -470,27 +470,27 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
               </div>
 
               {/* Background Style Switcher */}
-              <div className="flex items-center bg-slate-800/90 p-1 rounded-xl border border-slate-700/80 text-xs font-medium space-x-1">
+              <div className="flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs font-medium space-x-1">
                 <button
                   onClick={() => setPreviewBg('light')}
-                  className={`px-2.5 py-1 rounded-lg transition-all ${
-                    previewBg === 'light' ? 'bg-white text-slate-950 font-bold shadow' : 'text-slate-400 hover:text-white'
+                  className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                    previewBg === 'light' ? 'bg-white text-slate-950 font-bold shadow-2xs' : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   Light
                 </button>
                 <button
                   onClick={() => setPreviewBg('dark')}
-                  className={`px-2.5 py-1 rounded-lg transition-all ${
-                    previewBg === 'dark' ? 'bg-purple-950 text-white font-bold border border-purple-700 shadow' : 'text-slate-400 hover:text-white'
+                  className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                    previewBg === 'dark' ? 'bg-slate-950 text-white font-bold border border-slate-700 shadow-2xs' : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   Dark
                 </button>
                 <button
                   onClick={() => setPreviewBg('grid')}
-                  className={`px-2.5 py-1 rounded-lg transition-all ${
-                    previewBg === 'grid' ? 'bg-slate-700 text-white font-bold shadow' : 'text-slate-400 hover:text-white'
+                  className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                    previewBg === 'grid' ? 'bg-slate-700 text-white font-bold shadow-2xs' : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   Checker
@@ -500,11 +500,11 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
 
             {/* Realtime Canvas Display Box */}
             <div
-              className={`min-h-[220px] rounded-2xl p-8 flex items-center transition-all duration-300 relative border overflow-hidden ${
+              className={`min-h-[200px] rounded-2xl p-8 flex items-center transition-all duration-300 relative border overflow-hidden ${
                 previewBg === 'light'
                   ? 'bg-white border-slate-200'
                   : previewBg === 'dark'
-                  ? 'bg-purple-950/90 border-purple-800/60'
+                  ? 'bg-slate-950 border-slate-800'
                   : 'bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:16px_16px] bg-slate-800 border-slate-700'
               }`}
             >
@@ -513,7 +513,7 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
               </div>
 
               {/* Live Overlay Badge showing current position stats */}
-              <div className="absolute bottom-3 right-3 bg-slate-900/85 backdrop-blur px-3 py-1.5 rounded-xl border border-slate-700 text-[10px] font-mono text-amber-300 flex items-center gap-2">
+              <div className="absolute bottom-3 right-3 bg-slate-900/85 backdrop-blur-xs px-3 py-1.5 rounded-xl border border-slate-700 text-[10px] font-mono text-amber-300 flex items-center gap-2">
                 <span>Scale: {Math.round((settings.scale || 1) * 100)}%</span>
                 <span>•</span>
                 <span>Off: ({settings.offsetX || 0}px, {settings.offsetY || 0}px)</span>
@@ -533,7 +533,7 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
 
               <button
                 onClick={handleDownload}
-                className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center gap-1.5 font-bold transition-all border border-slate-700"
+                className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center gap-1.5 font-bold transition-all border border-slate-700 cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Download Asset</span>
@@ -542,9 +542,9 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
           </div>
 
           {/* Website Context Live Previews */}
-          <div className="bg-white rounded-3xl p-5 border border-purple-100 shadow-sm space-y-4">
+          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-              <Eye className="w-4 h-4 text-purple-600" />
+              <Eye className="w-4 h-4 text-slate-700" />
               <span>Real-Time Website Context Previews</span>
             </h4>
 
@@ -552,21 +552,21 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
               {/* Context 1: Header Navbar */}
               <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
                 <span className="text-[11px] font-bold text-slate-600 block">Top Navbar Header</span>
-                <div className="p-3 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-between">
+                <div className="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-between">
                   <MagadhSparshLogo size="md" />
                   <div className="flex gap-1.5">
                     <div className="w-12 h-6 bg-slate-100 rounded-md" />
-                    <div className="w-10 h-6 bg-purple-600 rounded-md" />
+                    <div className="w-10 h-6 bg-slate-900 rounded-md" />
                   </div>
                 </div>
               </div>
 
-              {/* Context 2: Dark Footer */}
+              {/* Context 2: Footer */}
               <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
                 <span className="text-[11px] font-bold text-slate-600 block">Website Footer Bar</span>
-                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 shadow-sm flex items-center justify-between text-white">
+                <div className="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center justify-between text-slate-900">
                   <MagadhSparshLogo size="md" />
-                  <span className="text-[10px] text-slate-400">© 2026 magadh Sparsh</span>
+                  <span className="text-[10px] text-slate-500 font-medium">© 2026 Magadh Sparsh</span>
                 </div>
               </div>
             </div>
