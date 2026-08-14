@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { TyreProduct, CartItem, Order, PaymentRecord, Coupon, CustomerAccount, ProductComponentConfig, getCartItemPrices } from './types';
 import { Navbar } from './components/Navbar';
+import { HomeSummaryBar } from './components/HomeSummaryBar';
+import { NexusTelemetrySection } from './components/NexusTelemetrySection';
 import { Hero } from './components/Hero';
 import { ProductCard } from './components/ProductCard';
 import { ProductCarousel } from './components/ProductCarousel';
@@ -570,8 +572,37 @@ export default function App() {
           </div>
         ) : (
           <>
-        {/* TAB 1: HOMEPAGE (All sections removed as requested) */}
-        {activeTab === 'home' && null}
+        {/* TAB 1: HOMEPAGE */}
+        {activeTab === 'home' && (
+          <div className="animate-fade-in py-4 space-y-6 sm:space-y-8">
+            {/* Section 1: Static Overview 2x2 Summary Bar */}
+            <HomeSummaryBar
+              orders={orders}
+              payments={payments}
+              currentCustomerAccount={currentCustomerAccount}
+              currentUser={currentUser}
+              currentUserEmail={currentUserEmail}
+              isAdmin={isAdmin}
+              setActiveTab={setActiveTab}
+              onRefreshData={() => {
+                loadProductsFromDb(false);
+                fetchOrdersFromSupabase().then(dbOrders => {
+                  if (dbOrders && dbOrders.length > 0) {
+                    setOrders(prev => {
+                      const existingIds = new Set(dbOrders.map(o => o.id));
+                      const localOnly = prev.filter(o => !existingIds.has(o.id));
+                      return [...localOnly, ...dbOrders];
+                    });
+                  }
+                  showToast('Live trade metrics synced with database');
+                });
+              }}
+            />
+
+            {/* Section 2: Nexus Telemetry Showcase ("Every micron is accounted for.") */}
+            <NexusTelemetrySection />
+          </div>
+        )}
 
         {/* TAB 2: CATALOGUE PAGE */}
         {activeTab === 'catalogue' && (() => {
