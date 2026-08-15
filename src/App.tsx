@@ -9,7 +9,7 @@ import { VerticalProductCard } from './components/VerticalProductCard';
 import { ProductCarousel } from './components/ProductCarousel';
 import { ContinuousProductBar } from './components/ContinuousProductBar';
 import { ProductDetailModal } from './components/ProductDetailModal';
-import { QuickOrderPage } from './components/QuickOrderPage';
+import { MyOrderPage } from './components/MyOrderPage';
 import { QuickPaymentsPage } from './components/QuickPaymentsPage';
 import { AccountPage } from './components/AccountPage';
 import { CartDrawer } from './components/CartDrawer';
@@ -694,8 +694,19 @@ export default function App() {
           );
         })()}
 
-        {/* TAB 3: QUICK ORDER PAGE (All sections removed) */}
-        {activeTab === 'quick-order' && null}
+        {/* TAB 3: QUICK ORDER / MY ORDERS PAGE */}
+        {activeTab === 'quick-order' && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <MyOrderPage
+              products={visibleProducts}
+              orders={orders}
+              onPlaceQuickOrder={handlePlaceOrder}
+              onViewInvoice={setSelectedOrderForInvoice}
+              onTrackOrder={() => setActiveTab('quick-order')}
+              setActiveTab={setActiveTab}
+            />
+          </div>
+        )}
 
         {/* TAB 4: QUICK PAYMENTS PAGE (All sections removed) */}
         {activeTab === 'quick-payments' && null}
