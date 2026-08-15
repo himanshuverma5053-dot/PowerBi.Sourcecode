@@ -10,8 +10,8 @@ import { ProductCarousel } from './components/ProductCarousel';
 import { ContinuousProductBar } from './components/ContinuousProductBar';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { MyOrderPage } from './components/MyOrderPage';
-import { QuickPaymentsPage } from './components/QuickPaymentsPage';
-import { AccountPage } from './components/AccountPage';
+import { PaymentPage } from './components/PaymentPage';
+import { ProfilePage } from './components/ProfilePage';
 import { CartDrawer } from './components/CartDrawer';
 import { InvoiceModal } from './components/InvoiceModal';
 import { AdminPanel } from './components/AdminPanel';
@@ -708,11 +708,41 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 4: QUICK PAYMENTS PAGE (All sections removed) */}
-        {activeTab === 'quick-payments' && null}
+        {/* TAB 4: PAYMENT PAGE */}
+        {activeTab === 'quick-payments' && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <PaymentPage
+              payments={payments}
+              orders={orders}
+              onProcessPayment={(newPayment) => {
+                setPayments(prev => [newPayment, ...prev]);
+                setOrders(prev => prev.map(o => 
+                  o.orderNumber === newPayment.orderId || o.id === newPayment.orderId 
+                    ? { ...o, paymentStatus: 'Paid' } 
+                    : o
+                ));
+                showToast(`Payment for #${newPayment.orderId} recorded successfully!`);
+              }}
+              onViewInvoice={setSelectedOrderForInvoice}
+            />
+          </div>
+        )}
 
-        {/* TAB 5: ACCOUNT PAGE (All sections removed) */}
-        {activeTab === 'account' && null}
+        {/* TAB 5: MY PROFILE PAGE */}
+        {activeTab === 'account' && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <ProfilePage
+              orders={orders}
+              showToast={showToast}
+              currentUser={currentUser}
+              setCurrentUser={setCurrentUser}
+              setActiveTab={setActiveTab}
+              currentUserEmail={currentUserEmail}
+              customerAccounts={customerAccounts}
+              onUpdateCustomerAccounts={setCustomerAccounts}
+            />
+          </div>
+        )}
 
         {/* TAB 6: ADMIN CONSOLE */}
         {activeTab === 'admin' && (
@@ -748,7 +778,7 @@ export default function App() {
                 <div className="pt-2">
                   <button
                     onClick={() => setActiveTab('account')}
-                    className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+                    className="px-6 py-2.5 rounded-xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-bold text-xs shadow-md transition-all cursor-pointer"
                   >
                     Go to Account Settings
                   </button>

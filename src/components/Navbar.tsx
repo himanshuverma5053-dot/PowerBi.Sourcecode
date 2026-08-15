@@ -102,7 +102,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     ? [
         {
           id: 'account',
-          label: 'My Account',
+          label: 'My Profile',
           icon: UserCircle2,
           badge: currentUser ? 'Active' : undefined,
           badgeColor: 'bg-emerald-100 text-emerald-800',
@@ -279,7 +279,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   onClick={() => setActiveTab('account')}
                   className="hidden sm:flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-900 font-bold text-xs transition-all"
-                  title="My Account"
+                  title="My Profile"
                 >
                   <UserCircle2 className="w-4 h-4 text-slate-700" />
                   <span className="truncate max-w-[120px]">{currentUser || 'Account'}</span>

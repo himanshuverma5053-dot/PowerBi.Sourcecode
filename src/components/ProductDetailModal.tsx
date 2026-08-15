@@ -179,9 +179,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 ) : (
                   <button
                     onClick={handleAddToCartClick}
-                    className="w-full py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-2xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
+                    className="w-full py-2.5 rounded-lg bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-bold text-xs sm:text-sm shadow-2xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
                   >
-                    <ShoppingBag className="w-3.5 h-3.5 text-slate-300" />
+                    <ShoppingBag className="w-3.5 h-3.5 text-white" />
                     <span>Add {quantity} to Cart</span>
                   </button>
                 )}

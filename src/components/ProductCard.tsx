@@ -139,9 +139,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <button
             type="button"
             onClick={handleView}
-            className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold transition-all flex items-center space-x-1 cursor-pointer shrink-0 shadow-2xs"
+            className="px-3 py-1.5 rounded-lg bg-[#54b4e7] hover:bg-[#3ea5dc] text-white text-[11px] font-bold transition-all flex items-center space-x-1 cursor-pointer shrink-0 shadow-2xs"
           >
-            <Eye className="w-3 h-3 text-slate-200" />
+            <Eye className="w-3 h-3 text-white" />
             <span>Details</span>
           </button>
         </div>

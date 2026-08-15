@@ -205,9 +205,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                 setMode('signin');
                 setError(null);
               }}
-              className="w-full py-3 px-4 rounded-xl bg-slate-900 text-white font-extrabold text-xs shadow-md flex items-center justify-center space-x-2 hover:bg-slate-800 transition-all cursor-pointer"
+              className="w-full py-3 px-4 rounded-xl bg-[#54b4e7] text-white font-extrabold text-xs shadow-md flex items-center justify-center space-x-2 hover:bg-[#3ea5dc] transition-all cursor-pointer"
             >
-              <LogIn className="w-4 h-4 text-slate-300" />
+              <LogIn className="w-4 h-4 text-white" />
               <span>I've Verified — Proceed to Sign In</span>
             </button>
           </div>
@@ -310,17 +310,17 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm shadow-md flex items-center justify-center space-x-2 transition-all disabled:opacity-60 cursor-pointer"
+            className="w-full py-3.5 px-4 rounded-xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-extrabold text-sm shadow-md flex items-center justify-center space-x-2 transition-all disabled:opacity-60 cursor-pointer"
           >
             {loading ? (
               <span className="flex items-center space-x-2">
-                <Disc className="w-4 h-4 animate-spin text-slate-300" />
+                <Disc className="w-4 h-4 animate-spin text-white" />
                 <span>Processing...</span>
               </span>
             ) : (
               <span className="flex items-center space-x-2">
                 <span>Sign In Now</span>
-                <ArrowRight className="w-4 h-4 text-slate-300" />
+                <ArrowRight className="w-4 h-4 text-white" />
               </span>
             )}
           </button>

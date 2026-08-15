@@ -67,7 +67,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({
 
           <button
             type="submit"
-            className="px-6 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-sm shadow-md active:scale-95 transition-all cursor-pointer"
+            className="px-6 py-3.5 rounded-2xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-black text-sm shadow-md active:scale-95 transition-all cursor-pointer"
           >
             Track Order
           </button>

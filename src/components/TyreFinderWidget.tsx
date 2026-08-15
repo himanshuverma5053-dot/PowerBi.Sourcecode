@@ -101,9 +101,9 @@ export const TyreFinderWidget: React.FC<TyreFinderWidgetProps> = ({ onSearch, se
 
           <button
             type="submit"
-            className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-sm shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer"
+            className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-black text-sm shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer"
           >
-            <Search className="w-4 h-4 text-amber-300" />
+            <Search className="w-4 h-4 text-white" />
             <span>Search Tyres Catalog</span>
           </button>
         </div>

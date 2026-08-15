@@ -203,7 +203,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               />
               <button
                 type="submit"
-                className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-bold text-xs cursor-pointer shadow-2xs transition-colors"
               >
                 Apply
               </button>
@@ -234,10 +234,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
             <button
               onClick={() => setIsCheckoutOpen(true)}
-              className="w-full py-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-sm shadow-md active:scale-95 transition-all flex items-center justify-center space-x-2 cursor-pointer"
+              className="w-full py-4 rounded-2xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-black text-sm shadow-md active:scale-95 transition-all flex items-center justify-center space-x-2 cursor-pointer"
             >
               <span>Proceed to Checkout</span>
-              <ArrowRight className="w-4 h-4 text-slate-200" />
+              <ArrowRight className="w-4 h-4 text-white" />
             </button>
           </div>
         )}
@@ -340,7 +340,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-sm shadow-md cursor-pointer"
+                className="w-full py-3.5 rounded-2xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-black text-sm shadow-md cursor-pointer transition-colors"
               >
                 Confirm Order & Generate Tax Invoice
               </button>

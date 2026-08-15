@@ -511,7 +511,7 @@ export const PaymentIntegrationsSpace: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleSaveConfig(activeGateway)}
-                className="px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs shadow-md active:scale-95 transition-all flex items-center space-x-2 cursor-pointer"
+                className="px-6 py-3 rounded-xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-extrabold text-xs shadow-md active:scale-95 transition-all flex items-center space-x-2 cursor-pointer"
               >
                 <Check className="w-4 h-4" />
                 <span>Save {activeGateway.toUpperCase()} Integration Keys</span>
@@ -556,9 +556,9 @@ export const PaymentIntegrationsSpace: React.FC = () => {
 
                 <button
                   onClick={handleTriggerTestWebhook}
-                  className="px-4 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs transition-all flex items-center space-x-1 cursor-pointer shadow-2xs"
+                  className="px-4 py-1.5 rounded-xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-black text-xs transition-all flex items-center space-x-1 cursor-pointer shadow-2xs"
                 >
-                  <Play className="w-3.5 h-3.5 text-amber-300" />
+                  <Play className="w-3.5 h-3.5 text-white" />
                   <span>Send Test Payload</span>
                 </button>
               </div>

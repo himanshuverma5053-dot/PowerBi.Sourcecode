@@ -947,9 +947,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
             <button
               onClick={openNewProductModal}
-              className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-lg flex items-center space-x-2 transition-transform active:scale-95 shrink-0"
+              className="px-5 py-2.5 rounded-xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white text-xs font-bold shadow-lg flex items-center space-x-2 transition-transform active:scale-95 shrink-0"
             >
-              <Plus className="w-4 h-4 text-amber-300" />
+              <Plus className="w-4 h-4 text-white" />
               <span>Add New Product</span>
             </button>
           </div>
@@ -2055,10 +2055,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         <td className="p-3.5 text-right space-x-1.5">
                           <button
                             onClick={() => handleOpenCustomerEditor(cust)}
-                            className="px-3 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 font-black text-xs inline-flex items-center space-x-1.5 shadow-md transition-all cursor-pointer"
+                            className="px-3 py-2 rounded-xl bg-[#54b4e7] text-white hover:bg-[#3ea5dc] font-black text-xs inline-flex items-center space-x-1.5 shadow-md transition-all cursor-pointer"
                             title="Open Customer Profile Editor"
                           >
-                            <Edit2 className="w-3.5 h-3.5 text-amber-300" />
+                            <Edit2 className="w-3.5 h-3.5 text-white" />
                             <span>Manage Profile & Pricing</span>
                           </button>
 
@@ -2755,9 +2755,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <button
                   type="button"
                   onClick={handleSaveCustomerProfile}
-                  className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs shadow-lg flex items-center space-x-2 cursor-pointer"
+                  className="px-6 py-2.5 rounded-xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-black text-xs shadow-lg flex items-center space-x-2 cursor-pointer"
                 >
-                  <CheckCircle2 className="w-4 h-4 text-amber-300" />
+                  <CheckCircle2 className="w-4 h-4 text-white" />
                   <span>Save Customer Profile</span>
                 </button>
               </div>
@@ -2945,12 +2945,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <button
                   type="submit"
                   disabled={cLoading}
-                  className="px-6 py-2.5 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 shadow-md flex items-center space-x-2 disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-xl bg-[#54b4e7] text-white font-bold hover:bg-[#3ea5dc] shadow-md flex items-center space-x-2 disabled:opacity-50"
                 >
                   {cLoading ? (
-                    <RefreshCw className="w-4 h-4 animate-spin text-amber-400" />
+                    <RefreshCw className="w-4 h-4 animate-spin text-white" />
                   ) : (
-                    <UserPlus className="w-4 h-4 text-amber-400" />
+                    <UserPlus className="w-4 h-4 text-white" />
                   )}
                   <span>{cLoading ? 'Registering...' : 'Create Customer Account'}</span>
                 </button>
@@ -3438,9 +3438,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     <button
                       type="button"
                       onClick={handleAddComponentRow}
-                      className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs inline-flex items-center space-x-1.5 shadow-md shrink-0 cursor-pointer transition-all"
+                      className="px-3.5 py-2 rounded-xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-extrabold text-xs inline-flex items-center space-x-1.5 shadow-md shrink-0 cursor-pointer transition-all"
                     >
-                      <Plus className="w-4 h-4 text-amber-300" />
+                      <Plus className="w-4 h-4 text-white" />
                       <span>+ Add Component</span>
                     </button>
                   </div>
@@ -3587,9 +3587,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 shadow-lg flex items-center space-x-2"
+                  className="px-6 py-2.5 rounded-xl bg-[#54b4e7] text-white font-bold hover:bg-[#3ea5dc] shadow-lg flex items-center space-x-2"
                 >
-                  <CheckCircle2 className="w-4 h-4 text-amber-300" />
+                  <CheckCircle2 className="w-4 h-4 text-white" />
                   <span>{editingProduct ? 'Update Product Details' : 'Save & Publish Product'}</span>
                 </button>
               </div>

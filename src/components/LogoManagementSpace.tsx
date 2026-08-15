@@ -177,7 +177,7 @@ export const LogoManagementSpace: React.FC<LogoManagementSpaceProps> = ({ showTo
           )}
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="px-5 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-2 transition-all shadow-2xs cursor-pointer"
+            className="px-5 py-2.5 rounded-2xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white text-xs font-bold flex items-center gap-2 transition-all shadow-2xs cursor-pointer"
           >
             <Upload className="w-4 h-4" />
             <span>{isCustom ? 'Replace Logo Asset' : 'Upload New Logo'}</span>

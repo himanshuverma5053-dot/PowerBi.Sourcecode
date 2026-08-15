@@ -150,9 +150,9 @@ export const ContinuousProductBar: React.FC<ContinuousProductBarProps> = ({
                       e.stopPropagation();
                       onAddToCart(product, 1);
                     }}
-                    className="flex-1 py-1 px-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-extrabold text-[10px] shadow-2xs transition-all flex items-center justify-center space-x-0.5 cursor-pointer"
+                    className="flex-1 py-1 px-1.5 rounded-lg bg-[#54b4e7] hover:bg-[#3ea5dc] active:scale-95 text-white font-extrabold text-[10px] shadow-2xs transition-all flex items-center justify-center space-x-0.5 cursor-pointer"
                   >
-                    <ShoppingBag className="w-2.5 h-2.5 text-amber-300" />
+                    <ShoppingBag className="w-2.5 h-2.5 text-white" />
                     <span>Add +</span>
                   </button>
                 </div>

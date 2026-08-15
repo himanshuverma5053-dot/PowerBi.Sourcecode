@@ -58,7 +58,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ order, onClose }) =>
           <div className="flex items-center space-x-3">
             <button
               onClick={handlePrint}
-              className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center space-x-1.5 transition-all shadow-2xs cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-bold text-xs flex items-center space-x-1.5 transition-all shadow-2xs cursor-pointer"
             >
               <Printer className="w-4 h-4" />
               <span className="hidden sm:inline">Print / Save PDF</span>
