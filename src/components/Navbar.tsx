@@ -72,7 +72,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   interface NavItem {
     id: string;
     label: string;
-    description: string;
+    description?: string;
     icon: React.ComponentType<{ className?: string }>;
     badge?: string;
     badgeColor?: string;
@@ -80,29 +80,20 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const primaryNavItems: NavItem[] = [
     {
-      id: 'home',
-      label: 'Home',
-      description: 'Tyre showcase, search & highlights',
-      icon: Home,
-    },
-    {
       id: 'catalogue',
-      label: 'Tyre Catalogue',
-      description: 'Explore full stock with dealer GST pricing',
+      label: 'Products',
       icon: Store,
       badge: allProducts.length > 0 ? `${allProducts.length} SKUs` : undefined,
       badgeColor: 'bg-slate-200 text-slate-800',
     },
     {
       id: 'quick-order',
-      label: 'Orders & Tracking',
-      description: 'Track active dispatches & order history',
+      label: 'My Orders',
       icon: Truck,
     },
     {
       id: 'quick-payments',
-      label: 'Payments & GST Invoices',
-      description: 'View digital receipts & download tax invoices',
+      label: 'My Payments',
       icon: CreditCard,
     },
   ];
@@ -111,8 +102,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     ? [
         {
           id: 'account',
-          label: 'My Account / Profile',
-          description: 'Dealer info, GSTIN & saved details',
+          label: 'My Account',
           icon: UserCircle2,
           badge: currentUser ? 'Active' : undefined,
           badgeColor: 'bg-emerald-100 text-emerald-800',
@@ -122,7 +112,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               {
                 id: 'admin',
                 label: 'Admin Control Console',
-                description: 'Stock management, pricing rules & orders',
                 icon: ShieldCheck,
                 badge: 'Admin Only',
                 badgeColor: 'bg-amber-400 text-slate-950',
@@ -134,7 +123,6 @@ export const Navbar: React.FC<NavbarProps> = ({
         {
           id: 'signin',
           label: 'Sign In / Register',
-          description: 'Login to access wholesale dealer pricing',
           icon: UserCircle2,
           badge: 'Unlock GST',
           badgeColor: 'bg-amber-400 text-slate-950',
@@ -429,13 +417,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                           <button
                             key={item.id}
                             onClick={() => handleNavClick(item.id)}
-                            className={`w-full flex items-start justify-between p-3 rounded-2xl text-xs font-bold transition-all border text-left cursor-pointer active:scale-[0.98] ${
+                            className={`w-full flex items-center justify-between p-3 rounded-2xl text-xs font-bold transition-all border text-left cursor-pointer active:scale-[0.98] ${
                               isActive
                                 ? 'bg-slate-900 text-white border-slate-950 shadow-sm'
                                 : 'bg-white hover:bg-slate-50 text-slate-900 border-slate-200 hover:border-slate-300'
                             }`}
                           >
-                            <div className="flex items-start space-x-3 min-w-0">
+                            <div className="flex items-center space-x-3 min-w-0">
                               <div className={`p-1.5 rounded-xl shrink-0 ${
                                 isActive ? 'bg-slate-800 text-amber-400' : 'bg-slate-100 text-slate-700'
                               }`}>
@@ -445,13 +433,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                                 <span className={`block font-extrabold truncate text-xs ${isActive ? 'text-white' : 'text-slate-900'}`}>
                                   {item.label}
                                 </span>
-                                <span className={`block text-[10px] font-medium truncate mt-0.5 ${isActive ? 'text-slate-300' : 'text-slate-500'}`}>
-                                  {item.description}
-                                </span>
+                                {item.description && (
+                                  <span className={`block text-[10px] font-medium truncate mt-0.5 ${isActive ? 'text-slate-300' : 'text-slate-500'}`}>
+                                    {item.description}
+                                  </span>
+                                )}
                               </div>
                             </div>
 
-                            <div className="flex items-center space-x-1.5 flex-shrink-0 mt-1">
+                            <div className="flex items-center space-x-1.5 flex-shrink-0">
                               {item.badge && (
                                 <span className={`px-1.5 py-0.5 text-[9px] font-black rounded ${item.badgeColor || 'bg-slate-200 text-slate-800'}`}>
                                   {item.badge}
@@ -471,13 +461,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                           <button
                             key={item.id}
                             onClick={() => handleNavClick(item.id)}
-                            className={`w-full flex items-start justify-between p-3 rounded-2xl text-xs font-bold transition-all border text-left cursor-pointer active:scale-[0.98] ${
+                            className={`w-full flex items-center justify-between p-3 rounded-2xl text-xs font-bold transition-all border text-left cursor-pointer active:scale-[0.98] ${
                               isActive
                                 ? 'bg-slate-900 text-white border-slate-950 shadow-sm'
                                 : 'bg-white hover:bg-slate-50 text-slate-900 border-slate-200 hover:border-slate-300'
                             }`}
                           >
-                            <div className="flex items-start space-x-3 min-w-0">
+                            <div className="flex items-center space-x-3 min-w-0">
                               <div className={`p-1.5 rounded-xl shrink-0 ${
                                 isActive ? 'bg-slate-800 text-amber-400' : 'bg-slate-100 text-slate-700'
                               }`}>
@@ -487,13 +477,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                                 <span className={`block font-extrabold truncate text-xs ${isActive ? 'text-white' : 'text-slate-900'}`}>
                                   {item.label}
                                 </span>
-                                <span className={`block text-[10px] font-medium truncate mt-0.5 ${isActive ? 'text-slate-300' : 'text-slate-500'}`}>
-                                  {item.description}
-                                </span>
+                                {item.description && (
+                                  <span className={`block text-[10px] font-medium truncate mt-0.5 ${isActive ? 'text-slate-300' : 'text-slate-500'}`}>
+                                    {item.description}
+                                  </span>
+                                )}
                               </div>
                             </div>
 
-                            <div className="flex items-center space-x-1.5 flex-shrink-0 mt-1">
+                            <div className="flex items-center space-x-1.5 flex-shrink-0">
                               {item.badge && (
                                 <span className={`px-1.5 py-0.5 text-[9px] font-black rounded ${item.badgeColor || 'bg-amber-400 text-slate-950'}`}>
                                   {item.badge}
