@@ -745,48 +745,7 @@ export default function App() {
         )}
 
         {/* TAB 6: ADMIN CONSOLE */}
-        {activeTab === 'admin' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            {isAdmin ? (
-              <AdminPanel
-                products={products}
-                isProductsLoading={isProductsLoading}
-                orders={orders}
-                payments={payments}
-                coupons={coupons}
-                customerAccounts={customerAccounts}
-                onUpdateCustomerAccounts={setCustomerAccounts}
-                onAddOrUpdateProduct={handleAddOrUpdateProduct}
-                onDeleteProduct={handleDeleteProduct}
-                onArchiveProduct={handleArchiveProduct}
-                onUpdateOrderStatus={handleUpdateOrderStatus}
-                onViewInvoice={setSelectedOrderForInvoice}
-                showToast={showToast}
-              />
-            ) : (
-              <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-2xs space-y-4 max-w-xl mx-auto my-12">
-                <div className="w-16 h-16 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center mx-auto">
-                  <ShieldAlert className="w-8 h-8" />
-                </div>
-                <h2 className="text-2xl font-black text-slate-900 font-display">Access Restricted</h2>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Admin Console privileges are granted exclusively to designated administrator <strong className="text-slate-900 font-black">"{ADMIN_CONFIG.username}"</strong> ({ADMIN_CONFIG.email}).
-                </p>
-                <p className="text-xs text-slate-500">
-                  Current user profile: <span className="font-bold text-slate-700">{currentUser || 'Standard User'}</span>
-                </p>
-                <div className="pt-2">
-                  <button
-                    onClick={() => setActiveTab('account')}
-                    className="px-6 py-2.5 rounded-xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-bold text-xs shadow-md transition-all cursor-pointer"
-                  >
-                    Go to Account Settings
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+        {activeTab === 'admin' && null}
 
         {/* TAB 7: SIGN IN AUTH */}
         {(activeTab === 'signin' || activeTab === 'signup' || activeTab === 'auth') && (

@@ -13,12 +13,12 @@ export const NexusTelemetrySection: React.FC<NexusTelemetrySectionProps> = ({
   syncLatency = '0.8 ms'
 }) => {
   return (
-    <section id="home-telemetry-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <section id="home-telemetry-section" className="w-full px-0 py-2 sm:py-4">
       <div 
         id="nexus-telemetry-banner"
-        className="relative w-full rounded-3xl sm:rounded-[32px] overflow-hidden border border-slate-800 shadow-2xl bg-black min-h-[320px] sm:min-h-[420px] md:min-h-[500px] lg:min-h-[560px] flex flex-col justify-between"
+        className="relative w-full rounded-none overflow-hidden border-y border-slate-800 shadow-2xl bg-black min-h-[360px] sm:min-h-[460px] md:min-h-[540px] lg:min-h-[620px] flex flex-col justify-between"
       >
-        {/* Background Image */}
+        {/* Background Image - Expanded edge-to-edge */}
         <img
           src={telemetryBg}
           alt="Nexus Telemetry - Engineered in the Open"
@@ -27,7 +27,7 @@ export const NexusTelemetrySection: React.FC<NexusTelemetrySectionProps> = ({
         />
 
         {/* Subtle Dark Vignette / Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/40 pointer-events-none" />
 
         {/* Precision Crosshair Laser Grid Lines */}
         <div className="absolute inset-0 pointer-events-none">
@@ -44,7 +44,7 @@ export const NexusTelemetrySection: React.FC<NexusTelemetrySectionProps> = ({
         </div>
 
         {/* Top spacer / status indicator */}
-        <div className="relative z-10 p-6 sm:p-8 flex justify-end">
+        <div className="relative z-10 p-6 sm:p-8 md:p-12 flex justify-end">
           {/* Futuristic Telemetry HUD Card */}
           <div 
             id="hud-telemetry-panel"
@@ -72,7 +72,7 @@ export const NexusTelemetrySection: React.FC<NexusTelemetrySectionProps> = ({
         </div>
 
         {/* Bottom Left Display Typography */}
-        <div className="relative z-10 p-6 sm:p-8 md:p-12 space-y-2 max-w-xl">
+        <div className="relative z-10 p-6 sm:p-8 md:p-12 lg:p-16 space-y-2 max-w-2xl">
           <div className="text-[#CCFF00] font-mono text-xs sm:text-sm font-semibold tracking-widest uppercase">
             02 / ENGINEERED IN THE OPEN
           </div>

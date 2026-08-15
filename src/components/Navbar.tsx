@@ -83,8 +83,6 @@ export const Navbar: React.FC<NavbarProps> = ({
       id: 'catalogue',
       label: 'Products',
       icon: Store,
-      badge: allProducts.length > 0 ? `${allProducts.length} SKUs` : undefined,
-      badgeColor: 'bg-slate-200 text-slate-800',
     },
     {
       id: 'quick-order',
@@ -104,28 +102,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           id: 'account',
           label: 'My Profile',
           icon: UserCircle2,
-          badge: currentUser ? 'Active' : undefined,
-          badgeColor: 'bg-emerald-100 text-emerald-800',
         },
-        ...(isAdmin
-          ? [
-              {
-                id: 'admin',
-                label: 'Admin Control Console',
-                icon: ShieldCheck,
-                badge: 'Admin Only',
-                badgeColor: 'bg-amber-400 text-slate-950',
-              },
-            ]
-          : []),
       ]
     : [
         {
           id: 'signin',
           label: 'Sign In / Register',
           icon: UserCircle2,
-          badge: 'Unlock GST',
-          badgeColor: 'bg-amber-400 text-slate-950',
         },
       ];
 
