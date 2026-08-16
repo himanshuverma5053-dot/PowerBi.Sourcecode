@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TyreProduct, CustomerAccount } from '../types';
 import { getCustomerEffectivePrice } from '../utils/customerPricing';
 import { ShoppingBag, Eye, Disc3, ShieldCheck, Zap, Pause, Play, ChevronRight } from 'lucide-react';
+import { SilverCartIcon } from './SilverCartIcon';
 
 interface ContinuousProductBarProps {
   title: string;
@@ -150,9 +151,9 @@ export const ContinuousProductBar: React.FC<ContinuousProductBarProps> = ({
                       e.stopPropagation();
                       onAddToCart(product, 1);
                     }}
-                    className="flex-1 py-1 px-1.5 rounded-lg bg-[#54b4e7] hover:bg-[#3ea5dc] active:scale-95 text-white font-extrabold text-[10px] shadow-2xs transition-all flex items-center justify-center space-x-0.5 cursor-pointer"
+                    className="flex-1 py-1 px-1.5 rounded-lg bg-[#54b4e7] hover:bg-[#3ea5dc] active:scale-95 text-white font-extrabold text-[10px] shadow-2xs transition-all flex items-center justify-center space-x-1 cursor-pointer"
                   >
-                    <ShoppingBag className="w-2.5 h-2.5 text-white" />
+                    <SilverCartIcon className="w-3 h-3" />
                     <span>Add +</span>
                   </button>
                 </div>

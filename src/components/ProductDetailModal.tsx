@@ -5,6 +5,7 @@ import { getCustomerEffectivePrice } from '../utils/customerPricing';
 import {
   X, ShoppingBag, Layers
 } from 'lucide-react';
+import { SilverCartIcon } from './SilverCartIcon';
 
 interface ProductDetailModalProps {
   product: TyreProduct | null;
@@ -181,7 +182,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                     onClick={handleAddToCartClick}
                     className="w-full py-2.5 rounded-lg bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-bold text-xs sm:text-sm shadow-2xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
                   >
-                    <ShoppingBag className="w-3.5 h-3.5 text-white" />
+                    <SilverCartIcon className="w-4 h-4" />
                     <span>Add {quantity} to Cart</span>
                   </button>
                 )}

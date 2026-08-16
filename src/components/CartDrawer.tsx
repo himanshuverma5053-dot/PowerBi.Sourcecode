@@ -4,6 +4,7 @@ import { formatCurrency, formatGST } from '../utils/formatters';
 import {
   X, ShoppingBag, Trash2, ArrowRight, CreditCard, Layers
 } from 'lucide-react';
+import { SilverCartIcon } from './SilverCartIcon';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -101,8 +102,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
         
         {/* Header */}
         <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
-          <div className="flex items-center space-x-2">
-            <ShoppingBag className="w-5 h-5 text-slate-800" />
+          <div className="flex items-center space-x-2.5">
+            <SilverCartIcon className="w-6 h-6" />
             <span className="text-lg font-black text-slate-900 font-display">
               Your Tyre Shopping Cart ({cart.reduce((s, i) => s + i.quantity, 0)})
             </span>
@@ -119,7 +120,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
         <div className="p-6 flex-1 overflow-y-auto space-y-4">
           {cart.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center text-slate-400 space-y-3">
-              <ShoppingBag className="w-12 h-12 text-slate-300" />
+              <SilverCartIcon className="w-16 h-16 opacity-60" />
               <p className="text-sm font-bold text-slate-800">Your cart is empty</p>
               <p className="text-xs text-slate-500">Browse our catalogue and add tyres to get instant bulk discounts.</p>
             </div>

@@ -99,7 +99,7 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
           <span className="text-base sm:text-lg md:text-xl font-normal text-slate-500 tracking-normal min-h-[1.75rem] flex items-center">
             Upcoming Due
           </span>
-          <p className="text-2xl sm:text-3xl md:text-[30px] font-black text-slate-900 tracking-tight mt-1.5 sm:mt-2 leading-tight">
+          <p className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tight mt-1 leading-tight">
             {formatCurrency(upcomingPaymentsAmount || 5689)}
           </p>
         </div>
@@ -112,7 +112,7 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
           <span className="text-base sm:text-lg md:text-xl font-normal text-slate-500 tracking-normal min-h-[1.75rem] flex items-center">
             Available Limit
           </span>
-          <p className="text-2xl sm:text-3xl md:text-[30px] font-black text-slate-900 tracking-tight mt-1.5 sm:mt-2 leading-tight">
+          <p className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tight mt-1 leading-tight">
             {formatCurrency(availableLimitAmount || 5689)}
           </p>
         </div>
@@ -125,7 +125,7 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
           <span className="text-base sm:text-lg md:text-xl font-normal text-slate-500 tracking-normal min-h-[1.75rem] flex items-center">
             Invoice Due
           </span>
-          <p className="text-2xl sm:text-3xl md:text-[30px] font-black text-slate-900 tracking-tight mt-1.5 sm:mt-2 leading-tight">
+          <p className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tight mt-1 leading-tight">
             {formatCurrency(invoiceDueAmount || 5689)}
           </p>
         </div>
@@ -138,7 +138,7 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
           <span className="text-base sm:text-lg md:text-xl font-normal text-slate-500 tracking-normal min-h-[1.75rem] flex items-center">
             Credit Score
           </span>
-          <p className="text-2xl sm:text-3xl md:text-[30px] font-black text-[#5b38f3] tracking-tight mt-1.5 sm:mt-2 leading-tight">
+          <p className="text-lg sm:text-xl md:text-2xl font-black text-[#5b38f3] tracking-tight mt-1 leading-tight">
             {formattedCreditScore}
           </p>
         </div>

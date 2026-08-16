@@ -11,6 +11,7 @@ import {
 import { MagadhSparshLogo } from './MagadhSparshLogo';
 import { CartItem, TyreProduct } from '../types';
 import { HeaderSearchBar } from './HeaderSearchBar';
+import { SilverCartIcon } from './SilverCartIcon';
 
 interface NavbarProps {
   activeTab: string;
@@ -282,11 +283,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 id="navbar-cart-btn"
                 onClick={() => setIsCartOpen(true)}
-                className="relative p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white shadow-xs transition-all flex items-center justify-center active:scale-95"
+                className="relative p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white shadow-xs transition-all flex items-center justify-center active:scale-95 group"
                 aria-label="Shopping Cart"
                 title="View Cart"
               >
-                <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-slate-100" />
+                <SilverCartIcon className="w-5 h-5 sm:w-5.5 sm:h-5.5 transition-transform group-hover:scale-105" />
                 {totalCartCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-amber-400 text-slate-950 font-extrabold text-[10px] sm:text-xs w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center border-2 border-white shadow-xs animate-scale-up">
                     {totalCartCount}
@@ -486,8 +487,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {totalCartCount > 0 && (
                     <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between">
                       <div className="flex items-center space-x-2.5">
-                        <div className="p-2 rounded-xl bg-amber-400 text-slate-950">
-                          <ShoppingBag className="w-4 h-4" />
+                        <div className="p-2 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center">
+                          <SilverCartIcon className="w-5 h-5" />
                         </div>
                         <div>
                           <span className="font-extrabold text-slate-900 block text-xs">
@@ -510,17 +511,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </div>
                   )}
 
-                </div>
-
-                {/* Drawer Footer */}
-                <div className="p-3.5 bg-slate-100 border-t border-slate-200 flex-shrink-0 text-center space-y-1">
-                  <div className="flex items-center justify-center space-x-1 text-[10px] font-bold text-slate-700">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>100% Genuine Tyres & GST Invoicing</span>
-                  </div>
-                  <p className="text-[9px] font-mono text-slate-400">
-                    Magadh Tyres Portal • Secure B2B Platform
-                  </p>
                 </div>
 
               </motion.div>

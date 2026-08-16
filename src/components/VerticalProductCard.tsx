@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TyreProduct, CustomerAccount } from '../types';
 import { Minus, Plus, ShoppingBag, Eye, Check } from 'lucide-react';
+import { SilverCartIcon } from './SilverCartIcon';
 
 interface VerticalProductCardProps {
   product: TyreProduct;
@@ -189,7 +190,10 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
                 <span>Added!</span>
               </span>
             ) : (
-              <span>Add to cart</span>
+              <span className="inline-flex items-center space-x-1.5">
+                <SilverCartIcon className="w-5 h-5 drop-shadow-sm" />
+                <span>Add to cart</span>
+              </span>
             )}
           </button>
         </div>
