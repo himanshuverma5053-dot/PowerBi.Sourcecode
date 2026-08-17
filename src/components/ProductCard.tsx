@@ -3,6 +3,7 @@ import { TyreProduct, CustomerAccount } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { getCustomerEffectivePrice } from '../utils/customerPricing';
 import { ShoppingBag, Eye, ShieldCheck, Zap, Disc3, Star, Check } from 'lucide-react';
+import { ProductImagePlaceholder } from './ProductImagePlaceholder';
 
 interface ProductCardProps {
   product: TyreProduct;
@@ -78,12 +79,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         className="relative h-32 sm:h-36 w-full flex items-center justify-center p-3 cursor-pointer overflow-hidden bg-slate-50/70 mt-1"
         onClick={handleView}
       >
-        <img
-          src={product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800'}
-          alt={product.name}
-          className="max-h-28 sm:max-h-32 max-w-full object-contain group-hover:scale-108 transition-transform duration-300 ease-out"
-          referrerPolicy="no-referrer"
-        />
+        {product.image || product.images?.[0] ? (
+          <img
+            src={product.image || product.images?.[0]}
+            alt={product.name}
+            className="max-h-28 sm:max-h-32 max-w-full object-contain group-hover:scale-108 transition-transform duration-300 ease-out"
+            referrerPolicy="no-referrer"
+          />
+        ) : (
+          <ProductImagePlaceholder label={product.name} size="sm" />
+        )}
       </div>
 
       {/* Product Content Details */}

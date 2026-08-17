@@ -3,6 +3,7 @@ import { TyreProduct, CustomerAccount } from '../types';
 import { getCustomerEffectivePrice } from '../utils/customerPricing';
 import { ShoppingBag, Eye, Disc3, ShieldCheck, Zap, Pause, Play, ChevronRight } from 'lucide-react';
 import { SilverCartIcon } from './SilverCartIcon';
+import { ProductImagePlaceholder } from './ProductImagePlaceholder';
 
 interface ContinuousProductBarProps {
   title: string;
@@ -89,12 +90,16 @@ export const ContinuousProductBar: React.FC<ContinuousProductBarProps> = ({
                   className="relative w-full h-20 sm:h-24 rounded-lg bg-slate-100 overflow-hidden flex items-center justify-center p-1.5 mb-1.5 cursor-pointer group-hover/card:bg-slate-200/50 transition-colors"
                   onClick={() => onViewDetails(product)}
                 >
-                  <img
-                    src={product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800'}
-                    alt={product.name}
-                    className="max-h-full max-w-full object-contain group-hover/card:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                  />
+                  {product.image || product.images?.[0] ? (
+                    <img
+                      src={product.image || product.images?.[0]}
+                      alt={product.name}
+                      className="max-h-full max-w-full object-contain group-hover/card:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <ProductImagePlaceholder label={product.name} size="sm" />
+                  )}
                   {/* Brand Badge */}
                   <span className="absolute top-1 left-1 bg-slate-950/80 backdrop-blur-xs text-white font-black text-[8px] px-1 py-0.5 rounded uppercase tracking-wider">
                     {product.brand}

@@ -29,7 +29,7 @@ import { isRadialProduct, isNonRadialProduct } from './utils/productCategories';
 import { safeSetLocalStorage, safeGetLocalStorage } from './utils/storage';
 import { calculateCustomerFinancials } from './utils/customerFinancials';
 import { MOCK_TYRES } from './data/mockData';
-import { apolloEndutraxImg, apolloEndutraxTreadImg } from './assets/tyreImages';
+import { apolloEndutraxImg, apolloEndutraxMaDImg, apolloEnduraceLdImg, apolloEndutraxTreadImg } from './assets/tyreImages';
 
 import {
   ShieldCheck, SlidersHorizontal, CheckCircle2,
@@ -42,21 +42,43 @@ export default function App() {
 
   // Helper to ensure mock tyres always have the high resolution product and tread images
   const initializeProducts = (rawList: TyreProduct[]): TyreProduct[] => {
-    return rawList.map(p => {
-      const defaultImg = apolloEndutraxImg;
-      if (p.id === 'tyre-endutrax-md-plus-d' || p.name.includes('ENDUTRAX')) {
+    const list = [...rawList];
+    // Ensure all MOCK_TYRES exist in list
+    for (const mock of MOCK_TYRES) {
+      const existingIdx = list.findIndex(p => p.id === mock.id);
+      if (existingIdx === -1) {
+        list.unshift(mock);
+      } else {
+        list[existingIdx] = { ...mock, ...list[existingIdx], price: mock.price, image: mock.image, images: mock.images, components: mock.components };
+      }
+    }
+
+    return list.map(p => {
+      if (p.id === 'tyre-endutrax-ma-d' || p.name.includes('ENDUTRAX MA')) {
         return {
           ...p,
-          image: p.image && p.image.trim() !== '' && !p.image.includes('unsplash') ? p.image : apolloEndutraxImg,
-          images: p.images && p.images.length > 0 && !p.images[0].includes('unsplash')
-            ? p.images
-            : [apolloEndutraxImg, apolloEndutraxTreadImg]
+          image: apolloEndutraxMaDImg || p.image,
+          images: [apolloEndutraxMaDImg || p.image, apolloEndutraxTreadImg]
+        };
+      }
+      if (p.id === 'tyre-endutrax-md-plus-d' || p.name.includes('ENDUTRAX MD')) {
+        return {
+          ...p,
+          image: apolloEndutraxImg,
+          images: [apolloEndutraxImg, apolloEndutraxTreadImg]
+        };
+      }
+      if (p.id === 'tyre-endurace-ld-d' || p.name.includes('ENDURACE LD')) {
+        return {
+          ...p,
+          image: apolloEnduraceLdImg || p.image,
+          images: [apolloEnduraceLdImg || p.image, apolloEndutraxTreadImg]
         };
       }
       return {
         ...p,
-        image: p.image && p.image.trim() !== '' ? p.image : defaultImg,
-        images: p.images && p.images.length > 0 ? p.images : [defaultImg]
+        image: p.image || '',
+        images: p.images || []
       };
     });
   };
@@ -412,10 +434,8 @@ export default function App() {
       stock: merged.stock !== undefined ? Number(merged.stock) : 0,
       minStockLevel: merged.minStockLevel !== undefined ? Number(merged.minStockLevel) : 5,
       gstRate: Number(merged.gstRate) ?? 18,
-      image: merged.image || (merged.images && merged.images[0]) || 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800',
-      images: merged.images && merged.images.length > 0 ? merged.images : [
-        merged.image || 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800'
-      ],
+      image: merged.image || (merged.images && merged.images[0]) || '',
+      images: merged.images && merged.images.length > 0 ? merged.images : (merged.image ? [merged.image] : []),
       terrain: merged.terrain || 'Highway',
       warrantyYears: Number(merged.warrantyYears) || 3,
       fuelEfficiency: merged.fuelEfficiency || 'B',
@@ -481,6 +501,23 @@ export default function App() {
       console.warn('Background Supabase product status update exception:', err);
     });
     showToast("Product status updated!");
+  };
+
+  const handleUpdateProductImage = (productId: string, imageUrl: string) => {
+    setProducts(prev => {
+      const updated = prev.map(p => {
+        if (p.id === productId) {
+          return { ...p, image: imageUrl, images: [imageUrl, ...(p.images || [])] };
+        }
+        return p;
+      });
+      safeSetLocalStorage('magadh_products', updated);
+      return updated;
+    });
+    if (selectedProductForModal && selectedProductForModal.id === productId) {
+      setSelectedProductForModal(prev => prev ? { ...prev, image: imageUrl, images: [imageUrl, ...(prev.images || [])] } : null);
+    }
+    showToast('Product photo updated successfully!');
   };
 
   // Customer-visible products (excluding inactive/archived products and restricted products)
@@ -704,6 +741,7 @@ export default function App() {
                       onAddToCart={handleAddToCart}
                       onInstantBuy={handleInstantBuy}
                       onViewDetails={(prod) => setSelectedProductForModal(prod)}
+                      onUpdateImage={handleUpdateProductImage}
                     />
                   ))}
                 </div>
@@ -821,6 +859,7 @@ export default function App() {
         onClose={() => setSelectedProductForModal(null)}
         onAddToCart={handleAddToCart}
         onInstantBuy={handleInstantBuy}
+        onUpdateImage={handleUpdateProductImage}
       />
 
       <InvoiceModal

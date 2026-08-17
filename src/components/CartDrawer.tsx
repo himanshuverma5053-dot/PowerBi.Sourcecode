@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CartItem, getCartItemPrices } from '../types';
 import { formatCurrency, formatGST } from '../utils/formatters';
 import {
-  X, ShoppingBag, Trash2, ArrowRight, CreditCard, Layers
+  X, ShoppingBag, Trash2, ArrowRight, CreditCard, Layers, Disc
 } from 'lucide-react';
 import { SilverCartIcon } from './SilverCartIcon';
 
@@ -138,12 +138,18 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   key={cartKey}
                   className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3"
                 >
-                  <img
-                    src={item.product?.image || item.product?.images?.[0] || 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800'}
-                    alt={item.product?.name || 'Tyre'}
-                    className="w-16 h-16 object-contain"
-                    referrerPolicy="no-referrer"
-                  />
+                  <div className="w-16 h-16 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0 p-1">
+                    {item.product?.image || item.product?.images?.[0] ? (
+                      <img
+                        src={item.product?.image || item.product?.images?.[0]}
+                        alt={item.product?.name || 'Tyre'}
+                        className="w-full h-full object-contain"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <Disc className="w-6 h-6 text-slate-400 stroke-[1.5]" />
+                    )}
+                  </div>
 
                   <div className="flex-1 space-y-1">
                     <div className="flex flex-wrap items-center gap-1">

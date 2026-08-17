@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TyreProduct, CustomerAccount } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { getCustomerEffectivePrice } from '../utils/customerPricing';
@@ -6,6 +6,7 @@ import {
   X, ShoppingBag, Layers
 } from 'lucide-react';
 import { SilverCartIcon } from './SilverCartIcon';
+import { ProductImagePlaceholder } from './ProductImagePlaceholder';
 
 interface ProductDetailModalProps {
   product: TyreProduct | null;
@@ -15,6 +16,7 @@ interface ProductDetailModalProps {
   onInstantBuy: (product: TyreProduct, quantity: number) => void;
   currentCustomer?: CustomerAccount | null;
   isAdmin?: boolean;
+  onUpdateImage?: (productId: string, imageUrl: string) => void;
 }
 
 export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
@@ -23,8 +25,14 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   onAddToCart,
   currentCustomer,
   isAdmin,
+  onUpdateImage,
 }) => {
   const [quantity, setQuantity] = useState<number>(1);
+  const [imgError, setImgError] = useState<boolean>(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [product?.image]);
 
   if (!product) return null;
 
@@ -71,12 +79,24 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             <div className="relative w-full h-32 sm:h-36 flex flex-col items-center justify-center overflow-hidden rounded-xl bg-white p-2 border border-slate-200 shadow-2xs">
               {/* Product Image */}
               <div className="relative w-full h-full flex items-center justify-center">
-                <img
-                  src={product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800'}
-                  alt={product.name}
-                  className="max-h-28 sm:max-h-32 max-w-full object-contain transition-transform duration-300 hover:scale-105"
-                  referrerPolicy="no-referrer"
-                />
+                {(!product.image && !product.images?.[0]) || imgError ? (
+                  <ProductImagePlaceholder 
+                    label={product.name} 
+                    size="sm" 
+                    onImageSelected={(dataUrl) => {
+                      setImgError(false);
+                      onUpdateImage?.(product.id, dataUrl);
+                    }}
+                  />
+                ) : (
+                  <img
+                    src={product.image || product.images?.[0]}
+                    alt={product.name}
+                    onError={() => setImgError(true)}
+                    className="max-h-28 sm:max-h-32 max-w-full object-contain transition-transform duration-300 hover:scale-105"
+                    referrerPolicy="no-referrer"
+                  />
+                )}
               </div>
             </div>
 

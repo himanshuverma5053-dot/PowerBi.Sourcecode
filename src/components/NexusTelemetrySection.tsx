@@ -67,19 +67,24 @@ export const NexusTelemetrySection: React.FC<NexusTelemetrySectionProps> = () =>
         ))}
 
         {/* Subtle Dark Vignette / Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/15 pointer-events-none z-20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10 pointer-events-none z-20" />
+      </div>
 
-        {/* Slide Indicator Dots */}
-        <div className="absolute bottom-3 sm:bottom-5 left-1/2 -translate-x-1/2 z-30 flex items-center space-x-2.5 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+      {/* Slide Indicator Dots - Positioned cleanly below the image */}
+      <div 
+        id="image-changing-bar"
+        className="w-full flex items-center justify-center py-2.5 bg-slate-50 border-b border-slate-100"
+      >
+        <div className="flex items-center space-x-2 bg-slate-200/80 px-3 py-1.5 rounded-full shadow-inner border border-slate-300/40">
           {BANNER_SLIDES.map((slide, index) => (
             <button
               key={slide.id}
               type="button"
               onClick={() => setCurrentSlide(index)}
-              className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+              className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
                 index === currentSlide 
-                  ? 'w-8 bg-amber-400 shadow-md ring-1 ring-white/50' 
-                  : 'w-2.5 bg-white/50 hover:bg-white/90'
+                  ? 'w-7 bg-slate-900 shadow-sm' 
+                  : 'w-2 bg-slate-400/80 hover:bg-slate-600'
               }`}
               aria-label={`Go to slide ${index + 1}: ${slide.label}`}
               title={slide.label}

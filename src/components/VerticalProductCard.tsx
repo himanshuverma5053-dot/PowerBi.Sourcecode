@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TyreProduct, CustomerAccount } from '../types';
 import { Minus, Plus, ShoppingBag, Eye, Check } from 'lucide-react';
 import { SilverCartIcon } from './SilverCartIcon';
+import { ProductImagePlaceholder } from './ProductImagePlaceholder';
 
 interface VerticalProductCardProps {
   product: TyreProduct;
@@ -10,6 +11,7 @@ interface VerticalProductCardProps {
   onAddToCart: (product: TyreProduct, quantity?: number) => void;
   onInstantBuy?: (product: TyreProduct, quantity?: number) => void;
   onViewDetails?: (product: TyreProduct) => void;
+  onUpdateImage?: (productId: string, imageUrl: string) => void;
 }
 
 export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
@@ -19,9 +21,15 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
   onAddToCart,
   onInstantBuy,
   onViewDetails,
+  onUpdateImage,
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [addedAnimation, setAddedAnimation] = useState(false);
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [product.image]);
 
   // Compute pricing
   const effectivePrice = currentCustomer && product.dealerPrice 
@@ -36,9 +44,7 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
   }).format(effectivePrice);
 
   // Size / spec formatted
-  const sizeSpec = `${product.width}/${product.aspectRatio}-${product.rimSize} ${product.loadIndex || '66'}${product.speedRating || 'S'} ${product.name} TL -D`;
-  const productCode = product.productCode || product.sku || (product.hsnCode ? `RLV9C0ZR51AP1` : `APL-${product.id.slice(0, 6).toUpperCase()}`);
-  const tagline = product.description || 'Cruise Far. Stay in Command.';
+  const sizeSpec = `${product.width}/${product.aspectRatio} R${product.rimSize} ${product.loadIndex || '154'}${product.speedRating || 'K'} ${product.name} TL -D`;
 
   const handleIncrement = () => {
     setQuantity((prev) => prev + 1);
@@ -95,48 +101,43 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
             {sizeSpec}
           </span>
         </div>
-
-        {/* Tagline / Subtitle */}
-        <p className="text-[11px] sm:text-xs text-slate-500 mt-2 font-normal">
-          {tagline}
-        </p>
-
-        {/* Product Code & Red Badge */}
-        <div className="flex items-center justify-between mt-3.5">
-          <span className="text-xs sm:text-[13px] font-bold text-[#8a14d4] font-mono tracking-wide uppercase">
-            {productCode}
-          </span>
-
-          {/* Red square indicator as shown in screenshot */}
-          <div
-            className="w-4 h-4 sm:w-5 sm:h-5 bg-[#e50914] rounded-[3px] border border-red-700/30 shadow-2xs"
-            title="Standard Spec Registered"
-          />
-        </div>
       </div>
 
       {/* Product Image Center View */}
       <div 
-        className="my-6 sm:my-8 flex items-center justify-center relative cursor-pointer group/img"
+        className="my-5 sm:my-7 flex items-center justify-center relative cursor-pointer group/img"
         onClick={() => onViewDetails?.(product)}
       >
-        <div className="relative w-36 h-36 sm:w-44 sm:h-44 flex items-center justify-center">
-          <img
-            src={product.image || 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?w=600&auto=format&fit=crop&q=80'}
-            alt={product.name}
-            className="w-full h-full object-contain filter drop-shadow-md group-hover/img:scale-105 transition-transform duration-300"
-            referrerPolicy="no-referrer"
-            loading="lazy"
-          />
+        <div className="relative w-40 h-40 sm:w-52 sm:h-52 flex items-center justify-center p-2 rounded-2xl bg-gradient-to-b from-slate-50/60 to-transparent transition-colors duration-200">
+          {!product.image || imgError ? (
+            <ProductImagePlaceholder 
+              label={product.name} 
+              onImageSelected={(dataUrl) => {
+                setImgError(false);
+                onUpdateImage?.(product.id, dataUrl);
+              }}
+            />
+          ) : (
+            <img
+              id={`product-card-img-${product.id}`}
+              src={product.image}
+              alt={product.name}
+              onError={() => setImgError(true)}
+              className="w-full h-full max-h-48 object-contain filter drop-shadow-xl group-hover/img:scale-105 transition-transform duration-300 select-none"
+              referrerPolicy="no-referrer"
+              loading="lazy"
+            />
+          )}
         </div>
 
         {/* Subtle quick view trigger on hover */}
         <button
+          id={`btn-view-spec-${product.id}`}
           onClick={(e) => {
             e.stopPropagation();
             onViewDetails?.(product);
           }}
-          className="absolute right-0 bottom-0 p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-2xs"
+          className="absolute right-1 bottom-1 p-2 bg-white/90 hover:bg-white text-slate-700 hover:text-slate-900 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-md border border-slate-200"
           title="View Specifications"
         >
           <Eye className="w-3.5 h-3.5" />

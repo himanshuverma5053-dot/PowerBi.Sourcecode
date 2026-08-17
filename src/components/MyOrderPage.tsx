@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Order, TyreProduct } from '../types';
 import {
   Calendar, FileText, Truck, Search, X, PackageX,
-  ChevronDown, ExternalLink, ShieldCheck, CheckCircle2, ArrowRight
+  ChevronDown, ExternalLink, ShieldCheck, CheckCircle2, ArrowRight, Disc
 } from 'lucide-react';
 
 interface MyOrderPageProps {
@@ -373,12 +373,18 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
             <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
               {selectedOrderDetails.items.map((item, i) => (
                 <div key={i} className="flex items-center space-x-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
-                  <img
-                    src={item.product?.image || item.product?.images?.[0] || 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800'}
-                    alt={item.product?.name || 'Tyre Product'}
-                    className="w-12 h-12 object-contain rounded-lg bg-white border border-slate-200 shrink-0"
-                    referrerPolicy="no-referrer"
-                  />
+                  <div className="w-12 h-12 rounded-lg bg-white border border-slate-200 shrink-0 overflow-hidden flex items-center justify-center p-1">
+                    {item.product?.image || item.product?.images?.[0] ? (
+                      <img
+                        src={item.product?.image || item.product?.images?.[0]}
+                        alt={item.product?.name || 'Tyre Product'}
+                        className="w-full h-full object-contain"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <Disc className="w-5 h-5 text-slate-400 stroke-[1.5]" />
+                    )}
+                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-bold text-slate-900 truncate">
                       {item.product.name}

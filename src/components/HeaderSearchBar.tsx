@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Loader2, X, ArrowRight, Sparkles, AlertCircle, ExternalLink } from 'lucide-react';
+import { Search, Loader2, X, ArrowRight, Sparkles, AlertCircle, ExternalLink, Disc } from 'lucide-react';
 import { TyreProduct } from '../types';
 import { searchProductsInSupabase } from '../utils/supabaseProducts';
 import { formatCurrency } from '../utils/formatters';
@@ -306,14 +306,18 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
                   >
                     {/* Thumbnail Image */}
                     <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center p-1">
-                      <img
-                        src={product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800'}
-                        alt={product.name}
-                        className="w-full h-full object-contain group-hover:scale-105 transition-transform"
-                        onError={(e) => {
-                          (e.target as HTMLElement).setAttribute('src', 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800');
-                        }}
-                      />
+                      {product.image || product.images?.[0] ? (
+                        <img
+                          src={product.image || product.images?.[0]}
+                          alt={product.name}
+                          className="w-full h-full object-contain group-hover:scale-105 transition-transform"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <Disc className="w-6 h-6 text-slate-400 stroke-[1.5]" />
+                      )}
                     </div>
 
                     {/* Info details */}
