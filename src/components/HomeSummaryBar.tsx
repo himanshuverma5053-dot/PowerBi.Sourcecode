@@ -48,11 +48,11 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
   );
 
   return (
-    <section id="home-static-overview-section" className="w-full max-w-[340px] mx-auto px-4 py-4 sm:py-5 font-sans space-y-2.5">
+    <section id="home-static-overview-section" className="w-full max-w-[540px] mx-auto px-4 py-4 sm:py-5 font-sans space-y-3">
       {/* Top Header */}
       <div className="flex items-center justify-between">
         <h1 id="static-overview-heading" className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-          <span>Overview</span>
+          <span>Static Overview</span>
           {financials.isCreditSuspended && (
             <span className="text-[10px] uppercase tracking-wider font-extrabold bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full flex items-center gap-1">
               <ShieldAlert className="w-3 h-3" />
@@ -62,39 +62,30 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         </h1>
       </div>
 
-      {/* 2x2 Professional Compact Dashboard Card Grid */}
+      {/* 2x2 Dashboard Card Grid matching Reference Style */}
       <div 
         id="static-overview-card-container" 
-        className="w-full aspect-[10/8] bg-white rounded-3xl border border-slate-200 shadow-xs grid grid-cols-2 grid-rows-2 overflow-hidden transition-all duration-200"
+        className="w-full bg-white rounded-[32px] sm:rounded-[36px] border border-gray-200/80 shadow-[0_4px_24px_rgba(0,0,0,0.03)] grid grid-cols-2 grid-rows-2 overflow-hidden transition-all duration-200"
       >
         {/* Quadrant 1 (Top-Left): Upcoming Due */}
         <div 
           id="upcoming-due-card"
           onClick={() => setActiveTab('quick-payments')}
-          className="border-r border-b border-slate-200/80 px-3.5 py-3 sm:px-4 sm:py-3.5 flex flex-col justify-between items-start cursor-pointer hover:bg-slate-50/70 transition-colors select-none relative group"
+          className="border-r border-b border-gray-200/80 p-5 sm:p-6 md:p-7 flex flex-col justify-between items-start cursor-pointer hover:bg-slate-50/40 transition-colors select-none min-h-[115px] sm:min-h-[130px]"
         >
-          <div className="w-full flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 tracking-normal truncate">
-              Upcoming Due
-            </span>
-          </div>
+          <span className="text-[15px] sm:text-[17px] font-normal text-[#555d6e] tracking-normal">
+            Upcoming Due
+          </span>
 
-          <div className="w-full my-auto">
+          <div className="w-full mt-2">
             {financials.allDuesCleared ? (
-              <div className="flex flex-col">
-                <span className="text-sm sm:text-base font-bold text-emerald-600 tracking-tight leading-tight flex items-center gap-1">
-                  No dues left
-                </span>
-              </div>
+              <span className="text-[18px] sm:text-[22px] font-extrabold text-emerald-600 tracking-tight leading-tight block">
+                No dues left
+              </span>
             ) : (
-              <div className="flex flex-col">
-                <p className="text-base sm:text-lg font-bold text-slate-900 tracking-tight leading-tight">
-                  {formatCurrency(financials.upcomingDueAmount)}
-                </p>
-                <span className="text-[10px] text-amber-600 font-bold truncate leading-none mt-0.5">
-                  {financials.upcomingDueLabel}
-                </span>
-              </div>
+              <p className="text-[22px] sm:text-[26px] font-extrabold text-slate-950 tracking-tight leading-tight">
+                {formatCurrency(financials.upcomingDueAmount)}
+              </p>
             )}
           </div>
         </div>
@@ -103,16 +94,14 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="available-limit-card"
           onClick={() => setActiveTab('account')}
-          className="border-b border-slate-200/80 px-3.5 py-3 sm:px-4 sm:py-3.5 flex flex-col justify-between items-start cursor-pointer hover:bg-slate-50/70 transition-colors select-none relative group"
+          className="border-b border-gray-200/80 p-5 sm:p-6 md:p-7 flex flex-col justify-between items-start cursor-pointer hover:bg-slate-50/40 transition-colors select-none min-h-[115px] sm:min-h-[130px]"
         >
-          <div className="w-full flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 tracking-normal truncate">
-              Available Limit
-            </span>
-          </div>
+          <span className="text-[15px] sm:text-[17px] font-normal text-[#555d6e] tracking-normal">
+            Available Limit
+          </span>
 
-          <div className="w-full my-auto flex flex-col">
-            <p className="text-base sm:text-lg font-bold text-slate-900 tracking-tight leading-tight">
+          <div className="w-full mt-2">
+            <p className="text-[22px] sm:text-[26px] font-extrabold text-slate-950 tracking-tight leading-tight">
               {formatCurrency(financials.availableLimit)}
             </p>
           </div>
@@ -122,19 +111,17 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="invoice-due-card"
           onClick={() => setActiveTab('quick-payments')}
-          className="border-r border-slate-200/80 px-3.5 py-3 sm:px-4 sm:py-3.5 flex flex-col justify-between items-start cursor-pointer hover:bg-slate-50/70 transition-colors select-none relative group"
+          className="border-r border-gray-200/80 p-5 sm:p-6 md:p-7 flex flex-col justify-between items-start cursor-pointer hover:bg-slate-50/40 transition-colors select-none min-h-[115px] sm:min-h-[130px]"
         >
-          <div className="w-full flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 tracking-normal truncate">
-              Invoice Due
-            </span>
-          </div>
+          <span className="text-[15px] sm:text-[17px] font-normal text-[#555d6e] tracking-normal">
+            Invoice Due
+          </span>
 
-          <div className="w-full my-auto flex flex-col">
-            <p className={`text-base sm:text-lg font-bold tracking-tight leading-tight ${
-              financials.totalInvoiceDue === 0 ? 'text-emerald-600' : 'text-slate-900'
+          <div className="w-full mt-2">
+            <p className={`text-[22px] sm:text-[26px] font-extrabold tracking-tight leading-tight ${
+              financials.totalInvoiceDue === 0 ? 'text-emerald-600' : 'text-[#6e3ff5]'
             }`}>
-              {financials.totalInvoiceDue === 0 ? '₹0.00' : formatCurrency(financials.totalInvoiceDue)}
+              {financials.totalInvoiceDue === 0 ? '₹0' : formatCurrency(financials.totalInvoiceDue)}
             </p>
           </div>
         </div>
@@ -143,23 +130,19 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="credit-score-card"
           onClick={() => setActiveTab('account')}
-          className="px-3.5 py-3 sm:px-4 sm:py-3.5 flex flex-col justify-between items-start cursor-pointer hover:bg-slate-50/70 transition-colors select-none relative group"
+          className="p-5 sm:p-6 md:p-7 flex flex-col justify-between items-start cursor-pointer hover:bg-slate-50/40 transition-colors select-none min-h-[115px] sm:min-h-[130px]"
         >
-          <div className="w-full flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 tracking-normal truncate">
-              Credit Score
-            </span>
-          </div>
+          <span className="text-[15px] sm:text-[17px] font-normal text-[#555d6e] tracking-normal">
+            Credit Score
+          </span>
 
-          <div className="w-full my-auto flex flex-col">
-            <div className="flex items-baseline gap-1">
-              <p className={`text-base sm:text-lg font-black tracking-tight leading-tight ${
-                financials.creditScore < 50 ? 'text-rose-600' : 'text-[#5b38f3]'
-              }`}>
-                {financials.creditScore}
-              </p>
-              <span className="text-[10px] text-slate-400 font-semibold">/100</span>
-            </div>
+          <div className="w-full mt-2 flex items-baseline gap-1">
+            <p className={`text-[22px] sm:text-[26px] font-extrabold tracking-tight leading-tight ${
+              financials.creditScore < 50 ? 'text-rose-600' : 'text-slate-950'
+            }`}>
+              {financials.creditScore}
+            </p>
+            <span className="text-[13px] text-slate-400 font-semibold">/100</span>
           </div>
         </div>
       </div>
