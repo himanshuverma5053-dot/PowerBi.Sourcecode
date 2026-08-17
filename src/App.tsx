@@ -27,6 +27,7 @@ import { fetchOrdersFromSupabase, saveOrderToSupabase, updateOrderStatusInSupaba
 import { fetchProductsFromSupabase, saveProductToSupabase, deleteProductFromSupabase, updateProductFieldInSupabase } from './utils/supabaseProducts';
 import { isRadialProduct, isNonRadialProduct } from './utils/productCategories';
 import { safeSetLocalStorage, safeGetLocalStorage } from './utils/storage';
+import { calculateCustomerFinancials } from './utils/customerFinancials';
 import { MOCK_TYRES } from './data/mockData';
 import { apolloEndutraxImg, apolloEndutraxTreadImg } from './assets/tyreImages';
 
@@ -833,14 +834,38 @@ export default function App() {
         }}
       />
 
-      <CartDrawer
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        cart={cart}
-        onUpdateQuantity={handleUpdateCartQuantity}
-        onRemoveItem={handleRemoveCartItem}
-        onPlaceOrder={handlePlaceOrder}
-      />
+      {(() => {
+        const userOrders = orders.filter((o) => {
+          if (isAdmin) return true;
+          if (currentUserEmail && o.customerEmail?.toLowerCase() === currentUserEmail.toLowerCase()) return true;
+          if (currentUser && o.customerName?.toLowerCase().includes(currentUser.toLowerCase())) return true;
+          return true;
+        });
+        const userPayments = payments.filter((p) => {
+          if (isAdmin) return true;
+          if (currentUser && p.customerName?.toLowerCase().includes(currentUser.toLowerCase())) return true;
+          return true;
+        });
+        const currentFinancials = calculateCustomerFinancials(
+          userOrders,
+          userPayments,
+          currentCustomerAccount,
+          isAdmin
+        );
+
+        return (
+          <CartDrawer
+            isOpen={isCartOpen}
+            onClose={() => setIsCartOpen(false)}
+            cart={cart}
+            onUpdateQuantity={handleUpdateCartQuantity}
+            onRemoveItem={handleRemoveCartItem}
+            onPlaceOrder={handlePlaceOrder}
+            canPlaceCreditOrder={currentFinancials.canPlaceCreditOrder}
+            creditScore={currentFinancials.creditScore}
+          />
+        );
+      })()}
     </div>
   );
 }

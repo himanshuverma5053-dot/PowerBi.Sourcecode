@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import sunsetCarImg from '../assets/images/sports_car_sunset_telemetry_1786922239830.jpg';
 import truckBannerImg from '../assets/images/regenerated_image_1786926088915.png';
 import distanceTruckImg from '../assets/images/regenerated_image_1786928008780.png';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface NexusTelemetrySectionProps {
   efficiency?: string;
@@ -42,16 +41,6 @@ export const NexusTelemetrySection: React.FC<NexusTelemetrySectionProps> = () =>
     return () => clearInterval(timer);
   }, []);
 
-  const goToPrev = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentSlide((prev) => (prev - 1 + BANNER_SLIDES.length) % BANNER_SLIDES.length);
-  };
-
-  const goToNext = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentSlide((prev) => (prev + 1) % BANNER_SLIDES.length);
-  };
-
   return (
     <section id="home-telemetry-section" className="w-full px-0 py-0 m-0 relative group">
       <div 
@@ -80,25 +69,6 @@ export const NexusTelemetrySection: React.FC<NexusTelemetrySectionProps> = () =>
         {/* Subtle Dark Vignette / Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/15 pointer-events-none z-20" />
 
-        {/* Left & Right Slide Navigation Arrows */}
-        <button
-          type="button"
-          onClick={goToPrev}
-          className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-3 rounded-full bg-black/60 hover:bg-black/85 text-white/90 hover:text-white backdrop-blur-md transition-all shadow-xl active:scale-95 cursor-pointer border border-white/20"
-          aria-label="Previous Slide"
-        >
-          <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-        </button>
-
-        <button
-          type="button"
-          onClick={goToNext}
-          className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-3 rounded-full bg-black/60 hover:bg-black/85 text-white/90 hover:text-white backdrop-blur-md transition-all shadow-xl active:scale-95 cursor-pointer border border-white/20"
-          aria-label="Next Slide"
-        >
-          <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-        </button>
-
         {/* Slide Indicator Dots */}
         <div className="absolute bottom-3 sm:bottom-5 left-1/2 -translate-x-1/2 z-30 flex items-center space-x-2.5 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
           {BANNER_SLIDES.map((slide, index) => (
@@ -120,5 +90,6 @@ export const NexusTelemetrySection: React.FC<NexusTelemetrySectionProps> = () =>
     </section>
   );
 };
+
 
 

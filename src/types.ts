@@ -1,3 +1,6 @@
+import { OrderInstallment } from './types/installment';
+export type { OrderInstallment };
+
 export type VehicleCategory = 'Car' | 'SUV' | 'Bike' | 'Truck' | 'EV';
 
 export type TerrainType = 'City' | 'Highway' | 'All-Terrain' | 'Mud-Terrain' | 'Performance';
@@ -111,6 +114,10 @@ export interface Order {
   trackingNumber: string;
   estimatedDelivery: string;
   timeline: OrderTimeline[];
+  paidAmount?: number;
+  refundAmount?: number;
+  installments?: OrderInstallment[];
+  isCreditOrder?: boolean;
 }
 
 export interface PaymentRecord {

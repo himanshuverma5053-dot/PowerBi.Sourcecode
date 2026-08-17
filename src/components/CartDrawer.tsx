@@ -13,6 +13,8 @@ interface CartDrawerProps {
   onUpdateQuantity: (productId: string, delta: number, parentProductId?: string) => void;
   onRemoveItem: (productId: string, parentProductId?: string) => void;
   onPlaceOrder: (orderData: any) => void;
+  canPlaceCreditOrder?: boolean;
+  creditScore?: number;
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({
@@ -22,6 +24,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   onUpdateQuantity,
   onRemoveItem,
   onPlaceOrder,
+  canPlaceCreditOrder = true,
+  creditScore = 100,
 }) => {
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
@@ -322,6 +326,17 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               </div>
 
               {/* Automated Payment Gateway Integration Notice */}
+              {!canPlaceCreditOrder && (
+                <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 space-y-1">
+                  <div className="flex items-center space-x-2 text-rose-800 font-bold text-xs">
+                    <span>⚠️ Credit Terms Restricted (Score: {creditScore}/100)</span>
+                  </div>
+                  <p className="text-[11px] text-rose-700 leading-snug">
+                    Your credit score has fallen below 50. Credit-based post-dated billing is restricted until outstanding dues are settled. Immediate payment required upon invoice.
+                  </p>
+                </div>
+              )}
+
               <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
                 <div className="flex items-center space-x-2 text-slate-900 font-bold text-xs">
                   <CreditCard className="w-4 h-4 text-slate-700" />
