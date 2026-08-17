@@ -78,7 +78,7 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
   const formattedCreditScore = Math.min(5.0, Math.max(1.0, computedScore)).toFixed(1);
 
   return (
-    <section id="home-static-overview-section" className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-8 font-sans space-y-4">
+    <section id="home-static-overview-section" className="w-full max-w-[340px] mx-auto px-4 py-4 sm:py-6 font-sans space-y-3">
       {/* Top Header */}
       <div className="flex items-center justify-between">
         <h1 id="static-overview-heading" className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
@@ -86,20 +86,20 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         </h1>
       </div>
 
-      {/* 2x2 Rectangular Card matching screenshot exact theme & styling */}
+      {/* 2x2 10x8 Aspect Ratio Card */}
       <div 
         id="static-overview-card-container" 
-        className="w-full bg-white rounded-[36px] sm:rounded-[48px] border border-slate-200 shadow-[0_10px_36px_rgba(0,0,0,0.04)] grid grid-cols-2 grid-rows-2 overflow-hidden transition-all duration-200"
+        className="w-full aspect-[10/8] bg-white rounded-3xl border border-slate-200 shadow-xs grid grid-cols-2 grid-rows-2 overflow-hidden transition-all duration-200"
       >
         {/* Quadrant 1 (Top-Left): Upcoming Due */}
         <div 
           onClick={() => setActiveTab('quick-payments')}
-          className="border-r border-b border-slate-200/80 px-7 sm:px-10 md:px-12 py-7 sm:py-9 md:py-10 flex flex-col justify-start items-start cursor-pointer hover:bg-slate-50/40 transition-colors select-none"
+          className="border-r border-b border-slate-200/80 px-4 py-3 sm:px-5 sm:py-3.5 flex flex-col justify-center items-start cursor-pointer hover:bg-slate-50/50 transition-colors select-none"
         >
-          <span className="text-base sm:text-lg md:text-xl font-normal text-slate-500 tracking-normal min-h-[1.75rem] flex items-center">
+          <span className="text-xs sm:text-sm font-medium text-slate-500 tracking-normal whitespace-nowrap">
             Upcoming Due
           </span>
-          <p className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tight mt-1 leading-tight">
+          <p className="text-base sm:text-lg font-bold text-slate-900 tracking-tight mt-0.5 leading-tight">
             {formatCurrency(upcomingPaymentsAmount || 5689)}
           </p>
         </div>
@@ -107,12 +107,12 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         {/* Quadrant 2 (Top-Right): Available Limit */}
         <div 
           onClick={() => setActiveTab('account')}
-          className="border-b border-slate-200/80 px-7 sm:px-10 md:px-12 py-7 sm:py-9 md:py-10 flex flex-col justify-start items-start cursor-pointer hover:bg-slate-50/40 transition-colors select-none"
+          className="border-b border-slate-200/80 px-4 py-3 sm:px-5 sm:py-3.5 flex flex-col justify-center items-start cursor-pointer hover:bg-slate-50/50 transition-colors select-none"
         >
-          <span className="text-base sm:text-lg md:text-xl font-normal text-slate-500 tracking-normal min-h-[1.75rem] flex items-center">
+          <span className="text-xs sm:text-sm font-medium text-slate-500 tracking-normal whitespace-nowrap">
             Available Limit
           </span>
-          <p className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tight mt-1 leading-tight">
+          <p className="text-base sm:text-lg font-bold text-slate-900 tracking-tight mt-0.5 leading-tight">
             {formatCurrency(availableLimitAmount || 5689)}
           </p>
         </div>
@@ -120,25 +120,25 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         {/* Quadrant 3 (Bottom-Left): Invoice Due */}
         <div 
           onClick={() => setActiveTab('quick-payments')}
-          className="border-r border-slate-200/80 px-7 sm:px-10 md:px-12 py-7 sm:py-9 md:py-10 flex flex-col justify-start items-start cursor-pointer hover:bg-slate-50/40 transition-colors select-none"
+          className="border-r border-slate-200/80 px-4 py-3 sm:px-5 sm:py-3.5 flex flex-col justify-center items-start cursor-pointer hover:bg-slate-50/50 transition-colors select-none"
         >
-          <span className="text-base sm:text-lg md:text-xl font-normal text-slate-500 tracking-normal min-h-[1.75rem] flex items-center">
+          <span className="text-xs sm:text-sm font-medium text-slate-500 tracking-normal whitespace-nowrap">
             Invoice Due
           </span>
-          <p className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tight mt-1 leading-tight">
+          <p className="text-base sm:text-lg font-bold text-slate-900 tracking-tight mt-0.5 leading-tight">
             {formatCurrency(invoiceDueAmount || 5689)}
           </p>
         </div>
 
-        {/* Quadrant 4 (Bottom-Right): Credit Score in Distinct Purple Theme */}
+        {/* Quadrant 4 (Bottom-Right): Credit Score */}
         <div 
           onClick={() => setActiveTab('account')}
-          className="px-7 sm:px-10 md:px-12 py-7 sm:py-9 md:py-10 flex flex-col justify-start items-start cursor-pointer hover:bg-slate-50/40 transition-colors select-none"
+          className="px-4 py-3 sm:px-5 sm:py-3.5 flex flex-col justify-center items-start cursor-pointer hover:bg-slate-50/50 transition-colors select-none"
         >
-          <span className="text-base sm:text-lg md:text-xl font-normal text-slate-500 tracking-normal min-h-[1.75rem] flex items-center">
+          <span className="text-xs sm:text-sm font-medium text-slate-500 tracking-normal whitespace-nowrap">
             Credit Score
           </span>
-          <p className="text-lg sm:text-xl md:text-2xl font-black text-[#5b38f3] tracking-tight mt-1 leading-tight">
+          <p className="text-base sm:text-lg font-bold text-[#5b38f3] tracking-tight mt-0.5 leading-tight">
             {formattedCreditScore}
           </p>
         </div>

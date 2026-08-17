@@ -72,7 +72,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               {/* Product Image */}
               <div className="relative w-full h-full flex items-center justify-center">
                 <img
-                  src={product.image}
+                  src={product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800'}
                   alt={product.name}
                   className="max-h-28 sm:max-h-32 max-w-full object-contain transition-transform duration-300 hover:scale-105"
                   referrerPolicy="no-referrer"

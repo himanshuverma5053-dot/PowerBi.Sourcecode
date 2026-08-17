@@ -3,6 +3,7 @@ import { TyreProduct, CartItem, Order, PaymentRecord, Coupon, CustomerAccount, P
 import { Navbar } from './components/Navbar';
 import { HomeSummaryBar } from './components/HomeSummaryBar';
 import { NexusTelemetrySection } from './components/NexusTelemetrySection';
+import { ForYourKnowledgeSection } from './components/ForYourKnowledgeSection';
 import { Hero } from './components/Hero';
 import { ProductCard } from './components/ProductCard';
 import { VerticalProductCard } from './components/VerticalProductCard';
@@ -27,6 +28,7 @@ import { fetchProductsFromSupabase, saveProductToSupabase, deleteProductFromSupa
 import { isRadialProduct, isNonRadialProduct } from './utils/productCategories';
 import { safeSetLocalStorage, safeGetLocalStorage } from './utils/storage';
 import { MOCK_TYRES } from './data/mockData';
+import { apolloEndutraxImg, apolloEndutraxTreadImg } from './assets/tyreImages';
 
 import {
   ShieldCheck, SlidersHorizontal, CheckCircle2,
@@ -37,9 +39,36 @@ import {
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('home');
 
-  // Shared Master State 1: Products (fetched live from Supabase database)
-  const [products, setProducts] = useState<TyreProduct[]>([]);
-  const [isProductsLoading, setIsProductsLoading] = useState<boolean>(true);
+  // Helper to ensure mock tyres always have the high resolution product and tread images
+  const initializeProducts = (rawList: TyreProduct[]): TyreProduct[] => {
+    return rawList.map(p => {
+      const defaultImg = apolloEndutraxImg;
+      if (p.id === 'tyre-endutrax-md-plus-d' || p.name.includes('ENDUTRAX')) {
+        return {
+          ...p,
+          image: p.image && p.image.trim() !== '' && !p.image.includes('unsplash') ? p.image : apolloEndutraxImg,
+          images: p.images && p.images.length > 0 && !p.images[0].includes('unsplash')
+            ? p.images
+            : [apolloEndutraxImg, apolloEndutraxTreadImg]
+        };
+      }
+      return {
+        ...p,
+        image: p.image && p.image.trim() !== '' ? p.image : defaultImg,
+        images: p.images && p.images.length > 0 ? p.images : [defaultImg]
+      };
+    });
+  };
+
+  // Shared Master State 1: Products (fetched live from Supabase database or fallback)
+  const [products, setProducts] = useState<TyreProduct[]>(() => {
+    const cached = safeGetLocalStorage<TyreProduct[]>('magadh_products', []);
+    if (cached && cached.length > 0) {
+      return initializeProducts(cached);
+    }
+    return initializeProducts(MOCK_TYRES);
+  });
+  const [isProductsLoading, setIsProductsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     safeSetLocalStorage('magadh_products', products);
@@ -111,23 +140,22 @@ export default function App() {
     setIsProductsLoading(true);
     try {
       const dbProducts = await fetchProductsFromSupabase();
-      if (dbProducts && Array.isArray(dbProducts)) {
+      if (dbProducts && Array.isArray(dbProducts) && dbProducts.length > 0) {
         setProducts(dbProducts);
         if (showNotification) {
-          if (dbProducts.length > 0) {
-            showToast(`Loaded ${dbProducts.length} live products from Supabase`);
-          } else {
-            showToast('No products available in Supabase database');
-          }
+          showToast(`Loaded ${dbProducts.length} live products from Supabase`);
         }
       } else {
-        setProducts([]);
+        setProducts(MOCK_TYRES);
+        if (showNotification) {
+          showToast('Loaded standard product catalogue');
+        }
       }
     } catch (err) {
       console.error('Database product fetch error:', err);
-      setProducts([]);
+      setProducts(MOCK_TYRES);
       if (showNotification) {
-        showToast('Connected to Supabase database');
+        showToast('Connected to product catalogue');
       }
     } finally {
       setIsProductsLoading(false);
@@ -602,6 +630,20 @@ export default function App() {
 
             {/* Section 2: Nexus Telemetry Showcase ("Every micron is accounted for.") */}
             <NexusTelemetrySection />
+
+            {/* Section 3: For Your Knowledge & Commercial Product Recommendations */}
+            <ForYourKnowledgeSection
+              products={visibleProducts}
+              currentCustomerAccount={currentCustomerAccount}
+              isAdmin={isAdmin}
+              onAddToCart={handleAddToCart}
+              onInstantBuy={handleInstantBuy}
+              onViewDetails={(product) => setSelectedProductForModal(product)}
+              onExploreCatalogue={(category) => {
+                if (category) setSelectedCategory(category);
+                setActiveTab('catalogue');
+              }}
+            />
           </div>
         )}
 

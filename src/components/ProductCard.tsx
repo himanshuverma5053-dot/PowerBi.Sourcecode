@@ -79,7 +79,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         onClick={handleView}
       >
         <img
-          src={product.image}
+          src={product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800'}
           alt={product.name}
           className="max-h-28 sm:max-h-32 max-w-full object-contain group-hover:scale-108 transition-transform duration-300 ease-out"
           referrerPolicy="no-referrer"

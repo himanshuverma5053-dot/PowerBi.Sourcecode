@@ -90,7 +90,7 @@ export const ContinuousProductBar: React.FC<ContinuousProductBarProps> = ({
                   onClick={() => onViewDetails(product)}
                 >
                   <img
-                    src={product.image}
+                    src={product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800'}
                     alt={product.name}
                     className="max-h-full max-w-full object-contain group-hover/card:scale-105 transition-transform duration-300"
                     loading="lazy"

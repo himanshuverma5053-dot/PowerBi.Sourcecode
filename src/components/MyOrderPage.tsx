@@ -374,8 +374,8 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
               {selectedOrderDetails.items.map((item, i) => (
                 <div key={i} className="flex items-center space-x-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
                   <img
-                    src={item.product.image}
-                    alt={item.product.name}
+                    src={item.product?.image || item.product?.images?.[0] || 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800'}
+                    alt={item.product?.name || 'Tyre Product'}
                     className="w-12 h-12 object-contain rounded-lg bg-white border border-slate-200 shrink-0"
                     referrerPolicy="no-referrer"
                   />

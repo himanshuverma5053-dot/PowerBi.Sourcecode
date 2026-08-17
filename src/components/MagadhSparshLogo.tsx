@@ -63,7 +63,7 @@ export const MagadhSparshLogo: React.FC<MagadhSparshLogoProps> = ({
       className={`cursor-pointer select-none group/logo relative overflow-visible ${className}`}
     >
       <img
-        src={settings.url || DEFAULT_LOGO_SETTINGS.url}
+        src={settings.url && settings.url.trim() !== '' ? settings.url : DEFAULT_LOGO_SETTINGS.url}
         alt="Website Logo"
         style={imgStyle}
         className="transition-opacity duration-200 group-hover/logo:opacity-95"

@@ -5,9 +5,9 @@ import {
   CreditCard, CheckCircle2, ShieldCheck, Download,
   ArrowRight, Zap, Search, Calendar, Clock,
   FileText, Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
-  AlertCircle, Building2, Smartphone, QrCode, Lock, RefreshCw, X
+  AlertCircle, Building2, Smartphone, QrCode, Lock, RefreshCw, X,
+  Banknote, Landmark, Receipt
 } from 'lucide-react';
-import { PaymentIntegrationsSpace } from './PaymentIntegrationsSpace';
 
 interface PaymentPageProps {
   payments: PaymentRecord[];
@@ -246,8 +246,6 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
   onProcessPayment,
   onViewInvoice,
 }) => {
-  const [activeSubTab, setActiveSubTab] = useState<'invoices' | 'gateways' | 'receipts'>('invoices');
-
   // Merged orders: include real orders + seed invoices without duplicating order numbers
   const allOrders = useMemo(() => {
     const existingOrderNumbers = new Set(orders.map(o => o.orderNumber));
@@ -269,7 +267,8 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
   // Payment Modal State
   const [paymentModalOrders, setPaymentModalOrders] = useState<Order[]>([]);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [selectedGateway, setSelectedGateway] = useState<'razorpay' | 'phonepe' | 'upi' | 'card' | 'netbanking' | 'credit'>('razorpay');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'bank_transfer' | 'cheque' | 'upi' | 'credit' | 'cash'>('bank_transfer');
+  const [referenceNumber, setReferenceNumber] = useState('');
   const [upiId, setUpiId] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStep, setProcessingStep] = useState('');
@@ -382,6 +381,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
   const handleInitiateSinglePayment = (order: Order) => {
     setPaymentModalOrders([order]);
     setIsPaymentModalOpen(true);
+    setReferenceNumber('');
     setUpiId('');
     setIsProcessing(false);
   };
@@ -392,40 +392,39 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
     if (ordersToPay.length === 0) return;
     setPaymentModalOrders(ordersToPay);
     setIsPaymentModalOpen(true);
+    setReferenceNumber('');
     setUpiId('');
     setIsProcessing(false);
   };
 
-  // Execute Gateway Payment
+  // Execute Direct Payment Settlement
   const handleConfirmPayment = (e: React.FormEvent) => {
     e.preventDefault();
     if (paymentModalOrders.length === 0) return;
 
     setIsProcessing(true);
-    setProcessingStep('Connecting to Authorized Banking PG...');
+    setProcessingStep('Recording Settlement in B2B Ledger...');
 
     setTimeout(() => {
-      setProcessingStep('Verifying GST Ledger & Instant Settlement...');
-    }, 800);
+      setProcessingStep('Reconciling GST Tax & Account Balance...');
+    }, 700);
 
     setTimeout(() => {
-      const totalToPay = paymentModalOrders.reduce((sum, o) => sum + o.totalAmount, 0);
-      const gatewayLabel =
-        selectedGateway === 'razorpay' ? 'Razorpay Secure' :
-        selectedGateway === 'phonepe' ? 'PhonePe PG' :
-        selectedGateway === 'upi' ? `UPI (${upiId || 'Direct VPA'})` :
-        selectedGateway === 'card' ? 'Credit/Debit Card' :
-        selectedGateway === 'netbanking' ? 'Net Banking' : 'Trade Credit Account';
+      const methodLabel =
+        selectedPaymentMethod === 'bank_transfer' ? 'Direct Bank Transfer (NEFT/RTGS)' :
+        selectedPaymentMethod === 'cheque' ? `Cheque / Demand Draft (${referenceNumber || 'Recorded'})` :
+        selectedPaymentMethod === 'upi' ? `Direct UPI (${upiId || 'Direct QR'})` :
+        selectedPaymentMethod === 'cash' ? 'Cash / Counter Deposit' : 'Trade Credit Account (30-Day)';
 
       paymentModalOrders.forEach(ord => {
         const receipt: PaymentRecord = {
           id: `pay-${Date.now()}-${ord.id}`,
-          paymentId: `PAY-${selectedGateway.toUpperCase()}-${Math.floor(100000 + Math.random() * 900000)}`,
+          paymentId: `REC-${selectedPaymentMethod.substring(0, 3).toUpperCase()}-${Math.floor(100000 + Math.random() * 900000)}`,
           orderId: ord.orderNumber,
           customerName: ord.customerName,
           amount: ord.totalAmount,
           gstNumber: ord.gstNumber,
-          method: gatewayLabel,
+          method: methodLabel,
           status: 'Success',
           date: new Date().toISOString().replace('T', ' ').substring(0, 16)
         };
@@ -436,7 +435,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
       setIsProcessing(false);
       setIsPaymentModalOpen(false);
       setSelectedInvoiceIds([]);
-    }, 1800);
+    }, 1400);
   };
 
   const selectedTotalAmount = allOrders
@@ -460,44 +459,28 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
             </h1>
           </div>
           <p className="text-slate-500 text-xs sm:text-sm mt-0.5">
-            Manage GST tax invoices, check outstanding due balances, and settle payments.
+            Manage GST tax invoices, check outstanding due balances, and record payments.
           </p>
         </div>
 
-        {/* View Switcher Tabs */}
-        <div className="flex items-center space-x-1.5 bg-slate-200/70 p-1 rounded-2xl border border-slate-300/60 shadow-2xs self-stretch sm:self-auto">
-          <button
-            onClick={() => setActiveSubTab('invoices')}
-            className={`flex-1 sm:flex-initial px-3.5 py-1.5 rounded-xl text-xs font-black transition-all flex items-center justify-center space-x-1.5 cursor-pointer ${
-              activeSubTab === 'invoices'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <CreditCard className="w-3.5 h-3.5" />
-            <span>Invoices</span>
-          </button>
-          <button
-            onClick={() => setActiveSubTab('gateways')}
-            className={`flex-1 sm:flex-initial px-3.5 py-1.5 rounded-xl text-xs font-black transition-all flex items-center justify-center space-x-1.5 cursor-pointer ${
-              activeSubTab === 'gateways'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Zap className="w-3.5 h-3.5 text-amber-500" />
-            <span>Gateways</span>
-          </button>
+        {/* Quick Summary Pill */}
+        <div className="bg-white px-4 py-2 rounded-2xl border border-slate-200 shadow-2xs flex items-center space-x-3">
+          <div className="w-8 h-8 rounded-xl bg-purple-50 text-[#7c3aed] flex items-center justify-center">
+            <CreditCard className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="text-[10px] uppercase font-bold text-slate-400">Total Outstanding</div>
+            <div className="text-xs sm:text-sm font-black text-slate-900">
+              {formatAmountINR(totalOutstandingAmount)}
+            </div>
+          </div>
         </div>
       </div>
 
-      {activeSubTab === 'gateways' ? (
-        <PaymentIntegrationsSpace />
-      ) : (
-        <div className="space-y-6">
+      <div className="space-y-6">
 
-          {/* SECTION 1: FILTER & SORT CARD (Matching screenshot styling) */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-2xs space-y-5">
+        {/* SECTION 1: FILTER & SORT CARD (Matching screenshot styling) */}
+        <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-2xs space-y-5">
             
             {/* Row 1: SORT BY & VIEW STATUS */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -777,7 +760,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                             type="button"
                             onClick={() => handleInitiateSinglePayment(order)}
                             className="text-slate-400 hover:text-[#54b4e7] flex items-center justify-center p-1 rounded-lg hover:bg-slate-100 transition-all cursor-pointer active:scale-95"
-                            title={isPaid ? 'View Payment Settlement Details' : 'Pay Invoice via Gateway'}
+                            title={isPaid ? 'View Payment Settlement Details' : 'Settle Invoice'}
                           >
                             <CreditCard className="w-6 h-6 stroke-[1.8]" />
                           </button>
@@ -911,10 +894,9 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
             </div>
           )}
 
-        </div>
-      )}
+      </div>
 
-      {/* POPUP PAYMENT GATEWAY MODAL */}
+      {/* POPUP PAYMENT SETTLEMENT MODAL */}
       {isPaymentModalOpen && paymentModalOrders.length > 0 && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-fade-in">
           <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-6">
@@ -951,62 +933,46 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
               {/* Payment Methods Selection */}
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-600 uppercase tracking-wider block">
-                  Select Payment Gateway / Method
+                  Select Settlement Method
                 </label>
                 <div className="grid grid-cols-2 gap-2.5">
                   <button
                     type="button"
-                    onClick={() => setSelectedGateway('razorpay')}
+                    onClick={() => setSelectedPaymentMethod('bank_transfer')}
                     className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center space-x-2.5 ${
-                      selectedGateway === 'razorpay'
+                      selectedPaymentMethod === 'bank_transfer'
                         ? 'border-[#54b4e7] bg-[#54b4e7]/10 text-slate-900 font-extrabold ring-1 ring-[#54b4e7]'
                         : 'border-slate-200 hover:bg-slate-50 text-slate-700 font-medium'
                     }`}
                   >
-                    <Zap className="w-4 h-4 text-sky-600 shrink-0" />
+                    <Landmark className="w-4 h-4 text-sky-600 shrink-0" />
                     <div>
-                      <div className="text-xs font-bold leading-tight">Razorpay PG</div>
-                      <div className="text-[10px] text-slate-500">Cards, UPI, NetBanking</div>
+                      <div className="text-xs font-bold leading-tight">Bank Transfer</div>
+                      <div className="text-[10px] text-slate-500">NEFT / RTGS / IMPS</div>
                     </div>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => setSelectedGateway('phonepe')}
+                    onClick={() => setSelectedPaymentMethod('cheque')}
                     className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center space-x-2.5 ${
-                      selectedGateway === 'phonepe'
+                      selectedPaymentMethod === 'cheque'
                         ? 'border-[#54b4e7] bg-[#54b4e7]/10 text-slate-900 font-extrabold ring-1 ring-[#54b4e7]'
                         : 'border-slate-200 hover:bg-slate-50 text-slate-700 font-medium'
                     }`}
                   >
-                    <Smartphone className="w-4 h-4 text-purple-600 shrink-0" />
+                    <Receipt className="w-4 h-4 text-purple-600 shrink-0" />
                     <div>
-                      <div className="text-xs font-bold leading-tight">PhonePe PG</div>
-                      <div className="text-[10px] text-slate-500">Instant QR & App Pay</div>
+                      <div className="text-xs font-bold leading-tight">Cheque / DD</div>
+                      <div className="text-[10px] text-slate-500">Commercial Clearance</div>
                     </div>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => setSelectedGateway('upi')}
+                    onClick={() => setSelectedPaymentMethod('credit')}
                     className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center space-x-2.5 ${
-                      selectedGateway === 'upi'
-                        ? 'border-[#54b4e7] bg-[#54b4e7]/10 text-slate-900 font-extrabold ring-1 ring-[#54b4e7]'
-                        : 'border-slate-200 hover:bg-slate-50 text-slate-700 font-medium'
-                    }`}
-                  >
-                    <QrCode className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <div>
-                      <div className="text-xs font-bold leading-tight">Direct UPI QR</div>
-                      <div className="text-[10px] text-slate-500">GPay, Paytm, BHIM</div>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setSelectedGateway('credit')}
-                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center space-x-2.5 ${
-                      selectedGateway === 'credit'
+                      selectedPaymentMethod === 'credit'
                         ? 'border-[#54b4e7] bg-[#54b4e7]/10 text-slate-900 font-extrabold ring-1 ring-[#54b4e7]'
                         : 'border-slate-200 hover:bg-slate-50 text-slate-700 font-medium'
                     }`}
@@ -1017,23 +983,68 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                       <div className="text-[10px] text-slate-500">30-Day B2B Credit</div>
                     </div>
                   </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPaymentMethod('upi')}
+                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center space-x-2.5 ${
+                      selectedPaymentMethod === 'upi'
+                        ? 'border-[#54b4e7] bg-[#54b4e7]/10 text-slate-900 font-extrabold ring-1 ring-[#54b4e7]'
+                        : 'border-slate-200 hover:bg-slate-50 text-slate-700 font-medium'
+                    }`}
+                  >
+                    <QrCode className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <div>
+                      <div className="text-xs font-bold leading-tight">Direct UPI QR</div>
+                      <div className="text-[10px] text-slate-500">VPA / Fast Settlement</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPaymentMethod('cash')}
+                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center space-x-2.5 col-span-2 ${
+                      selectedPaymentMethod === 'cash'
+                        ? 'border-[#54b4e7] bg-[#54b4e7]/10 text-slate-900 font-extrabold ring-1 ring-[#54b4e7]'
+                        : 'border-slate-200 hover:bg-slate-50 text-slate-700 font-medium'
+                    }`}
+                  >
+                    <Banknote className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <div>
+                      <div className="text-xs font-bold leading-tight">Cash / Counter Deposit</div>
+                      <div className="text-[10px] text-slate-500">Official Depot Receipt</div>
+                    </div>
+                  </button>
                 </div>
               </div>
 
-              {/* UPI Custom ID field if UPI selected */}
-              {selectedGateway === 'upi' && (
+              {/* Reference / UTR Number for Bank Transfer or Cheque */}
+              {(selectedPaymentMethod === 'bank_transfer' || selectedPaymentMethod === 'cheque') && (
                 <div className="space-y-1.5 p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs">
-                  <label className="font-bold text-slate-700">Enter Your UPI VPA ID (Optional for QR)</label>
+                  <label className="font-bold text-slate-700">
+                    {selectedPaymentMethod === 'bank_transfer' ? 'Bank UTR / Transaction Reference (Optional)' : 'Cheque / DD Number'}
+                  </label>
+                  <input
+                    type="text"
+                    value={referenceNumber}
+                    onChange={(e) => setReferenceNumber(e.target.value)}
+                    placeholder={selectedPaymentMethod === 'bank_transfer' ? 'e.g. UTR108293847291' : 'e.g. CHQ-448201'}
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-slate-500"
+                  />
+                </div>
+              )}
+
+              {/* UPI Custom ID field if UPI selected */}
+              {selectedPaymentMethod === 'upi' && (
+                <div className="space-y-1.5 p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs">
+                  <label className="font-bold text-slate-700">Payer UPI ID / VPA (Optional)</label>
                   <input
                     type="text"
                     value={upiId}
                     onChange={(e) => setUpiId(e.target.value)}
-                    placeholder="e.g. yourname@oksbi / yourname@paytm"
+                    placeholder="e.g. business@sbi / transport@icici"
                     className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-slate-500"
                   />
-                  <span className="text-[10px] text-slate-500 block">
-                    Or scan the dynamic QR code generated at checkout.
-                  </span>
                 </div>
               )}
 
@@ -1041,7 +1052,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
               <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-[11px] text-slate-600 space-y-1">
                 <div className="flex items-center space-x-1.5 font-bold text-slate-800">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  <span>256-Bit Encrypted Direct Bank Clearing</span>
+                  <span>GST-Compliant Commercial Ledger Settlement</span>
                 </div>
                 <p>
                   Official tax invoice and GST input credit (18%) will automatically be synced to your GSTIN upon settlement.
@@ -1063,7 +1074,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                   <>
                     <ShieldCheck className="w-5 h-5" />
                     <span>
-                      Pay {formatAmountINR(paymentModalOrders.reduce((sum, o) => sum + o.totalAmount, 0))} Now
+                      Settle {formatAmountINR(paymentModalOrders.reduce((sum, o) => sum + o.totalAmount, 0))} Now
                     </span>
                   </>
                 )}

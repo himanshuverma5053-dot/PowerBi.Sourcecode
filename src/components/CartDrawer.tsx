@@ -38,7 +38,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   const [city, setCity] = useState('Patna');
   const [state, setState] = useState('Bihar');
   const [pincode, setPincode] = useState('800001');
-  const [paymentMethod] = useState<string>('Integrated Gateway');
+  const [paymentMethod] = useState<string>('Direct Invoice / Bank Transfer');
 
   if (!isOpen) return null;
 
@@ -135,8 +135,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3"
                 >
                   <img
-                    src={item.product.image}
-                    alt={item.product.name}
+                    src={item.product?.image || item.product?.images?.[0] || 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800'}
+                    alt={item.product?.name || 'Tyre'}
                     className="w-16 h-16 object-contain"
                     referrerPolicy="no-referrer"
                   />

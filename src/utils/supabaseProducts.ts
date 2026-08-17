@@ -13,8 +13,16 @@ function normalizeProductRow(row: any): TyreProduct {
       images = [row.image || row.image_url];
     }
   }
+  if (Array.isArray(images)) {
+    images = images.filter((img: any) => typeof img === 'string' && img.trim() !== '');
+  }
   if (!Array.isArray(images) || images.length === 0) {
-    images = [row.image || row.image_url || 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800'];
+    const fallback = (typeof row.image === 'string' && row.image.trim() !== '') 
+      ? row.image 
+      : (typeof row.image_url === 'string' && row.image_url.trim() !== '') 
+      ? row.image_url 
+      : 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800';
+    images = [fallback];
   }
 
   let compatibleVehicles = row.compatible_vehicles || row.compatibleVehicles;
