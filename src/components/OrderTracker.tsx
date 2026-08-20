@@ -3,7 +3,7 @@ import { Order } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import {
   Truck, Search, CheckCircle2, Clock, MapPin,
-  FileText, ShieldCheck, AlertCircle, PackageCheck
+  FileText, ShieldCheck, AlertCircle, PackageCheck, Download
 } from 'lucide-react';
 
 interface OrderTrackerProps {
@@ -67,9 +67,10 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({
 
           <button
             type="submit"
-            className="px-6 py-3.5 rounded-2xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-black text-sm shadow-md active:scale-95 transition-all cursor-pointer"
+            className="px-6 py-3.5 rounded-2xl bg-white hover:bg-purple-50/70 border-2 border-[#9800ff] text-[#9800ff] font-extrabold text-sm shadow-2xs active:scale-95 transition-all cursor-pointer flex items-center gap-2"
           >
-            Track Order
+            <span>Track Order</span>
+            <Truck className="w-4 h-4 text-[#9800ff] stroke-[2.2]" />
           </button>
         </form>
       </div>
@@ -97,10 +98,10 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => onViewInvoice(searchedOrder)}
-                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-900 text-xs font-extrabold shadow-2xs flex items-center space-x-1.5 cursor-pointer transition-colors"
+                className="px-5 py-2.5 rounded-2xl bg-white hover:bg-purple-50/70 border-2 border-[#9800ff] text-[#9800ff] text-xs sm:text-sm font-bold shadow-2xs flex items-center space-x-2 cursor-pointer transition-all active:scale-95"
               >
-                <FileText className="w-4 h-4 text-slate-700" />
-                <span>View GST Invoice</span>
+                <span>Generate PDF</span>
+                <Download className="w-4 h-4 text-[#9800ff] stroke-[2.2]" />
               </button>
             </div>
           </div>

@@ -41,8 +41,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   // Primary user account profile state - blank unless user written
   const [name, setName] = useState<string>(currentUser || '');
   const [userId, setUserId] = useState<string>(currentUserEmail || '');
-  const [role, setRole] = useState<'Admin' | 'Dealer / Partner' | 'Billing Manager' | 'Staff / Operator'>(
-    currentUser && checkIsAdmin(currentUser, currentUserEmail || '') ? 'Admin' : 'Dealer / Partner'
+  const [role, setRole] = useState<'Admin' | 'Partner' | 'Billing Manager' | 'Staff / Operator'>(
+    currentUser && checkIsAdmin(currentUser, currentUserEmail || '') ? 'Admin' : 'Partner'
   );
   const [status, setStatus] = useState<'Active' | 'Inactive'>('Active');
   
@@ -83,7 +83,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         setGstNumber(parsed.gstNumber || '');
         setDeliveryLocation(parsed.deliveryLocation || '');
         setAddress(parsed.address || '');
-        if (parsed.role) setRole(parsed.role);
+        if (parsed.role) {
+          setRole(parsed.role === 'Dealer / Partner' ? 'Partner' : parsed.role);
+        }
         return;
       } catch (e) {
         console.error('Profile load error:', e);
@@ -286,7 +288,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm sm:text-base font-bold text-slate-900 focus:outline-none focus:border-[#54b4e7]"
               >
                 <option value="Admin">Admin</option>
-                <option value="Dealer / Partner">Dealer / Partner</option>
+                <option value="Partner">Partner</option>
                 <option value="Billing Manager">Billing Manager</option>
                 <option value="Staff / Operator">Staff / Operator</option>
               </select>

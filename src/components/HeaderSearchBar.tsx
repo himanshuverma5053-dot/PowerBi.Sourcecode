@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Loader2, X, ArrowRight, Sparkles, AlertCircle, ExternalLink, Disc } from 'lucide-react';
+import { Search, Loader2, X, Tag, ShoppingCart, Minus, Plus, Lightbulb, Disc, AlertCircle, ExternalLink, ArrowRight, Check } from 'lucide-react';
 import { TyreProduct } from '../types';
 import { searchProductsInSupabase } from '../utils/supabaseProducts';
-import { formatCurrency } from '../utils/formatters';
 import { MOCK_TYRES } from '../data/mockData';
 
 interface HeaderSearchBarProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   onSelectProduct?: (product: TyreProduct) => void;
+  onAddToCart?: (product: TyreProduct, quantity?: number) => void;
   allProducts?: TyreProduct[];
   setActiveTab: (tab: string) => void;
   placeholder?: string;
@@ -22,9 +22,10 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
   searchQuery,
   setSearchQuery,
   onSelectProduct,
+  onAddToCart,
   allProducts = [],
   setActiveTab,
-  placeholder = 'Search tyre name, size e.g. 195/65 R15, brand...',
+  placeholder = 'Search tyre name, size e.g. 295/90 R20, brand...',
   className = '',
   isMobile = false,
   autoFocus = false,
@@ -35,6 +36,8 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [searchedTerm, setSearchedTerm] = useState('');
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [addedItemIds, setAddedItemIds] = useState<Record<string, boolean>>({});
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -53,7 +56,54 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
     setInputValue(searchQuery);
   }, [searchQuery]);
 
-  // Instant / Debounced live search matching as user types
+  // Helper to format specifications (Size & Load/Speed Rating)
+  const getProductSpecs = (product: TyreProduct) => {
+    let size = '';
+    const rawPattern = (product.pattern || '').toUpperCase();
+    const rawSku = (product.sku || '').toUpperCase();
+
+    if ((product as any).sizeSpec || (product as any).tyreSize) {
+      size = (product as any).sizeSpec || (product as any).tyreSize;
+    } else if (rawPattern.includes('10.00 R20') || rawSku.includes('1000R20') || product.width === 10) {
+      size = '10.00 R20 16PR';
+    } else if (product.width && product.aspectRatio && product.rimSize) {
+      size = `${product.width}/${product.aspectRatio} R${product.rimSize}`;
+    } else if (product.width && product.rimSize) {
+      size = `${product.width} R${product.rimSize}`;
+    } else {
+      size = '295/90 R20';
+    }
+
+    let loadSpeed = '';
+    if ((product as any).loadSpeedSpec) {
+      loadSpeed = (product as any).loadSpeedSpec;
+    } else if (rawPattern.includes('10.00') || size.includes('10.00')) {
+      loadSpeed = '146/143K';
+    } else if (product.loadIndex) {
+      if (product.loadIndex >= 140) {
+        const dualIndex = product.loadIndex - 4;
+        const speed = product.speedRating || 'J';
+        loadSpeed = `${product.loadIndex}/${dualIndex}${speed}`;
+      } else {
+        loadSpeed = `${product.loadIndex}${product.speedRating || ''}`;
+      }
+    } else {
+      loadSpeed = '152/148J';
+    }
+
+    return { size, loadSpeed };
+  };
+
+  // Helper to format currency with Indian numbering & exact 2 decimal places
+  const formatINR = (amount: number) => {
+    const num = Number(amount) || 0;
+    return '₹' + num.toLocaleString('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+
+  // Live Debounced search matching
   useEffect(() => {
     const trimmed = inputValue.trim();
 
@@ -77,7 +127,7 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
         const queryLower = trimmed.toLowerCase();
         const tokens = queryLower.split(/\s+/).filter(Boolean);
 
-        const localMatches = activeProductPool.filter((p) => {
+        const checkMatch = (p: TyreProduct) => {
           const nameLower = (p.name || '').toLowerCase();
           const brandLower = (p.brand || '').toLowerCase();
           const categoryLower = (p.category || '').toLowerCase();
@@ -86,45 +136,32 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
           const patternLower = (p.pattern || '').toLowerCase();
           const tireTypeLower = (p.tireType || p.tire_type || '').toLowerCase();
           const sizeString = `${p.width}/${p.aspectRatio} R${p.rimSize}`.toLowerCase();
-          const cleanSizeString = sizeString.replace(/[\/\-\s]/g, '');
+          const cleanSizeString = sizeString.replace(/[\/\-\s\.\*]/g, '');
+          const cleanName = nameLower.replace(/[\/\-\s\.\*\+\(\)]/g, '');
           const vehicleString = Array.isArray(p.compatibleVehicles) ? p.compatibleVehicles.join(' ').toLowerCase() : '';
           const tagString = Array.isArray(p.tags) ? p.tags.join(' ').toLowerCase() : '';
 
           const fullSearchableText = `${nameLower} ${brandLower} ${categoryLower} ${descLower} ${skuLower} ${patternLower} ${tireTypeLower} ${sizeString} ${cleanSizeString} ${vehicleString} ${tagString}`;
 
-          // Every customer requirement token MUST match
           return tokens.every((token) => {
-            const cleanToken = token.replace(/[\/\-\s]/g, '');
+            const cleanToken = token.replace(/[\/\-\s\.\*\+\(\)]/g, '');
             if (fullSearchableText.includes(token)) return true;
-            if (cleanToken.length > 1 && cleanSizeString.includes(cleanToken)) return true;
+            if (cleanToken.length > 1 && (cleanSizeString.includes(cleanToken) || cleanName.includes(cleanToken))) return true;
             if (token === String(p.width) || token === String(p.rimSize) || token === `r${p.rimSize}`) return true;
+            if (token.startsWith('md') && (nameLower.includes('md') || patternLower.includes('md'))) return true;
+            if (token.startsWith('ma') && (nameLower.includes('ma') || patternLower.includes('ma'))) return true;
+            if (token.startsWith('ld') && (nameLower.includes('ld') || patternLower.includes('ld'))) return true;
+            if (token.startsWith('ra') && (nameLower.includes('ra') || patternLower.includes('ra'))) return true;
             return false;
           });
-        });
+        };
 
-        // 3. Filter and deduplicate combined results strictly matching customer requirements
+        const localMatches = activeProductPool.filter(checkMatch);
+
+        // 3. Filter and deduplicate combined results
         const combinedMap = new Map<string, TyreProduct>();
         supabaseResults.forEach((p) => {
-          const nameLower = (p.name || '').toLowerCase();
-          const brandLower = (p.brand || '').toLowerCase();
-          const categoryLower = (p.category || '').toLowerCase();
-          const descLower = (p.description || '').toLowerCase();
-          const skuLower = (p.sku || '').toLowerCase();
-          const patternLower = (p.pattern || '').toLowerCase();
-          const tireTypeLower = (p.tireType || p.tire_type || '').toLowerCase();
-          const sizeString = `${p.width}/${p.aspectRatio} R${p.rimSize}`.toLowerCase();
-          const cleanSizeString = sizeString.replace(/[\/\-\s]/g, '');
-          const fullSearchableText = `${nameLower} ${brandLower} ${categoryLower} ${descLower} ${skuLower} ${patternLower} ${tireTypeLower} ${sizeString} ${cleanSizeString}`;
-
-          const matchesAll = tokens.every((token) => {
-            const cleanToken = token.replace(/[\/\-\s]/g, '');
-            if (fullSearchableText.includes(token)) return true;
-            if (cleanToken.length > 1 && cleanSizeString.includes(cleanToken)) return true;
-            if (token === String(p.width) || token === String(p.rimSize) || token === `r${p.rimSize}`) return true;
-            return false;
-          });
-
-          if (matchesAll) {
+          if (checkMatch(p)) {
             combinedMap.set(p.id, p);
           }
         });
@@ -143,7 +180,7 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
       } finally {
         setIsLoading(false);
       }
-    }, 150); // Fast response as user types in advance
+    }, 120);
 
     return () => clearTimeout(timer);
   }, [inputValue, activeProductPool]);
@@ -196,6 +233,28 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
     }
   };
 
+  const handleQuantityChange = (productId: string, delta: number, maxStock: number = 99, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setQuantities((prev) => {
+      const current = prev[productId] || 1;
+      const next = Math.max(1, Math.min(maxStock || 99, current + delta));
+      return { ...prev, [productId]: next };
+    });
+  };
+
+  const handleAddToCartClick = (product: TyreProduct, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const qty = quantities[product.id] || 1;
+    if (onAddToCart) {
+      onAddToCart(product, qty);
+    }
+    // Animate checkmark feedback
+    setAddedItemIds((prev) => ({ ...prev, [product.id]: true }));
+    setTimeout(() => {
+      setAddedItemIds((prev) => ({ ...prev, [product.id]: false }));
+    }, 1400);
+  };
+
   const handleSeeAllResults = () => {
     setIsOpen(false);
     if (onCloseMobileSearch) {
@@ -207,7 +266,7 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
 
   return (
     <div ref={containerRef} className={`relative w-full ${className}`}>
-      {/* Input Box */}
+      {/* Top Search Input Box */}
       <div className="relative w-full flex items-center space-x-2">
         <div className="relative flex-1">
           <input
@@ -230,37 +289,44 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
               }
             }}
             placeholder={placeholder}
-            className={`w-full pl-10 pr-10 rounded-xl text-xs sm:text-sm bg-slate-100/80 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white focus:border-transparent transition-all text-slate-900 placeholder-slate-400 font-medium ${
-              isMobile ? 'py-2.5' : 'py-2'
+            className={`w-full pl-10 pr-16 rounded-xl sm:rounded-2xl text-xs sm:text-sm bg-slate-100/90 border border-slate-200/90 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white focus:border-transparent transition-all text-slate-950 placeholder-slate-400 font-medium ${
+              isMobile ? 'py-2.5' : 'py-2.5'
             }`}
           />
 
-          {/* Search Icon / Spinner */}
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center text-slate-500">
+          {/* Search Icon / Spinner on Left */}
+          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center text-slate-700 pointer-events-none">
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin text-slate-900" />
             ) : (
-              <Search className="w-4 h-4 text-slate-500" />
+              <Search className="w-4 h-4 text-slate-800 stroke-[2.2]" />
             )}
           </div>
 
-          {/* Clear Button */}
-          {inputValue && (
-            <button
-              onClick={handleClear}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 p-1 rounded-full hover:bg-slate-200/60 transition-colors"
-              title="Clear search"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
+          {/* Right Action Icons (Clear X & Lightbulb / Hint) */}
+          <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center space-x-1">
+            {inputValue && (
+              <button
+                type="button"
+                onClick={handleClear}
+                className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-slate-200/70 transition-colors cursor-pointer"
+                title="Clear search"
+              >
+                <X className="w-4 h-4 stroke-[2.2]" />
+              </button>
+            )}
+            <div className="p-1 text-amber-500 hover:text-amber-600 transition-transform hover:scale-110 cursor-pointer flex items-center justify-center">
+              <Lightbulb className="w-4 h-4 text-amber-500 fill-amber-400" />
+            </div>
+          </div>
         </div>
 
         {/* Dedicated Close Button for Mobile Overlay mode */}
         {onCloseMobileSearch && (
           <button
+            type="button"
             onClick={onCloseMobileSearch}
-            className="p-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-900 font-bold text-xs transition-colors flex items-center justify-center flex-shrink-0"
+            className="p-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-900 font-bold text-xs transition-colors flex items-center justify-center flex-shrink-0 cursor-pointer"
             title="Close Search"
           >
             <X className="w-4 h-4" />
@@ -268,97 +334,132 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
         )}
       </div>
 
-      {/* Live Dropdown Matching Results - Only displayed when user searches */}
+      {/* Live Dropdown Products List matching exact Screenshot Design */}
       {isOpen && inputValue.trim().length > 0 && (
-        <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-150 max-h-[440px] flex flex-col">
+        <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-150 max-h-[480px] sm:max-h-[540px] flex flex-col">
           <div className="flex flex-col flex-1 overflow-hidden">
-            {/* Header indicator */}
-            <div className="bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between text-xs font-bold border-b border-slate-800">
-              <div className="flex items-center space-x-2">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                <span>Matching Products</span>
-              </div>
-              {isLoading ? (
-                <span className="text-[11px] text-slate-300 font-normal flex items-center gap-1">
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                  Searching...
-                </span>
-              ) : (
-                <span className="text-[11px] bg-slate-800 px-2 py-0.5 rounded-full text-slate-200 font-semibold">
-                  {results.length} {results.length === 1 ? 'product found' : 'products found'}
-                </span>
-              )}
-            </div>
-
-            {/* Results List */}
+            {/* Products List View */}
             <div className="overflow-y-auto divide-y divide-slate-100 flex-1">
-              {isLoading ? (
+              {isLoading && results.length === 0 ? (
                 <div className="p-8 text-center space-y-2">
-                  <Loader2 className="w-6 h-6 animate-spin text-slate-900 mx-auto" />
-                  <p className="text-xs font-bold text-slate-600">Searching store catalogue...</p>
+                  <Loader2 className="w-6 h-6 animate-spin text-purple-600 mx-auto" />
+                  <p className="text-xs font-bold text-slate-600">Searching products...</p>
                 </div>
               ) : results.length > 0 ? (
-                results.map((product) => (
-                  <div
-                    key={product.id}
-                    onClick={() => handleSelectProductItem(product)}
-                    className="p-3 sm:p-3.5 hover:bg-slate-50 cursor-pointer transition-colors flex items-center space-x-3 group"
-                  >
-                    {/* Thumbnail Image */}
-                    <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center p-1">
-                      {product.image || product.images?.[0] ? (
-                        <img
-                          src={product.image || product.images?.[0]}
-                          alt={product.name}
-                          className="w-full h-full object-contain group-hover:scale-105 transition-transform"
-                          onError={(e) => {
-                            (e.target as HTMLElement).style.display = 'none';
-                          }}
-                        />
-                      ) : (
-                        <Disc className="w-6 h-6 text-slate-400 stroke-[1.5]" />
-                      )}
-                    </div>
+                results.map((product) => {
+                  const specs = getProductSpecs(product);
+                  const price = product.mrp || product.price || 25685;
+                  const qty = quantities[product.id] || 1;
+                  const isInStock = (product.stock ?? 1) > 0;
+                  const isAdded = addedItemIds[product.id];
 
-                    {/* Info details */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
-                        <span className="font-bold text-xs sm:text-sm text-slate-900 truncate group-hover:text-amber-600 transition-colors">
-                          {product.name}
-                        </span>
-                        <span className="px-1.5 py-0.2 text-[10px] font-extrabold rounded-md bg-slate-100 text-slate-900 border border-slate-200">
-                          {product.brand}
-                        </span>
-                        {(product.tireType || product.tire_type) && (
-                          <span className={`px-1.5 py-0.2 text-[9px] font-bold rounded-md ${
-                            (product.tireType || product.tire_type) === 'Radial' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-amber-50 text-amber-800 border border-amber-200'
-                          }`}>
-                            {product.tireType || product.tire_type}
-                          </span>
+                  return (
+                    <div
+                      key={product.id}
+                      onClick={() => handleSelectProductItem(product)}
+                      className="p-3 sm:p-4 hover:bg-slate-50/90 transition-colors flex items-center justify-between gap-2.5 sm:gap-3.5 group cursor-pointer"
+                    >
+                      {/* Left: Product Tyre Thumbnail Image */}
+                      <div className="w-13 h-13 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-white border border-slate-100 flex items-center justify-center p-0.5 sm:p-1 flex-shrink-0 shadow-2xs group-hover:scale-105 transition-transform overflow-hidden">
+                        {product.image || product.images?.[0] ? (
+                          <img
+                            src={product.image || product.images?.[0]}
+                            alt={product.name}
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <Disc className="w-7 h-7 sm:w-8 sm:h-8 text-slate-400 stroke-[1.5]" />
                         )}
                       </div>
 
-                      <div className="text-[11px] text-slate-500 mt-0.5 flex items-center space-x-2 truncate">
-                        <span>{product.width}/{product.aspectRatio} R{product.rimSize}</span>
-                        <span>•</span>
-                        <span>SKU: {product.sku || 'N/A'}</span>
-                      </div>
-                    </div>
+                      {/* Middle: Specs, Load/Speed, Product Name, Price */}
+                      <div className="flex-1 min-w-0 pr-1">
+                        {/* Line 1: Purple Tag Icon + Tyre Size */}
+                        <div className="flex items-center space-x-1.5 leading-none">
+                          <Tag className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8a14d4] fill-[#8a14d4] flex-shrink-0" />
+                          <span className="font-bold text-slate-900 text-xs sm:text-[14px] tracking-tight">
+                            {specs.size}
+                          </span>
+                        </div>
 
-                    {/* Price & Action */}
-                    <div className="text-right flex-shrink-0">
-                      <div className="font-extrabold text-xs sm:text-sm text-slate-900">
-                        {formatCurrency(product.mrp || product.price)}
+                        {/* Line 2: Load & Speed Index Specification */}
+                        <div className="text-[11px] sm:text-xs font-semibold text-slate-700 mt-1 leading-tight">
+                          {specs.loadSpeed}
+                        </div>
+
+                        {/* Line 3: Product Name in Uppercase Bold */}
+                        <div className="text-xs sm:text-[13px] font-black text-slate-950 uppercase tracking-tight truncate mt-1 leading-tight group-hover:text-purple-700 transition-colors">
+                          {product.name}
+                        </div>
+
+                        {/* Line 4: Formatted Price in INR */}
+                        <div className="text-xs sm:text-[13.5px] font-bold text-slate-600 mt-1 leading-tight">
+                          {formatINR(price)}
+                        </div>
                       </div>
-                      <div className="text-[10px] text-slate-900 font-bold flex items-center justify-end gap-0.5 group-hover:translate-x-0.5 transition-transform">
-                        <span>View Tyre</span>
-                        <ArrowRight className="w-3 h-3" />
+
+                      {/* Right: Stock Indicator Square + Quantity Stepper + Purple Cart Button */}
+                      <div className="flex items-center space-x-2 sm:space-x-2.5 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                        {/* Status Square (Green = in stock, Red = out of stock/limited) */}
+                        <div
+                          className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-[3px] flex-shrink-0 ${
+                            isInStock ? 'bg-[#16a34a]' : 'bg-[#dc2626]'
+                          }`}
+                          title={isInStock ? 'In Stock' : 'Out of Stock / Limited'}
+                        />
+
+                        {/* Quantity Stepper Pill */}
+                        <div className="border border-slate-300 rounded-lg sm:rounded-xl flex items-center bg-white h-8 sm:h-9 px-1 shadow-2xs">
+                          <button
+                            type="button"
+                            onClick={(e) => handleQuantityChange(product.id, -1, product.stock, e)}
+                            disabled={qty <= 1}
+                            className="p-1 sm:p-1.5 text-slate-600 hover:text-slate-950 disabled:opacity-30 transition-colors rounded hover:bg-slate-100 cursor-pointer"
+                            aria-label="Decrease quantity"
+                          >
+                            <Minus className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2.2]" />
+                          </button>
+                          <span className="font-extrabold text-xs sm:text-sm text-slate-950 min-w-[18px] sm:min-w-[20px] text-center select-none">
+                            {qty}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={(e) => handleQuantityChange(product.id, 1, product.stock, e)}
+                            disabled={product.stock > 0 && qty >= product.stock}
+                            className="p-1 sm:p-1.5 text-slate-600 hover:text-slate-950 disabled:opacity-30 transition-colors rounded hover:bg-slate-100 cursor-pointer"
+                            aria-label="Increase quantity"
+                          >
+                            <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2.2]" />
+                          </button>
+                        </div>
+
+                        {/* Add to Cart Button (Bright Purple with Shopping Cart Icon) */}
+                        <button
+                          type="button"
+                          onClick={(e) => handleAddToCartClick(product, e)}
+                          className={`p-2 sm:p-2.5 rounded-xl sm:rounded-2xl transition-all duration-200 active:scale-95 flex items-center justify-center shadow-sm cursor-pointer ${
+                            isAdded
+                              ? 'bg-emerald-600 text-white ring-2 ring-emerald-400/50 scale-105'
+                              : 'bg-[#9800ff] hover:bg-[#8500df] active:bg-[#7200be] text-white'
+                          }`}
+                          title={`Add ${qty}x ${product.name} to Cart`}
+                          aria-label={`Add ${product.name} to Cart`}
+                        >
+                          {isAdded ? (
+                            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[2.8]" />
+                          ) : (
+                            <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[2.2]" />
+                          )}
+                        </button>
                       </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
-                /* No match state */
+                /* No Results Found State */
                 <div className="p-6 text-center space-y-3">
                   <div className="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 mx-auto flex items-center justify-center">
                     <AlertCircle className="w-5 h-5" />
@@ -368,10 +469,11 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
                       No products found matching "{searchedTerm}"
                     </p>
                     <p className="text-[11px] text-slate-500 mt-1 max-w-xs mx-auto">
-                      Try searching by size (e.g. <span className="font-semibold text-slate-900">295/90</span>, <span className="font-semibold text-slate-900">195/65</span>) or brand (<span className="font-semibold text-slate-900">Apollo</span>, <span className="font-semibold text-slate-900">MRF</span>, <span className="font-semibold text-slate-900">CEAT</span>).
+                      Try searching for tyre models like <span className="font-semibold text-slate-900">Endutrax md+</span>, <span className="font-semibold text-slate-900">295/90 R20</span>, or <span className="font-semibold text-slate-900">Apollo</span>.
                     </p>
                   </div>
                   <button
+                    type="button"
                     onClick={handleSeeAllResults}
                     className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-900 text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer"
                   >
@@ -382,14 +484,18 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
               )}
             </div>
 
-            {/* Footer bar */}
+            {/* Bottom Footer Action */}
             {results.length > 0 && (
-              <div className="bg-slate-50 p-2.5 border-t border-slate-100 text-center">
+              <div className="bg-slate-50/80 px-4 py-2.5 border-t border-slate-100 text-center flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500">
+                  {results.length} {results.length === 1 ? 'tyre variant' : 'tyre variants'} found
+                </span>
                 <button
+                  type="button"
                   onClick={handleSeeAllResults}
-                  className="text-xs font-bold text-slate-900 hover:underline flex items-center justify-center gap-1 mx-auto cursor-pointer"
+                  className="text-xs font-bold text-purple-700 hover:text-purple-900 hover:underline flex items-center justify-center gap-1 cursor-pointer"
                 >
-                  <span>View all matching products in Tyre Store</span>
+                  <span>View all in Catalogue</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>

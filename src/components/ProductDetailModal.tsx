@@ -200,10 +200,10 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 ) : (
                   <button
                     onClick={handleAddToCartClick}
-                    className="w-full py-2.5 rounded-lg bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-bold text-xs sm:text-sm shadow-2xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
+                    className="w-full py-2.5 rounded-2xl bg-white hover:bg-purple-50/70 border-2 border-[#9800ff] text-[#9800ff] font-bold text-xs sm:text-sm shadow-2xs flex items-center justify-center space-x-2 transition-all cursor-pointer active:scale-95"
                   >
-                    <SilverCartIcon className="w-4 h-4" />
                     <span>Add {quantity} to Cart</span>
+                    <SilverCartIcon className="w-4 h-4 text-[#9800ff]" />
                   </button>
                 )}
               </div>

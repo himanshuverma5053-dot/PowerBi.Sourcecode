@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Order } from '../types';
 import { numberToWords } from '../utils/formatters';
-import { X, Printer, FileText, ArrowLeft } from 'lucide-react';
+import { X, Printer, FileText, ArrowLeft, Download } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 
 interface InvoiceModalProps {
@@ -58,11 +58,10 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ order, onClose }) =>
           <div className="flex items-center space-x-3">
             <button
               onClick={handlePrint}
-              className="px-4 py-2 rounded-xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-bold text-xs flex items-center space-x-1.5 transition-all shadow-2xs cursor-pointer"
+              className="px-4 py-2 rounded-2xl bg-white hover:bg-purple-50/70 border-2 border-[#9800ff] text-[#9800ff] font-bold text-xs sm:text-sm flex items-center space-x-2 transition-all shadow-2xs cursor-pointer active:scale-95"
             >
-              <Printer className="w-4 h-4" />
-              <span className="hidden sm:inline">Print / Save PDF</span>
-              <span className="sm:hidden">Print</span>
+              <span>Generate PDF</span>
+              <Download className="w-4 h-4 text-[#9800ff] stroke-[2.2]" />
             </button>
             <button
               onClick={onClose}

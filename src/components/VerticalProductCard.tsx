@@ -179,21 +179,21 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
           {/* Add to Cart Purple Button */}
           <button
             onClick={handleAdd}
-            className={`flex-1 h-11 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center transition-all duration-200 shadow-sm cursor-pointer active:scale-[0.98] ${
+            className={`flex-1 h-11 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center transition-all duration-200 shadow-2xs cursor-pointer active:scale-[0.98] border-2 ${
               addedAnimation
-                ? 'bg-emerald-600 text-white'
-                : 'bg-[#9800ff] hover:bg-[#8500e0] text-white shadow-[#9800ff]/20'
+                ? 'bg-emerald-50 border-emerald-600 text-emerald-700'
+                : 'bg-white hover:bg-purple-50/70 border-[#9800ff] text-[#9800ff]'
             }`}
           >
             {addedAnimation ? (
-              <span className="inline-flex items-center space-x-1.5">
-                <Check className="w-4 h-4 stroke-[3]" />
+              <span className="inline-flex items-center space-x-2">
                 <span>Added!</span>
+                <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
               </span>
             ) : (
-              <span className="inline-flex items-center space-x-1.5">
-                <SilverCartIcon className="w-5 h-5 drop-shadow-sm" />
-                <span>Add to cart</span>
+              <span className="inline-flex items-center space-x-2">
+                <span className="tracking-tight">Add to cart</span>
+                <SilverCartIcon className="w-5 h-5 drop-shadow-sm text-[#9800ff]" />
               </span>
             )}
           </button>

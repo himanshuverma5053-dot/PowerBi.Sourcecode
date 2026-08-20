@@ -15,7 +15,7 @@ export interface LogoDisplaySettings {
 export const DEFAULT_LOGO_SETTINGS: LogoDisplaySettings = {
   url: DEFAULT_LOGO_URL,
   scale: 1.0,
-  maxHeight: 36,
+  maxHeight: 42,
   offsetX: 0,
   offsetY: 0,
   alignment: 'center',

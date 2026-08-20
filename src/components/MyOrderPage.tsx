@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Order, TyreProduct } from '../types';
 import {
   Calendar, FileText, Truck, Search, X, PackageX,
-  ChevronDown, ExternalLink, ShieldCheck, CheckCircle2, ArrowRight, Disc
+  ChevronDown, ExternalLink, ShieldCheck, CheckCircle2, ArrowRight, Disc, Download
 } from 'lucide-react';
 
 interface MyOrderPageProps {
@@ -297,10 +297,10 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
                       e.stopPropagation();
                       if (onViewInvoice) onViewInvoice(order);
                     }}
-                    className="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
+                    className="flex-1 py-2.5 px-3.5 rounded-2xl bg-white hover:bg-purple-50/70 border-2 border-[#9800ff] text-[#9800ff] text-xs sm:text-sm font-bold transition-all flex items-center justify-center space-x-2 cursor-pointer shadow-2xs active:scale-[0.98]"
                   >
-                    <FileText className="w-3.5 h-3.5 text-slate-600" />
-                    <span>Tax Invoice</span>
+                    <span>Generate PDF</span>
+                    <Download className="w-4 h-4 text-[#9800ff] stroke-[2.2]" />
                   </button>
 
                   <button
@@ -308,10 +308,10 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
                       e.stopPropagation();
                       if (onTrackOrder) onTrackOrder(order.orderNumber);
                     }}
-                    className="flex-1 py-2 px-3 rounded-xl bg-[#9800ff] hover:bg-[#8500e0] text-white text-xs font-bold transition-colors flex items-center justify-center space-x-1.5 shadow-2xs cursor-pointer"
+                    className="flex-1 py-2.5 px-3.5 rounded-2xl bg-white hover:bg-purple-50/70 border-2 border-[#9800ff] text-[#9800ff] text-xs sm:text-sm font-bold transition-all flex items-center justify-center space-x-2 shadow-2xs cursor-pointer active:scale-[0.98]"
                   >
-                    <Truck className="w-3.5 h-3.5 text-white" />
                     <span>Track Order</span>
+                    <Truck className="w-4 h-4 text-[#9800ff] stroke-[2.2]" />
                   </button>
                 </div>
               </div>
@@ -332,10 +332,10 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
             {setActiveTab && (
               <button
                 onClick={() => setActiveTab('catalogue')}
-                className="mt-2 px-5 py-2.5 bg-[#9800ff] hover:bg-[#8500e0] text-white rounded-xl text-xs font-bold shadow-2xs transition-colors cursor-pointer inline-flex items-center space-x-1.5"
+                className="mt-2 px-5 py-2.5 bg-white hover:bg-purple-50 border-2 border-[#9800ff] text-[#9800ff] rounded-2xl text-xs sm:text-sm font-bold shadow-2xs transition-all cursor-pointer inline-flex items-center space-x-2 active:scale-95"
               >
                 <span>Browse Products</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-4 h-4 text-[#9800ff]" />
               </button>
             )}
           </div>
@@ -417,9 +417,10 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
                     setSelectedOrderDetails(null);
                     if (onViewInvoice) onViewInvoice(ord);
                   }}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                  className="px-4 py-2 bg-white hover:bg-purple-50 border-2 border-[#9800ff] text-[#9800ff] rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center space-x-1.5 active:scale-95"
                 >
-                  Invoice
+                  <span>Generate PDF</span>
+                  <Download className="w-3.5 h-3.5 text-[#9800ff]" />
                 </button>
                 <button
                   onClick={() => {
@@ -427,9 +428,10 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
                     setSelectedOrderDetails(null);
                     if (onTrackOrder) onTrackOrder(ord.orderNumber);
                   }}
-                  className="px-4 py-2 bg-[#9800ff] hover:bg-[#8500e0] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                  className="px-4 py-2 bg-white hover:bg-purple-50 border-2 border-[#9800ff] text-[#9800ff] rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center space-x-1.5 active:scale-95"
                 >
-                  Track
+                  <span>Track</span>
+                  <Truck className="w-3.5 h-3.5 text-[#9800ff]" />
                 </button>
               </div>
             </div>

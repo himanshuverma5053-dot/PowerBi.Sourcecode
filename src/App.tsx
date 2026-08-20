@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { TyreProduct, CartItem, Order, PaymentRecord, Coupon, CustomerAccount, ProductComponentConfig, getCartItemPrices } from './types';
 import { Navbar } from './components/Navbar';
 import { HomeSummaryBar } from './components/HomeSummaryBar';
+import { HomeBannerSection } from './components/HomeBannerSection';
 import { NexusTelemetrySection } from './components/NexusTelemetrySection';
 import { ForYourKnowledgeSection } from './components/ForYourKnowledgeSection';
+import { HomePartnerSection } from './components/HomePartnerSection';
 import { Hero } from './components/Hero';
 import { ProductCard } from './components/ProductCard';
 import { VerticalProductCard } from './components/VerticalProductCard';
@@ -29,7 +31,8 @@ import { isRadialProduct, isNonRadialProduct } from './utils/productCategories';
 import { safeSetLocalStorage, safeGetLocalStorage } from './utils/storage';
 import { calculateCustomerFinancials } from './utils/customerFinancials';
 import { MOCK_TYRES } from './data/mockData';
-import { apolloEndutraxImg, apolloEndutraxMaDImg, apolloEnduraceLdImg, apolloEndutraxTreadImg } from './assets/tyreImages';
+import { apolloEndutraxImg, apolloEndutraxMaDImg, apolloEnduraceLdImg, apolloEnduraceRatDImg, apolloEndutraxTreadImg } from './assets/tyreImages';
+import apolloEnduBannerImg from './assets/images/regenerated_image_1787248277167.png';
 
 import {
   ShieldCheck, SlidersHorizontal, CheckCircle2,
@@ -73,6 +76,13 @@ export default function App() {
           ...p,
           image: apolloEnduraceLdImg || p.image,
           images: [apolloEnduraceLdImg || p.image, apolloEndutraxTreadImg]
+        };
+      }
+      if (p.id === 'tyre-endurace-rat-d' || p.name.includes('ENDURACE RA')) {
+        return {
+          ...p,
+          image: apolloEnduraceRatDImg || p.image,
+          images: [apolloEnduraceRatDImg || p.image, apolloEndutraxTreadImg]
         };
       }
       return {
@@ -617,6 +627,7 @@ export default function App() {
         currentUser={currentUser}
         allProducts={visibleProducts}
         onSelectProduct={(product) => setSelectedProductForModal(product)}
+        onAddToCart={handleAddToCart}
         onSelectCategory={(category) => setSelectedCategory(category)}
       />
 
@@ -666,10 +677,10 @@ export default function App() {
               }}
             />
 
-            {/* Section 2: Nexus Telemetry Showcase ("Every micron is accounted for.") */}
-            <NexusTelemetrySection />
+            {/* Featured Showcase Banner Carousel with Zero Horizontal Space */}
+            <HomeBannerSection />
 
-            {/* Section 3: For Your Knowledge & Commercial Product Recommendations */}
+            {/* Section 3: For Popular Choices & Knowledge */}
             <ForYourKnowledgeSection
               products={visibleProducts}
               currentCustomerAccount={currentCustomerAccount}
@@ -682,6 +693,9 @@ export default function App() {
                 setActiveTab('catalogue');
               }}
             />
+
+            {/* Section 4: Apollo Sampark Business Partner Connect & Copyright */}
+            <HomePartnerSection />
           </div>
         )}
 

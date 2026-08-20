@@ -26,6 +26,7 @@ interface NavbarProps {
   currentUser?: string;
   allProducts?: TyreProduct[];
   onSelectProduct?: (product: TyreProduct) => void;
+  onAddToCart?: (product: TyreProduct, quantity?: number) => void;
   onSelectCategory?: (category: string) => void;
 }
 
@@ -42,6 +43,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   currentUser = '',
   allProducts = [],
   onSelectProduct,
+  onAddToCart,
   onSelectCategory,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -163,8 +165,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Main Navbar */}
       <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 relative">
-        <div className="flex items-center justify-between h-14 sm:h-16">
-          {/* LEFT CORNER: Apollo-inspired Hamburger / Close Toggle Button + Brand Logo */}
+        <div className="flex items-center justify-between h-14 sm:h-16 relative">
+          {/* LEFT SECTION: Apollo-inspired Hamburger / Close Toggle Button */}
           <div className={`flex items-center space-x-2 sm:space-x-3.5 transition-all duration-300 ${
             isMobileSearchExpanded ? 'blur-[1.5px] opacity-60' : ''
           }`}>
@@ -216,8 +218,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {menuOpen ? 'Close' : 'Menu'}
               </span>
             </button>
+          </div>
 
-            {/* Brand Logo */}
+          {/* MIDDLE SECTION: Brand Logo Centered */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-auto z-20">
             <MagadhSparshLogo
               size="md"
               onClick={() => {
@@ -227,24 +231,25 @@ export const Navbar: React.FC<NavbarProps> = ({
             />
           </div>
 
-          {/* Search Bar - Desktop & Tablet Centered Inline */}
-          <div className="hidden md:flex flex-1 max-w-sm lg:max-w-md xl:max-w-lg mx-2 lg:mx-4 relative z-50">
-            <HeaderSearchBar
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              onSelectProduct={onSelectProduct}
-              allProducts={allProducts}
-              setActiveTab={setActiveTab}
-              placeholder="Search tyre name, size e.g. 195/65 R15, brand..."
-            />
-          </div>
-
-          {/* Right Side Actions */}
+          {/* RIGHT SECTION: Search & Account Actions */}
           <div className="flex items-center space-x-1 sm:space-x-2 ml-1 sm:ml-2">
-            {/* Mobile Search Toggle */}
+            {/* Desktop / Tablet Search Bar */}
+            <div className="hidden lg:block w-56 xl:w-72 relative z-40 mr-1">
+              <HeaderSearchBar
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                onSelectProduct={onSelectProduct}
+                onAddToCart={onAddToCart}
+                allProducts={allProducts}
+                setActiveTab={setActiveTab}
+                placeholder="Search tyres..."
+              />
+            </div>
+
+            {/* Mobile / Tablet Search Toggle */}
             <button
               onClick={() => setIsMobileSearchExpanded(!isMobileSearchExpanded)}
-              className={`md:hidden p-2 rounded-xl border transition-all flex items-center justify-center ${
+              className={`lg:hidden p-2 rounded-xl border transition-all flex items-center justify-center ${
                 isMobileSearchExpanded
                   ? 'bg-slate-900 text-white border-slate-950 shadow-sm'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border-slate-200'
@@ -311,9 +316,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           onSelectProduct={onSelectProduct}
+          onAddToCart={onAddToCart}
           allProducts={allProducts}
           setActiveTab={setActiveTab}
-          placeholder="Search tyre name, size e.g. 195/65 R15, brand..."
+          placeholder="Search tyre name, size e.g. 295/90 R20, brand..."
           isMobile
           autoFocus={isMobileSearchExpanded}
           onCloseMobileSearch={() => setIsMobileSearchExpanded(false)}

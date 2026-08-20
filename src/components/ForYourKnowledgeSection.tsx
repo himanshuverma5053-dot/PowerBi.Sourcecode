@@ -39,6 +39,30 @@ interface KnowledgeArticle {
 
 const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
   {
+    id: 'tractor-tyre-weight-guide',
+    date: '27.07.2023',
+    title: 'A Guide to Understanding Tractor Tyre Weight',
+    category: 'Agricultural & Commercial',
+    readTime: '4 min read',
+    image: fleetTyresGuideImg,
+    summary: 'Proper tractor and commercial vehicle tyre weight distribution prevents soil compaction, maximizes drawbar pull, and significantly increases tyre casing service life.',
+    tag: 'Commercial',
+    sections: [
+      {
+        heading: 'Why Tyre Ballasting and Weight Matter',
+        content: 'Proper tyre weighting (ballasting) ensures optimal tractive efficiency, reduced slippage, and balanced axle load distribution under heavy agricultural and commercial payloads.',
+        bulletPoints: [
+          'Ballast Optimization: Minimizes wheel slip to ideal 10-15% range in agricultural and quarry terrains.',
+          'Sidewall Integrity: Heavy-duty commercial radial casings protect against bead separation under full axle load.',
+          'Fuel Economy: Correct ballasting and pressure reduce rolling resistance, saving fuel per working hour.'
+        ]
+      }
+    ],
+    relatedFilter: {
+      category: 'RADIAL'
+    }
+  },
+  {
     id: 'ev-tyre-guide',
     date: '13.09.2023',
     title: 'The Complete Guide to Electric Vehicle Tyres',
@@ -74,7 +98,7 @@ const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     title: 'Commercial Fleet Radial Maintenance & Retread Standards',
     category: 'Fleet Efficiency',
     readTime: '5 min read',
-    image: fleetTyresGuideImg,
+    image: apolloEndutraxImg,
     summary: 'Mastering CPKM (Cost Per Kilometer) through strict pressure telemetry, multi-stage retreading, and high-tensile steel belt casing preservation.',
     tag: 'Fleet Tech',
     sections: [
@@ -85,31 +109,6 @@ const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
           'Nitrogen & Precision Inflation: A 10% under-inflation causes a 9% increase in tyre wear and 2.5% fuel efficiency loss.',
           'Laser Telemetry Wheel Alignment: Correct toe-in and camber angles prevent irregular one-shoulder wear.',
           'Regrooving at 3mm Depth: Timing regrooving before hitting the casing steel cord extends first-life mileage.'
-        ]
-      }
-    ],
-    relatedFilter: {
-      category: 'RADIAL',
-      tag: 'Radial'
-    }
-  },
-  {
-    id: 'heavy-mining-tipper-guide',
-    date: '15.01.2024',
-    title: 'Heavy Tipper Mining & Construction Tyre Selection Guide',
-    category: 'Mining & Tipper',
-    readTime: '6 min read',
-    image: apolloEndutraxImg,
-    summary: 'How to select cut-and-chip resistant compound tyres for rigorous quarrying, construction dumps, and heavy haulage routes.',
-    tag: 'Heavy Radial',
-    sections: [
-      {
-        heading: 'Severe Service Tread Compounds (Cut & Chip Resistance)',
-        content: 'Mining and construction tipper applications subject tyres to severe jagged stone impacts and high scrub environments. Deep block directional lugs and stone-ejector ridges protect the under-tread belt package from punctures.',
-        bulletPoints: [
-          'Deep Lug Depth (23mm+): Delivers high traction on loose gravel, mud, and quarry incline grades.',
-          'Inter-lug Tie-Bars: Minimize block wriggling and heal-and-toe irregular wear during loaded braking.',
-          'High Tensile Steel Casing: Resists severe impact bursts under maximum gross vehicle weight (GVW).'
         ]
       }
     ],
@@ -150,7 +149,7 @@ export const ForYourKnowledgeSection: React.FC<ForYourKnowledgeSectionProps> = (
       {/* Section Header */}
       <div className="text-center space-y-1 sm:space-y-2">
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-black font-display text-slate-900 tracking-tight">
-          For Your Knowledge
+          For&nbsp;&nbsp;Popular&nbsp;&nbsp;Choices
         </h2>
         <p className="text-xs sm:text-sm text-slate-500 font-medium max-w-xl mx-auto">
           Expert tyre technology insights, commercial fleet engineering guides, and product specifications.
@@ -159,72 +158,49 @@ export const ForYourKnowledgeSection: React.FC<ForYourKnowledgeSectionProps> = (
 
       {/* Main Knowledge Featured Card Container */}
       <div
-        className="max-w-md sm:max-w-lg md:max-w-xl mx-auto"
+        className="w-full max-w-[290px] sm:max-w-[320px] mx-auto px-1"
         onMouseEnter={() => setIsAutoPlaying(false)}
         onMouseLeave={() => setIsAutoPlaying(true)}
       >
-        <div className="bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col">
+        <div className="bg-white rounded-[26px] sm:rounded-[28px] overflow-hidden border border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-lg transition-all duration-300 flex flex-col">
           
           {/* Card Top Image */}
-          <div className="relative aspect-4/3 sm:aspect-16/11 w-full bg-slate-950 overflow-hidden group">
-            <img
-              src={currentArticle.image}
-              alt={currentArticle.title}
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          <div className="relative w-full h-44 sm:h-52 bg-slate-100 overflow-hidden shrink-0">
+            <img 
+              src={currentArticle.image} 
+              alt={currentArticle.title} 
+              className="w-full h-full object-cover object-center"
+              loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
-            
-            {/* Category Tag */}
-            <div className="absolute top-4 left-4">
-              <span className="bg-white/90 backdrop-blur-md text-slate-900 text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full shadow-md border border-white/40 flex items-center space-x-1.5">
-                <Sparkles className="w-3 h-3 text-[#9800ff]" />
-                <span>{currentArticle.category}</span>
-              </span>
-            </div>
-
-            {/* Read time pill */}
-            <div className="absolute top-4 right-4">
-              <span className="bg-black/60 backdrop-blur-md text-white/90 text-[11px] font-bold px-2.5 py-1 rounded-full border border-white/20 flex items-center space-x-1">
-                <BookOpen className="w-3 h-3 text-slate-300" />
-                <span>{currentArticle.readTime}</span>
-              </span>
-            </div>
           </div>
 
           {/* Card Body */}
-          <div className="p-6 sm:p-7 flex flex-col flex-1 space-y-4">
+          <div className="p-4 sm:p-5 flex flex-col flex-1 space-y-3 sm:space-y-4">
             {/* Date */}
-            <div className="text-xs sm:text-sm font-bold text-slate-400">
+            <div className="text-xs sm:text-sm font-bold text-slate-800 tracking-tight">
               {currentArticle.date}
             </div>
 
-            {/* Title (Matching exact screenshot bold font-display styling) */}
-            <h3 className="text-xl sm:text-2xl font-black font-display text-slate-900 tracking-tight leading-snug">
+            {/* Title */}
+            <h3 className="text-base sm:text-lg font-black font-display text-slate-900 tracking-tight leading-snug">
               {currentArticle.title}
             </h3>
 
-            {/* Summary preview */}
-            <p className="text-xs sm:text-sm text-slate-500 line-clamp-2 leading-relaxed">
-              {currentArticle.summary}
-            </p>
-
-            {/* Know More Purple Button (Matching screenshot) */}
-            <div className="pt-2">
+            {/* Know More Button (Solid vibrant purple with white text as in screenshot) */}
+            <div className="pt-1 sm:pt-2">
               <button
                 type="button"
                 onClick={() => setSelectedArticle(currentArticle)}
-                className="w-full py-3 sm:py-3.5 px-6 rounded-2xl bg-[#9800ff] hover:bg-[#8500df] active:bg-[#7200bf] text-white font-black text-sm tracking-wide shadow-md hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer active:scale-[0.99]"
+                className="w-full py-2.5 sm:py-3 px-5 rounded-xl bg-[#9800ff] hover:bg-[#8500e0] active:scale-[0.98] transition-all text-white font-bold text-xs sm:text-sm tracking-wide shadow-sm flex items-center justify-center cursor-pointer select-none"
               >
-                <span>Know More</span>
-                <ArrowRight className="w-4 h-4" />
+                Know More
               </button>
             </div>
           </div>
         </div>
 
-        {/* Carousel Pagination Dots below the card (matching screenshot styling) */}
-        <div className="flex items-center justify-center space-x-2.5 mt-5">
+        {/* Carousel Pagination Dots below the card */}
+        <div className="flex items-center justify-center space-x-2 mt-4">
           {KNOWLEDGE_ARTICLES.map((article, idx) => {
             const isActive = idx === activeIndex;
             return (
@@ -235,12 +211,23 @@ export const ForYourKnowledgeSection: React.FC<ForYourKnowledgeSectionProps> = (
                 aria-label={`Go to slide ${idx + 1}: ${article.title}`}
                 className={`transition-all duration-300 rounded-full cursor-pointer ${
                   isActive
-                    ? 'w-7 h-2.5 bg-slate-800'
+                    ? 'w-7 h-2.5 bg-slate-900'
                     : 'w-2.5 h-2.5 bg-slate-300 hover:bg-slate-400'
                 }`}
               />
             );
           })}
+        </div>
+
+        {/* View Blog Link */}
+        <div className="text-center mt-3">
+          <button
+            type="button"
+            onClick={() => setSelectedArticle(currentArticle)}
+            className="text-[#9800ff] hover:text-[#7b00cc] text-sm sm:text-base font-semibold underline underline-offset-4 decoration-2 transition-colors cursor-pointer"
+          >
+            View Blog
+          </button>
         </div>
       </div>
 
@@ -274,17 +261,6 @@ export const ForYourKnowledgeSection: React.FC<ForYourKnowledgeSectionProps> = (
 
             {/* Modal Scrollable Article Body */}
             <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-slate-700 text-sm leading-relaxed">
-              
-              {/* Featured Banner in Modal */}
-              <div className="rounded-2xl overflow-hidden border border-slate-200 relative aspect-16/9 bg-slate-950">
-                <img
-                  src={selectedArticle.image}
-                  alt={selectedArticle.title}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
               {/* Summary */}
               <div className="p-4 bg-purple-50/70 rounded-2xl border border-purple-100 text-slate-800 font-medium">
                 {selectedArticle.summary}

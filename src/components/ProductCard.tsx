@@ -144,10 +144,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <button
             type="button"
             onClick={handleView}
-            className="px-3 py-1.5 rounded-lg bg-[#54b4e7] hover:bg-[#3ea5dc] text-white text-[11px] font-bold transition-all flex items-center space-x-1 cursor-pointer shrink-0 shadow-2xs"
+            className="px-3 py-1.5 rounded-xl bg-white hover:bg-purple-50/70 border-2 border-[#9800ff] text-[#9800ff] text-[11px] font-bold transition-all flex items-center space-x-1 cursor-pointer shrink-0 shadow-2xs active:scale-95"
           >
-            <Eye className="w-3 h-3 text-white" />
             <span>Details</span>
+            <Eye className="w-3 h-3 text-[#9800ff]" />
           </button>
         </div>
 
