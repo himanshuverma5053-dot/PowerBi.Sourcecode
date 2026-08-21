@@ -9,7 +9,6 @@ interface ProductCarouselProps {
   products: TyreProduct[];
   currentCustomer?: CustomerAccount | null;
   isAdmin?: boolean;
-  onAddToCart: (product: TyreProduct, quantity: number) => void;
   onInstantBuy?: (product: TyreProduct) => void;
   onViewDetails: (product: TyreProduct) => void;
   emptyMessage?: string;
@@ -22,7 +21,6 @@ export const ProductCarousel: React.FC<ProductCarouselProps> = ({
   products,
   currentCustomer,
   isAdmin,
-  onAddToCart,
   onInstantBuy,
   onViewDetails,
   emptyMessage = "No products found matching your criteria.",
@@ -150,7 +148,6 @@ export const ProductCarousel: React.FC<ProductCarouselProps> = ({
                   product={product}
                   currentCustomer={currentCustomer}
                   isAdmin={isAdmin}
-                  onAddToCart={onAddToCart}
                   onInstantBuy={onInstantBuy}
                   onViewDetails={onViewDetails}
                   compact

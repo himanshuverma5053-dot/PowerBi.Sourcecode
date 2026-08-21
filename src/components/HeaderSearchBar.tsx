@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Loader2, X, Tag, ShoppingCart, Minus, Plus, Lightbulb, Disc, AlertCircle, ExternalLink, ArrowRight, Check } from 'lucide-react';
+import { Search, Loader2, X, Tag, Lightbulb, Disc, AlertCircle, ExternalLink, ArrowRight, ChevronRight } from 'lucide-react';
 import { TyreProduct } from '../types';
 import { searchProductsInSupabase } from '../utils/supabaseProducts';
 import { MOCK_TYRES } from '../data/mockData';
@@ -8,7 +8,6 @@ interface HeaderSearchBarProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   onSelectProduct?: (product: TyreProduct) => void;
-  onAddToCart?: (product: TyreProduct, quantity?: number) => void;
   allProducts?: TyreProduct[];
   setActiveTab: (tab: string) => void;
   placeholder?: string;
@@ -22,7 +21,6 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
   searchQuery,
   setSearchQuery,
   onSelectProduct,
-  onAddToCart,
   allProducts = [],
   setActiveTab,
   placeholder = 'Search tyre name, size e.g. 295/90 R20, brand...',
@@ -36,8 +34,6 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [searchedTerm, setSearchedTerm] = useState('');
-  const [quantities, setQuantities] = useState<Record<string, number>>({});
-  const [addedItemIds, setAddedItemIds] = useState<Record<string, boolean>>({});
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -233,28 +229,6 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
     }
   };
 
-  const handleQuantityChange = (productId: string, delta: number, maxStock: number = 99, e?: React.MouseEvent) => {
-    e?.stopPropagation();
-    setQuantities((prev) => {
-      const current = prev[productId] || 1;
-      const next = Math.max(1, Math.min(maxStock || 99, current + delta));
-      return { ...prev, [productId]: next };
-    });
-  };
-
-  const handleAddToCartClick = (product: TyreProduct, e: React.MouseEvent) => {
-    e.stopPropagation();
-    const qty = quantities[product.id] || 1;
-    if (onAddToCart) {
-      onAddToCart(product, qty);
-    }
-    // Animate checkmark feedback
-    setAddedItemIds((prev) => ({ ...prev, [product.id]: true }));
-    setTimeout(() => {
-      setAddedItemIds((prev) => ({ ...prev, [product.id]: false }));
-    }, 1400);
-  };
-
   const handleSeeAllResults = () => {
     setIsOpen(false);
     if (onCloseMobileSearch) {
@@ -349,9 +323,7 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
                 results.map((product) => {
                   const specs = getProductSpecs(product);
                   const price = product.mrp || product.price || 25685;
-                  const qty = quantities[product.id] || 1;
                   const isInStock = (product.stock ?? 1) > 0;
-                  const isAdded = addedItemIds[product.id];
 
                   return (
                     <div
@@ -401,8 +373,8 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
                         </div>
                       </div>
 
-                      {/* Right: Stock Indicator Square + Quantity Stepper + Purple Cart Button */}
-                      <div className="flex items-center space-x-2 sm:space-x-2.5 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                      {/* Right: Stock Indicator Square + View Arrow */}
+                      <div className="flex items-center space-x-2 sm:space-x-2.5 flex-shrink-0">
                         {/* Status Square (Green = in stock, Red = out of stock/limited) */}
                         <div
                           className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-[3px] flex-shrink-0 ${
@@ -411,49 +383,10 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
                           title={isInStock ? 'In Stock' : 'Out of Stock / Limited'}
                         />
 
-                        {/* Quantity Stepper Pill */}
-                        <div className="border border-slate-300 rounded-lg sm:rounded-xl flex items-center bg-white h-8 sm:h-9 px-1 shadow-2xs">
-                          <button
-                            type="button"
-                            onClick={(e) => handleQuantityChange(product.id, -1, product.stock, e)}
-                            disabled={qty <= 1}
-                            className="p-1 sm:p-1.5 text-slate-600 hover:text-slate-950 disabled:opacity-30 transition-colors rounded hover:bg-slate-100 cursor-pointer"
-                            aria-label="Decrease quantity"
-                          >
-                            <Minus className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2.2]" />
-                          </button>
-                          <span className="font-extrabold text-xs sm:text-sm text-slate-950 min-w-[18px] sm:min-w-[20px] text-center select-none">
-                            {qty}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={(e) => handleQuantityChange(product.id, 1, product.stock, e)}
-                            disabled={product.stock > 0 && qty >= product.stock}
-                            className="p-1 sm:p-1.5 text-slate-600 hover:text-slate-950 disabled:opacity-30 transition-colors rounded hover:bg-slate-100 cursor-pointer"
-                            aria-label="Increase quantity"
-                          >
-                            <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2.2]" />
-                          </button>
+                        {/* View Arrow Button */}
+                        <div className="p-2 rounded-xl bg-slate-100 group-hover:bg-[#9800ff] text-slate-500 group-hover:text-white transition-all shadow-2xs">
+                          <ChevronRight className="w-4 h-4 stroke-[2.5]" />
                         </div>
-
-                        {/* Add to Cart Button (Bright Purple with Shopping Cart Icon) */}
-                        <button
-                          type="button"
-                          onClick={(e) => handleAddToCartClick(product, e)}
-                          className={`p-2 sm:p-2.5 rounded-xl sm:rounded-2xl transition-all duration-200 active:scale-95 flex items-center justify-center shadow-sm cursor-pointer ${
-                            isAdded
-                              ? 'bg-emerald-600 text-white ring-2 ring-emerald-400/50 scale-105'
-                              : 'bg-[#9800ff] hover:bg-[#8500df] active:bg-[#7200be] text-white'
-                          }`}
-                          title={`Add ${qty}x ${product.name} to Cart`}
-                          aria-label={`Add ${product.name} to Cart`}
-                        >
-                          {isAdded ? (
-                            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[2.8]" />
-                          ) : (
-                            <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[2.2]" />
-                          )}
-                        </button>
                       </div>
                     </div>
                   );

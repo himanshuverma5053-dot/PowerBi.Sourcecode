@@ -10,7 +10,6 @@ interface ForYourKnowledgeSectionProps {
   products?: TyreProduct[];
   currentCustomerAccount?: CustomerAccount | null;
   isAdmin?: boolean;
-  onAddToCart?: (product: TyreProduct, quantity: number) => void;
   onInstantBuy?: (product: TyreProduct) => void;
   onViewDetails?: (product: TyreProduct) => void;
   onExploreCatalogue?: (category?: string) => void;
@@ -123,7 +122,6 @@ export const ForYourKnowledgeSection: React.FC<ForYourKnowledgeSectionProps> = (
   products,
   currentCustomerAccount,
   isAdmin,
-  onAddToCart,
   onInstantBuy,
   onViewDetails,
   onExploreCatalogue,

@@ -1,16 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TyreProduct, CustomerAccount } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { getCustomerEffectivePrice } from '../utils/customerPricing';
-import { ShoppingBag, Eye, ShieldCheck, Zap, Disc3, Star, Check } from 'lucide-react';
+import { Eye, ShieldCheck, Zap, Minus, Plus } from 'lucide-react';
 import { ProductImagePlaceholder } from './ProductImagePlaceholder';
 
 interface ProductCardProps {
   product: TyreProduct;
   onQuickView?: (product: TyreProduct) => void;
   onViewDetails?: (product: TyreProduct) => void;
-  onInstantBuy?: (product: TyreProduct) => void;
-  onAddToCart: (product: TyreProduct, quantity: number) => void;
+  onInstantBuy?: (product: TyreProduct, quantity?: number) => void;
   currentCustomer?: CustomerAccount | null;
   isAdmin?: boolean;
   compact?: boolean;
@@ -21,11 +20,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onQuickView,
   onViewDetails,
   onInstantBuy,
-  onAddToCart,
   currentCustomer,
-  isAdmin,
   compact = false,
 }) => {
+  const [quantity, setQuantity] = useState(1);
   const pricingInfo = getCustomerEffectivePrice(product, currentCustomer);
   const displayPrice = pricingInfo.effectivePrice;
   const isCustomRate = pricingInfo.hasCustomOverride || pricingInfo.appliedDiscountPercent > 0;
@@ -35,6 +33,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       onViewDetails(product);
     } else if (onQuickView) {
       onQuickView(product);
+    }
+  };
+
+  const handleIncrement = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setQuantity((prev) => (product.stock && prev >= product.stock ? prev : prev + 1));
+  };
+
+  const handleDecrement = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  };
+
+  const handleBuyNow = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onInstantBuy) {
+      onInstantBuy(product, quantity);
+    } else if (onViewDetails) {
+      onViewDetails(product);
     }
   };
 
@@ -127,28 +144,67 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
 
-        {/* Pricing & Add to Cart */}
-        <div className="pt-2 border-t border-slate-200 flex items-center justify-between gap-1">
-          <div>
+        {/* Pricing & Quantity + Buy Now */}
+        <div className="pt-2 border-t border-slate-200 space-y-2">
+          <div className="flex items-baseline justify-between">
             <div className="flex items-baseline space-x-1">
               <span className="text-sm sm:text-base font-black text-slate-950 font-display">
                 {formatCurrency(displayPrice)}
               </span>
               <span className="text-[9px] text-slate-500 font-medium">/ unit</span>
             </div>
-            <div className="text-[9px] text-amber-900 font-bold truncate">
-              Bulk 4+: {formatCurrency(isCustomRate ? displayPrice : (product.bulkPrice || displayPrice))}
-            </div>
+            {product.bulkPrice && product.bulkPrice < displayPrice && (
+              <span className="text-[9px] text-slate-500 font-bold">
+                Bulk: {formatCurrency(product.bulkPrice)}
+              </span>
+            )}
           </div>
 
-          <button
-            type="button"
-            onClick={handleView}
-            className="px-3 py-1.5 rounded-xl bg-white hover:bg-purple-50/70 border-2 border-[#9800ff] text-[#9800ff] text-[11px] font-bold transition-all flex items-center space-x-1 cursor-pointer shrink-0 shadow-2xs active:scale-95"
-          >
-            <span>Details</span>
-            <Eye className="w-3 h-3 text-[#9800ff]" />
-          </button>
+          {/* Quantity Stepper & Buy Now Button */}
+          <div className="flex items-center gap-1.5">
+            <div className="flex items-center border border-slate-200 rounded-xl bg-white h-8 shrink-0 shadow-2xs">
+              <button
+                type="button"
+                onClick={handleDecrement}
+                disabled={quantity <= 1}
+                className="w-6 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-50 disabled:opacity-30 transition-colors cursor-pointer"
+                aria-label="Decrease quantity"
+              >
+                <Minus className="w-3 h-3" />
+              </button>
+              <span className="w-5 text-center text-xs font-black text-slate-900 select-none">
+                {quantity}
+              </span>
+              <button
+                type="button"
+                onClick={handleIncrement}
+                disabled={Boolean(product.stock && product.stock > 0 && quantity >= product.stock)}
+                className="w-6 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-50 disabled:opacity-30 transition-colors cursor-pointer"
+                aria-label="Increase quantity"
+              >
+                <Plus className="w-3 h-3" />
+              </button>
+            </div>
+
+            <button
+              type="button"
+              id={`btn-card-buy-now-${product.id}`}
+              onClick={handleBuyNow}
+              className="flex-1 py-1.5 px-2 rounded-xl bg-[#9800ff] hover:bg-[#8500df] active:bg-[#7200be] text-white text-[11px] font-black transition-all flex items-center justify-center space-x-1 cursor-pointer shadow-2xs active:scale-95"
+            >
+              <Zap className="w-3 h-3 fill-white text-white" />
+              <span>Buy Now</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleView}
+              className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
+              title="View Specs"
+            >
+              <Eye className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
 
       </div>

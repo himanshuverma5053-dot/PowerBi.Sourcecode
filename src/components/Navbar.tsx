@@ -9,15 +9,12 @@ import {
   PackageCheck, HelpCircle, Building2, CheckCircle2
 } from 'lucide-react';
 import { MagadhSparshLogo } from './MagadhSparshLogo';
-import { CartItem, TyreProduct } from '../types';
+import { TyreProduct } from '../types';
 import { HeaderSearchBar } from './HeaderSearchBar';
-import { SilverCartIcon } from './SilverCartIcon';
 
 interface NavbarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  cart: CartItem[];
-  setIsCartOpen: (open: boolean) => void;
   isAdmin: boolean;
   setIsAdmin?: (admin: boolean) => void;
   searchQuery: string;
@@ -26,15 +23,12 @@ interface NavbarProps {
   currentUser?: string;
   allProducts?: TyreProduct[];
   onSelectProduct?: (product: TyreProduct) => void;
-  onAddToCart?: (product: TyreProduct, quantity?: number) => void;
   onSelectCategory?: (category: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   setActiveTab,
-  cart,
-  setIsCartOpen,
   isAdmin,
   setIsAdmin,
   searchQuery,
@@ -43,13 +37,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   currentUser = '',
   allProducts = [],
   onSelectProduct,
-  onAddToCart,
   onSelectCategory,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileSearchExpanded, setIsMobileSearchExpanded] = useState(false);
-  const totalCartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -94,7 +86,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     },
     {
       id: 'quick-payments',
-      label: 'My Payments',
+      label: 'My Payment Page',
       icon: CreditCard,
     },
   ];
@@ -239,7 +231,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
                 onSelectProduct={onSelectProduct}
-                onAddToCart={onAddToCart}
                 allProducts={allProducts}
                 setActiveTab={setActiveTab}
                 placeholder="Search tyres..."
@@ -260,14 +251,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Search className="w-4 h-4" />
             </button>
 
-            {/* Account & Cart Actions */}
+            {/* Account Actions */}
             <div className={`flex items-center space-x-1 sm:space-x-2 transition-all duration-300 ${
               isMobileSearchExpanded ? 'blur-[1.5px] opacity-60' : ''
             }`}>
               {isLoggedIn ? (
                 <button
                   onClick={() => setActiveTab('account')}
-                  className="hidden sm:flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-900 font-bold text-xs transition-all"
+                  className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-900 font-bold text-xs transition-all"
                   title="My Profile"
                 >
                   <UserCircle2 className="w-4 h-4 text-slate-700" />
@@ -276,29 +267,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               ) : (
                 <button
                   onClick={() => setActiveTab('signin')}
-                  className="hidden sm:flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs shadow-xs transition-all"
+                  className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs shadow-xs transition-all"
                   title="Sign In"
                 >
                   <UserCircle2 className="w-4 h-4 text-slate-950" />
                   <span>Sign In</span>
                 </button>
               )}
-
-              {/* Shopping Cart Button */}
-              <button
-                id="navbar-cart-btn"
-                onClick={() => setIsCartOpen(true)}
-                className="relative p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white shadow-xs transition-all flex items-center justify-center active:scale-95 group"
-                aria-label="Shopping Cart"
-                title="View Cart"
-              >
-                <SilverCartIcon className="w-5 h-5 sm:w-5.5 sm:h-5.5 transition-transform group-hover:scale-105" />
-                {totalCartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-amber-400 text-slate-950 font-extrabold text-[10px] sm:text-xs w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center border-2 border-white shadow-xs animate-scale-up">
-                    {totalCartCount}
-                  </span>
-                )}
-              </button>
             </div>
           </div>
         </div>
@@ -316,7 +291,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           onSelectProduct={onSelectProduct}
-          onAddToCart={onAddToCart}
           allProducts={allProducts}
           setActiveTab={setActiveTab}
           placeholder="Search tyre name, size e.g. 295/90 R20, brand..."
@@ -488,34 +462,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                       })}
                     </div>
                   </div>
-
-                  {/* Quick Cart Shortcut (If items exist in cart) */}
-                  {totalCartCount > 0 && (
-                    <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between">
-                      <div className="flex items-center space-x-2.5">
-                        <div className="p-2 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center">
-                          <SilverCartIcon className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <span className="font-extrabold text-slate-900 block text-xs">
-                            {totalCartCount} Tyre{totalCartCount > 1 ? 's' : ''} in Cart
-                          </span>
-                          <span className="text-[10px] font-medium text-slate-600">
-                            Ready for quick checkout
-                          </span>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => {
-                          setMenuOpen(false);
-                          setIsCartOpen(true);
-                        }}
-                        className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs"
-                      >
-                        Checkout
-                      </button>
-                    </div>
-                  )}
 
                 </div>
 

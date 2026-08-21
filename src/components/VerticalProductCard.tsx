@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { TyreProduct, CustomerAccount } from '../types';
-import { Minus, Plus, ShoppingBag, Eye, Check } from 'lucide-react';
-import { SilverCartIcon } from './SilverCartIcon';
+import { Eye, Minus, Plus, Zap } from 'lucide-react';
 import { ProductImagePlaceholder } from './ProductImagePlaceholder';
 
 interface VerticalProductCardProps {
   product: TyreProduct;
   currentCustomer?: CustomerAccount | null;
   isAdmin?: boolean;
-  onAddToCart: (product: TyreProduct, quantity?: number) => void;
   onInstantBuy?: (product: TyreProduct, quantity?: number) => void;
   onViewDetails?: (product: TyreProduct) => void;
   onUpdateImage?: (productId: string, imageUrl: string) => void;
@@ -18,13 +16,11 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
   product,
   currentCustomer,
   isAdmin,
-  onAddToCart,
   onInstantBuy,
   onViewDetails,
   onUpdateImage,
 }) => {
   const [quantity, setQuantity] = useState(1);
-  const [addedAnimation, setAddedAnimation] = useState(false);
   const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
@@ -46,22 +42,24 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
   // Size / spec formatted
   const sizeSpec = `${product.width}/${product.aspectRatio} R${product.rimSize} ${product.loadIndex || '154'}${product.speedRating || 'K'} ${product.name} TL -D`;
 
+  // Brand logo lookup or clean text styling
+  const brandName = product.brand || 'Apollo';
+
   const handleIncrement = () => {
-    setQuantity((prev) => prev + 1);
+    setQuantity((prev) => (product.stock && prev >= product.stock ? prev : prev + 1));
   };
 
   const handleDecrement = () => {
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
   };
 
-  const handleAdd = () => {
-    onAddToCart(product, quantity);
-    setAddedAnimation(true);
-    setTimeout(() => setAddedAnimation(false), 1200);
+  const handleBuyNow = () => {
+    if (onInstantBuy) {
+      onInstantBuy(product, quantity);
+    } else if (onViewDetails) {
+      onViewDetails(product);
+    }
   };
-
-  // Brand logo lookup or clean text styling
-  const brandName = product.brand || 'Apollo';
 
   return (
     <div
@@ -145,57 +143,55 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
       </div>
 
       {/* Price & Action Row */}
-      <div className="space-y-4">
+      <div className="space-y-3.5">
         {/* Price tag */}
-        <div className="text-left">
+        <div className="text-left flex items-baseline justify-between">
           <div className="text-xl sm:text-2xl font-black text-[#8a14d4] tracking-tight">
             {formattedPrice}
           </div>
+          {product.bulkPrice && product.bulkPrice < effectivePrice && (
+            <span className="text-[11px] font-bold text-slate-500">
+              Bulk: ₹{product.bulkPrice.toLocaleString('en-IN')}
+            </span>
+          )}
         </div>
 
-        {/* Counter and Add to Cart button */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
-          {/* Increment / Decrement Counter Pill */}
+        {/* Quantity Bar and Buy Now button */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Quantity Stepper Bar */}
           <div className="flex items-center border border-slate-200 rounded-2xl bg-white overflow-hidden shadow-2xs h-11 shrink-0">
             <button
+              type="button"
               onClick={handleDecrement}
-              className="w-9 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-50 active:bg-slate-100 transition-colors cursor-pointer"
+              disabled={quantity <= 1}
+              className="w-8 sm:w-9 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-50 active:bg-slate-100 disabled:opacity-30 transition-colors cursor-pointer"
               aria-label="Decrease quantity"
             >
               <Minus className="w-3.5 h-3.5" />
             </button>
-            <span className="w-8 text-center text-sm font-bold text-slate-900 select-none">
+            <span className="w-7 sm:w-8 text-center text-xs sm:text-sm font-black text-slate-900 select-none">
               {quantity}
             </span>
             <button
+              type="button"
               onClick={handleIncrement}
-              className="w-9 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-50 active:bg-slate-100 transition-colors cursor-pointer"
+              disabled={Boolean(product.stock && product.stock > 0 && quantity >= product.stock)}
+              className="w-8 sm:w-9 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-50 active:bg-slate-100 disabled:opacity-30 transition-colors cursor-pointer"
               aria-label="Increase quantity"
             >
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* Add to Cart Purple Button */}
+          {/* Buy Now Purple Button */}
           <button
-            onClick={handleAdd}
-            className={`flex-1 h-11 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center transition-all duration-200 shadow-2xs cursor-pointer active:scale-[0.98] border-2 ${
-              addedAnimation
-                ? 'bg-emerald-50 border-emerald-600 text-emerald-700'
-                : 'bg-white hover:bg-purple-50/70 border-[#9800ff] text-[#9800ff]'
-            }`}
+            type="button"
+            id={`btn-buy-now-${product.id}`}
+            onClick={handleBuyNow}
+            className="flex-1 h-11 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center space-x-1.5 transition-all duration-200 shadow-sm cursor-pointer active:scale-[0.98] bg-[#9800ff] hover:bg-[#8500df] active:bg-[#7200be] text-white"
           >
-            {addedAnimation ? (
-              <span className="inline-flex items-center space-x-2">
-                <span>Added!</span>
-                <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
-              </span>
-            ) : (
-              <span className="inline-flex items-center space-x-2">
-                <span className="tracking-tight">Add to cart</span>
-                <SilverCartIcon className="w-5 h-5 drop-shadow-sm text-[#9800ff]" />
-              </span>
-            )}
+            <Zap className="w-4 h-4 fill-white text-white" />
+            <span className="tracking-tight">Buy Now</span>
           </button>
         </div>
       </div>

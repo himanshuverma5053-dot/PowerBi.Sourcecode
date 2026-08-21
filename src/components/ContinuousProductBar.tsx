@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { TyreProduct, CustomerAccount } from '../types';
 import { getCustomerEffectivePrice } from '../utils/customerPricing';
-import { ShoppingBag, Eye, Disc3, ShieldCheck, Zap, Pause, Play, ChevronRight } from 'lucide-react';
-import { SilverCartIcon } from './SilverCartIcon';
+import { Eye, Disc3, ShieldCheck, Zap, Pause, Play, ChevronRight } from 'lucide-react';
 import { ProductImagePlaceholder } from './ProductImagePlaceholder';
 
 interface ContinuousProductBarProps {
@@ -15,7 +14,6 @@ interface ContinuousProductBarProps {
   speedSeconds?: number;
   currentCustomer?: CustomerAccount | null;
   isAdmin?: boolean;
-  onAddToCart: (product: TyreProduct, quantity: number) => void;
   onInstantBuy?: (product: TyreProduct) => void;
   onViewDetails: (product: TyreProduct) => void;
   onViewAllCategory?: () => void;
@@ -31,7 +29,6 @@ export const ContinuousProductBar: React.FC<ContinuousProductBarProps> = ({
   speedSeconds = 28,
   currentCustomer,
   isAdmin,
-  onAddToCart,
   onInstantBuy,
   onViewDetails,
   onViewAllCategory
@@ -137,29 +134,33 @@ export const ContinuousProductBar: React.FC<ContinuousProductBarProps> = ({
                 </div>
 
                 {/* Action Buttons */}
-                <div className="mt-1.5 pt-1.5 border-t border-slate-200 flex items-center justify-between gap-1">
+                <div className="mt-1.5 pt-1.5 border-t border-slate-200 flex items-center gap-1">
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onViewDetails(product);
+                      if (onInstantBuy) {
+                        onInstantBuy(product);
+                      } else {
+                        onViewDetails(product);
+                      }
                     }}
-                    className="p-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-800 transition-colors flex items-center justify-center cursor-pointer"
-                    title="View Product Specs"
+                    className="flex-1 py-1 px-1.5 rounded-xl bg-[#9800ff] hover:bg-[#8500df] active:bg-[#7200be] active:scale-95 text-white font-extrabold text-[10px] shadow-2xs transition-all flex items-center justify-center space-x-1 cursor-pointer"
                   >
-                    <Eye className="w-3 h-3" />
+                    <Zap className="w-3 h-3 fill-white text-white" />
+                    <span>Buy Now</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onAddToCart(product, 1);
+                      onViewDetails(product);
                     }}
-                    className="flex-1 py-1 px-1.5 rounded-xl bg-white hover:bg-purple-50/70 border-2 border-[#9800ff] active:scale-95 text-[#9800ff] font-extrabold text-[10px] shadow-2xs transition-all flex items-center justify-center space-x-1 cursor-pointer"
+                    className="p-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors flex items-center justify-center cursor-pointer"
+                    title="View Specs"
                   >
-                    <span>Add +</span>
-                    <SilverCartIcon className="w-3 h-3 text-[#9800ff]" />
+                    <Eye className="w-3 h-3" />
                   </button>
                 </div>
               </div>

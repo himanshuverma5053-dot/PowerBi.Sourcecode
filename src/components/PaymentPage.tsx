@@ -1,9 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { PaymentRecord, Order } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import {
   CreditCard, CheckCircle2, ShieldCheck, Download,
-  ArrowRight, Zap, Search, Calendar, Clock,
+  ArrowRight, ArrowLeft, Zap, Search, Calendar, Clock,
   FileText, Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
   AlertCircle, Building2, Smartphone, QrCode, Lock, RefreshCw, X,
   Banknote, Landmark, Receipt
@@ -14,6 +14,9 @@ interface PaymentPageProps {
   orders?: Order[];
   onProcessPayment: (paymentData: PaymentRecord) => void;
   onViewInvoice?: (order: Order) => void;
+  incomingOrderToPay?: Order | null;
+  onPaymentSuccess?: (order: Order) => void;
+  onCancelPayment?: (order?: Order) => void;
 }
 
 // B2B Seed Invoices to ensure exact screenshot fidelity and rich data
@@ -245,6 +248,9 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
   orders = [],
   onProcessPayment,
   onViewInvoice,
+  incomingOrderToPay = null,
+  onPaymentSuccess,
+  onCancelPayment,
 }) => {
   // Merged orders: include real orders + seed invoices without duplicating order numbers
   const allOrders = useMemo(() => {
@@ -267,12 +273,23 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
   // Payment Modal State
   const [paymentModalOrders, setPaymentModalOrders] = useState<Order[]>([]);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'bank_transfer' | 'cheque' | 'upi' | 'credit' | 'cash'>('bank_transfer');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'bank_transfer' | 'cheque' | 'upi' | 'credit' | 'cash'>('upi');
   const [referenceNumber, setReferenceNumber] = useState('');
   const [upiId, setUpiId] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStep, setProcessingStep] = useState('');
   const [lastReceipt, setLastReceipt] = useState<PaymentRecord | null>(null);
+
+  // Auto-open modal when incomingOrderToPay is provided from Order Details
+  useEffect(() => {
+    if (incomingOrderToPay) {
+      setPaymentModalOrders([incomingOrderToPay]);
+      setIsPaymentModalOpen(true);
+      setReferenceNumber('');
+      setUpiId('');
+      setIsProcessing(false);
+    }
+  }, [incomingOrderToPay]);
 
   // Helper date formatting function: DD.MM.YYYY
   const formatDisplayDate = (dateStr?: string, addDays: number = 0): string => {
@@ -416,6 +433,8 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
         selectedPaymentMethod === 'upi' ? `Direct UPI (${upiId || 'Direct QR'})` :
         selectedPaymentMethod === 'cash' ? 'Cash / Counter Deposit' : 'Trade Credit Account (30-Day)';
 
+      const paidOrdersCopy = [...paymentModalOrders];
+
       paymentModalOrders.forEach(ord => {
         const receipt: PaymentRecord = {
           id: `pay-${Date.now()}-${ord.id}`,
@@ -435,6 +454,10 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
       setIsProcessing(false);
       setIsPaymentModalOpen(false);
       setSelectedInvoiceIds([]);
+
+      if (onPaymentSuccess && paidOrdersCopy.length > 0) {
+        onPaymentSuccess(paidOrdersCopy[0]);
+      }
     }, 1400);
   };
 
@@ -455,11 +478,11 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
           <div className="flex items-center space-x-2">
             <span className="w-2.5 h-2.5 rounded-full bg-[#54b4e7] animate-pulse" />
             <h1 className="text-2xl sm:text-3xl font-black font-display text-slate-900 tracking-tight">
-              Payment & Invoices
+              My Payment Page
             </h1>
           </div>
           <p className="text-slate-500 text-xs sm:text-sm mt-0.5">
-            Manage GST tax invoices, check outstanding due balances, and record payments.
+            Manage GST tax invoices, review outstanding due balances, and make payments directly.
           </p>
         </div>
 
@@ -806,11 +829,13 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                       <div className="mt-4 pt-3 flex justify-end">
                         <button
                           type="button"
+                          id={`btn-pay-now-${order.orderNumber}`}
                           onClick={() => handleInitiateSinglePayment(order)}
-                          className="px-4 py-2 rounded-xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-extrabold text-xs shadow-2xs flex items-center space-x-1.5 transition-all cursor-pointer active:scale-95"
+                          className="px-5 py-2.5 rounded-xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-black text-xs shadow-2xs flex items-center space-x-2 transition-all cursor-pointer active:scale-95"
                         >
-                          <CreditCard className="w-3.5 h-3.5" />
-                          <span>Pay {formatAmountINR(order.totalAmount)}</span>
+                          <CreditCard className="w-4 h-4" />
+                          <span>Pay Now</span>
+                          <span className="text-[11px] font-semibold opacity-90">({formatAmountINR(order.totalAmount)})</span>
                         </button>
                       </div>
                     )}
@@ -844,11 +869,12 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                   Clear
                 </button>
                 <button
+                  id="btn-bulk-pay-now"
                   onClick={handleInitiateBulkPayment}
                   className="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-black text-xs shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer active:scale-95"
                 >
                   <Zap className="w-4 h-4" />
-                  <span>Pay Selected Invoices</span>
+                  <span>Pay Now</span>
                 </button>
               </div>
             </div>
@@ -920,7 +946,13 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
               </div>
 
               <button
-                onClick={() => setIsPaymentModalOpen(false)}
+                type="button"
+                onClick={() => {
+                  setIsPaymentModalOpen(false);
+                  if (incomingOrderToPay && onCancelPayment) {
+                    onCancelPayment(paymentModalOrders[0] || incomingOrderToPay || undefined);
+                  }
+                }}
                 className="text-slate-400 hover:text-white p-1 rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
@@ -1059,26 +1091,45 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                 </p>
               </div>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={isProcessing}
-                className="w-full py-4 rounded-2xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-black text-sm shadow-md active:scale-95 transition-all flex items-center justify-center space-x-2 cursor-pointer"
-              >
-                {isProcessing ? (
-                  <>
-                    <RefreshCw className="w-5 h-5 animate-spin" />
-                    <span>{processingStep || 'Processing Settlement...'}</span>
-                  </>
-                ) : (
-                  <>
-                    <ShieldCheck className="w-5 h-5" />
-                    <span>
-                      Settle {formatAmountINR(paymentModalOrders.reduce((sum, o) => sum + o.totalAmount, 0))} Now
-                    </span>
-                  </>
-                )}
-              </button>
+              {/* Action Buttons: Cancel Payment & Pay Now Horizontally */}
+              <div className="flex items-center gap-3 pt-1">
+                <button
+                  type="button"
+                  id="btn-modal-cancel-payment"
+                  disabled={isProcessing}
+                  onClick={() => {
+                    setIsPaymentModalOpen(false);
+                    if (onCancelPayment) {
+                      onCancelPayment(paymentModalOrders[0] || incomingOrderToPay || undefined);
+                    }
+                  }}
+                  className="px-5 py-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-bold text-sm transition-all flex items-center justify-center space-x-2 border border-slate-200 cursor-pointer disabled:opacity-50"
+                >
+                  <ArrowLeft className="w-4 h-4 text-slate-500" />
+                  <span>Cancel Payment</span>
+                </button>
+
+                <button
+                  type="submit"
+                  id="btn-modal-pay-now"
+                  disabled={isProcessing}
+                  className="flex-1 py-3.5 px-4 rounded-2xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-black text-sm shadow-md active:scale-95 transition-all flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50"
+                >
+                  {isProcessing ? (
+                    <>
+                      <RefreshCw className="w-5 h-5 animate-spin" />
+                      <span>{processingStep || 'Processing Settlement...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="w-5 h-5" />
+                      <span>
+                        Pay Now • {formatAmountINR(paymentModalOrders.reduce((sum, o) => sum + o.totalAmount, 0))}
+                      </span>
+                    </>
+                  )}
+                </button>
+              </div>
             </form>
 
           </div>

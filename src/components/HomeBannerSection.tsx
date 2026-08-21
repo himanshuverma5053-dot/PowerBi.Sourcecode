@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import apolloEnduBannerImg from '../assets/images/regenerated_image_1787248277167.png';
-import apolloTruckBannerImg from '../assets/images/go_the_distance_truck_banner_1786927618826.jpg';
+import apolloBannerImg1 from '../assets/images/regenerated_image_1787297022512.jpg';
+import apolloBannerImg2 from '../assets/images/regenerated_image_1787297019496.jpg';
+import apolloBannerImg3 from '../assets/images/regenerated_image_1787298186833.webp';
 
 interface BannerSlide {
   id: string;
@@ -13,17 +14,24 @@ interface BannerSlide {
 const BANNER_SLIDES: BannerSlide[] = [
   {
     id: 'slide-endu-series',
-    image: apolloEnduBannerImg,
-    alt: 'Apollo Endu Series Phase 1 Range Commercial Tyres',
+    image: apolloBannerImg1,
+    alt: 'Apollo Endu Series Commercial Tyres',
     title: 'Apollo Endu Series Range',
     subtitle: 'High durability commercial tyre range engineered for extreme load conditions'
   },
   {
     id: 'slide-truck-fleet',
-    image: apolloTruckBannerImg,
-    alt: 'Apollo Commercial Heavy Duty Fleet Tyres - Go The Distance',
+    image: apolloBannerImg2,
+    alt: 'Apollo Commercial Heavy Duty Fleet Tyres',
     title: 'Go The Distance - Fleet Performance',
     subtitle: 'Premium radial and heavy commercial transport solutions'
+  },
+  {
+    id: 'slide-terra-bt',
+    image: apolloBannerImg3,
+    alt: 'Apollo Terra BT - Rock Solid Performance Commercial Tyres',
+    title: 'Apollo Terra BT - Rock Solid Performance',
+    subtitle: 'Engineered for tough off-highway, mining and heavy duty haulage applications'
   }
 ];
 
@@ -47,7 +55,7 @@ export const HomeBannerSection: React.FC = () => {
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* Banner Slides Carousel */}
-      <div className="relative w-full aspect-[2/1] sm:aspect-[2.2/1] md:aspect-[2.5/1] overflow-hidden flex items-center justify-center bg-black">
+      <div className="relative w-full aspect-[4/5] sm:aspect-[1/1] md:aspect-[16/10] lg:aspect-[16/9] min-h-[420px] sm:min-h-[540px] md:min-h-[640px] lg:min-h-[720px] overflow-hidden flex items-center justify-center bg-slate-950 shadow-md">
         {BANNER_SLIDES.map((slide, index) => {
           const isActive = index === currentSlide;
           return (
@@ -61,7 +69,7 @@ export const HomeBannerSection: React.FC = () => {
                 src={slide.image}
                 alt={slide.alt}
                 referrerPolicy="no-referrer"
-                className="w-full h-full object-cover sm:object-contain object-center select-none block"
+                className="w-full h-full object-cover object-center select-none block"
               />
             </div>
           );

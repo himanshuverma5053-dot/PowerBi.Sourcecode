@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TyreProduct, CartItem, Order, PaymentRecord, Coupon, CustomerAccount, ProductComponentConfig, getCartItemPrices } from './types';
+import { TyreProduct, Order, PaymentRecord, Coupon, CustomerAccount, ProductComponentConfig } from './types';
 import { Navbar } from './components/Navbar';
 import { HomeSummaryBar } from './components/HomeSummaryBar';
 import { HomeBannerSection } from './components/HomeBannerSection';
@@ -15,8 +15,8 @@ import { ProductDetailModal } from './components/ProductDetailModal';
 import { MyOrderPage } from './components/MyOrderPage';
 import { PaymentPage } from './components/PaymentPage';
 import { ProfilePage } from './components/ProfilePage';
-import { CartDrawer } from './components/CartDrawer';
 import { InvoiceModal } from './components/InvoiceModal';
+import { OrderDetailsPage } from './components/OrderDetailsPage';
 import { AdminPanel } from './components/AdminPanel';
 import { TyreLogo } from './components/TyreLogo';
 import { TyreLoader } from './components/TyreLoader';
@@ -143,8 +143,6 @@ export default function App() {
     safeSetLocalStorage('magadh_coupons', coupons);
   }, [coupons]);
 
-  const [cart, setCart] = useState<CartItem[]>([]);
-
   const [currentUserEmail, setCurrentUserEmail] = useState<string>('');
   const [currentUser, setCurrentUser] = useState<string>(() => {
     const saved = localStorage.getItem('user_profile');
@@ -264,9 +262,10 @@ export default function App() {
   const isAdmin = checkIsAdmin(currentUser, currentUserEmail);
   const isLoggedIn = Boolean(currentUser || currentUserEmail);
 
-  const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [selectedProductForModal, setSelectedProductForModal] = useState<TyreProduct | null>(null);
   const [selectedOrderForInvoice, setSelectedOrderForInvoice] = useState<Order | null>(null);
+  const [checkoutOrderProduct, setCheckoutOrderProduct] = useState<{ product: TyreProduct; quantity: number } | null>(null);
+  const [orderToPay, setOrderToPay] = useState<Order | null>(null);
 
   // Filters State for Catalogue
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -285,65 +284,43 @@ export default function App() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Cart Management
-  const handleAddToCart = (product: TyreProduct, quantity: number = 1) => {
-    setCart(prevCart => {
-      const existing = prevCart.find(item => item.product.id === product.id);
-      if (existing) {
-        return prevCart.map(item =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
-      } else {
-        return [...prevCart, { product, quantity }];
-      }
-    });
-
-    showToast(`Added ${quantity}x ${product.name} to Cart`);
-  };
-
-  const handleUpdateCartQuantity = (productId: string, delta: number, parentProductId?: string) => {
-    setCart(prevCart =>
-      prevCart
-        .map(item => {
-          if (item.product.id === productId && item.parentProductId === parentProductId) {
-            const newQty = item.quantity + delta;
-            return newQty > 0 ? { ...item, quantity: newQty } : null;
-          }
-          return item;
-        })
-        .filter(Boolean) as CartItem[]
-    );
-  };
-
-  const handleRemoveCartItem = (productId: string, parentProductId?: string) => {
-    setCart(prevCart => prevCart.filter(item => !(item.product.id === productId && item.parentProductId === parentProductId)));
-  };
-
-  // Place Order Action
-  const handlePlaceOrder = (orderData: any) => {
-    if (activeTab === 'admin' || (isAdmin && orderData?.fromAdmin)) {
-      showToast('Order creation is disabled in the Admin Console. Orders must be placed via the customer portal.');
+  // Open Order Details Page on Buy Now Click
+  const handleInstantBuy = (product: TyreProduct, quantity: number = 1) => {
+    if (activeTab === 'admin' || isAdmin) {
+      showToast('Order creation is disabled in the Admin Console.');
       return;
     }
 
-    const subtotal = cart.reduce((sum, item) => {
-      const { bundleUnitPrice } = getCartItemPrices(item);
-      return sum + bundleUnitPrice * item.quantity;
-    }, 0);
+    setCheckoutOrderProduct({ product, quantity });
+    setSelectedProductForModal(null);
+    setActiveTab('order-details');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-    let discount = 0;
-    if (orderData.couponCode) {
-      const coupon = coupons.find(c => c.code.toUpperCase() === orderData.couponCode?.toUpperCase() && c.active);
-      if (coupon && subtotal >= coupon.minOrderValue) {
-        discount = Math.min((subtotal * coupon.discountPercent) / 100, coupon.maxDiscount);
-      }
-    }
-
-    const discountedSubtotal = subtotal - discount;
-    const totalAmount = Math.round(discountedSubtotal * 100) / 100;
-    const gstAmount = Math.round((totalAmount - (totalAmount / 1.18)) * 100) / 100; // 18% GST included
+  // Proceed & Confirm Order from Order Details Page
+  const handleProceedConfirmedOrder = (orderData: {
+    customerName: string;
+    customerEmail: string;
+    phone: string;
+    companyName?: string;
+    gstNumber?: string;
+    shippingAddress: {
+      street: string;
+      city: string;
+      state: string;
+      pincode: string;
+    };
+    paymentMethod: 'UPI' | 'Card' | 'NetBanking' | 'EMI' | 'Pay on Delivery';
+    quantity: number;
+    couponCode?: string;
+    discount: number;
+    subtotal: number;
+    gstAmount: number;
+    totalAmount: number;
+  }) => {
+    if (!checkoutOrderProduct) return;
+    const { product } = checkoutOrderProduct;
+    const quantity = orderData.quantity;
 
     const orderNumber = `MT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
     const trackingNumber = `MGT-EXPRESS-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -352,29 +329,24 @@ export default function App() {
       id: `ord-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`,
       orderNumber,
       date: new Date().toISOString().replace('T', ' ').substring(0, 16),
-      customerName: orderData.customerName || 'Valued Customer',
-      customerEmail: orderData.customerEmail || 'customer@magadhtyres.com',
-      phone: orderData.phone || '+91 98351 22345',
-      companyName: orderData.companyName,
-      gstNumber: orderData.gstNumber,
-      items: [...cart],
-      subtotal,
-      discount,
-      gstAmount,
-      totalAmount,
-      paymentMethod: orderData.paymentMethod || 'UPI',
-      paymentStatus: 'Paid',
+      customerName: orderData.customerName || currentCustomerAccount?.customerName || currentUser || 'Valued Customer',
+      customerEmail: orderData.customerEmail || currentCustomerAccount?.email || currentUserEmail || 'customer@magadhtyres.com',
+      phone: orderData.phone || currentCustomerAccount?.phone || '+91 98351 22345',
+      companyName: orderData.companyName || currentCustomerAccount?.companyName,
+      gstNumber: orderData.gstNumber || currentCustomerAccount?.gstNumber,
+      items: [{ product, quantity }],
+      subtotal: orderData.subtotal,
+      discount: orderData.discount || 0,
+      gstAmount: orderData.gstAmount,
+      totalAmount: orderData.totalAmount,
+      paymentMethod: orderData.paymentMethod,
+      paymentStatus: 'Pending',
       orderStatus: 'Confirmed',
-      shippingAddress: orderData.shippingAddress || {
-        street: 'Main Road',
-        city: 'Patna',
-        state: 'Bihar',
-        pincode: '800001'
-      },
+      shippingAddress: orderData.shippingAddress,
       trackingNumber,
       estimatedDelivery: new Date(Date.now() + 3 * 24 * 3600 * 1000).toISOString().split('T')[0],
       timeline: [
-        { status: 'Order Placed', time: 'Just Now', done: true, location: 'Magadh Web Portal' },
+        { status: 'Order Placed', time: 'Just Now', done: true, location: 'Magadh Direct Checkout' },
         { status: 'Confirmed', time: 'Just Now', done: true, location: 'Magadh Payment Gateway' },
         { status: 'Warehouse Processing', time: 'Pending', done: false, location: 'Patna Central Hub' },
         { status: 'Dispatched', time: 'Pending', done: false },
@@ -384,37 +356,24 @@ export default function App() {
     };
 
     setOrders(prev => [newOrder, ...prev]);
-    setCart([]);
 
     // Persist order to Supabase database
     saveOrderToSupabase(newOrder).catch(err => {
       console.warn('Background Supabase order save exception:', err);
     });
 
-    // Update product inventory locally across all cart items and sync to Supabase
+    // Update product inventory locally and sync to Supabase
+    const newStock = Math.max(0, (product.stock || 0) - quantity);
+    updateProductFieldInSupabase(product.id, { stock: newStock }).catch(err => console.warn(err));
     setProducts(prevProducts =>
-      prevProducts.map(p => {
-        const totalOrderedQty = cart
-          .filter(ci => ci.product.id === p.id)
-          .reduce((sum, ci) => sum + ci.quantity, 0);
-
-        if (totalOrderedQty > 0) {
-          const newStock = Math.max(0, p.stock - totalOrderedQty);
-          updateProductFieldInSupabase(p.id, { stock: newStock }).catch(err => console.warn(err));
-          return { ...p, stock: newStock };
-        }
-        return p;
-      })
+      prevProducts.map(p => p.id === product.id ? { ...p, stock: newStock } : p)
     );
 
-    setSelectedOrderForInvoice(newOrder);
-    showToast(`Order #${newOrder.orderNumber} placed successfully! Tax Invoice Generated.`);
-  };
-
-  // Instant Buy Trigger
-  const handleInstantBuy = (product: TyreProduct, quantity: number) => {
-    handleAddToCart(product, quantity);
-    setIsCartOpen(true);
+    setCheckoutOrderProduct(null);
+    setOrderToPay(newOrder);
+    setActiveTab('quick-payments');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showToast(`Order #${newOrder.orderNumber} initiated! Please select payment method to complete payment.`);
   };
 
   // Admin Add/Update Product
@@ -618,8 +577,6 @@ export default function App() {
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        cart={cart}
-        setIsCartOpen={setIsCartOpen}
         isAdmin={isAdmin}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
@@ -627,7 +584,6 @@ export default function App() {
         currentUser={currentUser}
         allProducts={visibleProducts}
         onSelectProduct={(product) => setSelectedProductForModal(product)}
-        onAddToCart={handleAddToCart}
         onSelectCategory={(category) => setSelectedCategory(category)}
       />
 
@@ -685,7 +641,6 @@ export default function App() {
               products={visibleProducts}
               currentCustomerAccount={currentCustomerAccount}
               isAdmin={isAdmin}
-              onAddToCart={handleAddToCart}
               onInstantBuy={handleInstantBuy}
               onViewDetails={(product) => setSelectedProductForModal(product)}
               onExploreCatalogue={(category) => {
@@ -752,7 +707,6 @@ export default function App() {
                       product={product}
                       currentCustomer={currentCustomerAccount}
                       isAdmin={isAdmin}
-                      onAddToCart={handleAddToCart}
                       onInstantBuy={handleInstantBuy}
                       onViewDetails={(prod) => setSelectedProductForModal(prod)}
                       onUpdateImage={handleUpdateProductImage}
@@ -789,13 +743,28 @@ export default function App() {
           );
         })()}
 
+        {/* TAB: ORDER DETAILS & VERIFICATION PAGE */}
+        {activeTab === 'order-details' && checkoutOrderProduct && (
+          <OrderDetailsPage
+            product={checkoutOrderProduct.product}
+            initialQuantity={checkoutOrderProduct.quantity}
+            currentCustomer={currentCustomerAccount}
+            currentUser={currentUser}
+            currentUserEmail={currentUserEmail}
+            coupons={coupons}
+            onProceedOrder={handleProceedConfirmedOrder}
+            onBack={() => {
+              setActiveTab('catalogue');
+            }}
+          />
+        )}
+
         {/* TAB 3: QUICK ORDER / MY ORDERS PAGE */}
         {activeTab === 'quick-order' && (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <MyOrderPage
               products={visibleProducts}
               orders={orders}
-              onPlaceQuickOrder={handlePlaceOrder}
               onViewInvoice={setSelectedOrderForInvoice}
               onTrackOrder={() => setActiveTab('quick-order')}
               setActiveTab={setActiveTab}
@@ -809,14 +778,49 @@ export default function App() {
             <PaymentPage
               payments={payments}
               orders={orders}
+              incomingOrderToPay={orderToPay}
               onProcessPayment={(newPayment) => {
                 setPayments(prev => [newPayment, ...prev]);
-                setOrders(prev => prev.map(o => 
-                  o.orderNumber === newPayment.orderId || o.id === newPayment.orderId 
-                    ? { ...o, paymentStatus: 'Paid' } 
-                    : o
-                ));
+                setOrders(prev => prev.map(o => {
+                  if (o.orderNumber === newPayment.orderId || o.id === newPayment.orderId) {
+                    const updatedOrder: Order = {
+                      ...o,
+                      paymentStatus: 'Paid',
+                      timeline: o.timeline.map(t =>
+                        t.status === 'Confirmed' || t.status === 'Order Placed' ? { ...t, done: true } : t
+                      )
+                    };
+                    saveOrderToSupabase(updatedOrder).catch(err => console.warn(err));
+                    return updatedOrder;
+                  }
+                  return o;
+                }));
                 showToast(`Payment for #${newPayment.orderId} recorded successfully!`);
+              }}
+              onPaymentSuccess={(paidOrder) => {
+                setOrderToPay(null);
+                setActiveTab('quick-order');
+                showToast(`Payment successful! Order #${paidOrder.orderNumber} confirmed.`);
+              }}
+              onCancelPayment={(cancelledOrder) => {
+                const targetOrder = cancelledOrder || orderToPay;
+                if (targetOrder && targetOrder.items && targetOrder.items.length > 0) {
+                  setCheckoutOrderProduct({
+                    product: targetOrder.items[0].product,
+                    quantity: targetOrder.items[0].quantity
+                  });
+                  // Remove the unconfirmed pending order
+                  setOrders(prev => prev.filter(o => o.id !== targetOrder.id && o.orderNumber !== targetOrder.orderNumber));
+                } else if (!checkoutOrderProduct && visibleProducts.length > 0) {
+                  setCheckoutOrderProduct({
+                    product: visibleProducts[0],
+                    quantity: 1
+                  });
+                }
+                setOrderToPay(null);
+                setActiveTab('order-details');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                showToast('Payment cancelled. Returned to order details.');
               }}
               onViewInvoice={setSelectedOrderForInvoice}
             />
@@ -871,7 +875,6 @@ export default function App() {
         currentCustomer={currentCustomerAccount}
         isAdmin={isAdmin}
         onClose={() => setSelectedProductForModal(null)}
-        onAddToCart={handleAddToCart}
         onInstantBuy={handleInstantBuy}
         onUpdateImage={handleUpdateProductImage}
       />
@@ -880,45 +883,11 @@ export default function App() {
         order={selectedOrderForInvoice}
         onClose={() => {
           setSelectedOrderForInvoice(null);
-          setIsCartOpen(false);
           if (activeTab !== 'admin') {
             setActiveTab('quick-order');
           }
         }}
       />
-
-      {(() => {
-        const userOrders = orders.filter((o) => {
-          if (isAdmin) return true;
-          if (currentUserEmail && o.customerEmail?.toLowerCase() === currentUserEmail.toLowerCase()) return true;
-          if (currentUser && o.customerName?.toLowerCase().includes(currentUser.toLowerCase())) return true;
-          return true;
-        });
-        const userPayments = payments.filter((p) => {
-          if (isAdmin) return true;
-          if (currentUser && p.customerName?.toLowerCase().includes(currentUser.toLowerCase())) return true;
-          return true;
-        });
-        const currentFinancials = calculateCustomerFinancials(
-          userOrders,
-          userPayments,
-          currentCustomerAccount,
-          isAdmin
-        );
-
-        return (
-          <CartDrawer
-            isOpen={isCartOpen}
-            onClose={() => setIsCartOpen(false)}
-            cart={cart}
-            onUpdateQuantity={handleUpdateCartQuantity}
-            onRemoveItem={handleRemoveCartItem}
-            onPlaceOrder={handlePlaceOrder}
-            canPlaceCreditOrder={currentFinancials.canPlaceCreditOrder}
-            creditScore={currentFinancials.creditScore}
-          />
-        );
-      })()}
     </div>
   );
 }
