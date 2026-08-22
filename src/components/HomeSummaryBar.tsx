@@ -59,6 +59,32 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
     isAdmin
   );
 
+  // Formatted values
+  const upcomingDueVal = financials.upcomingDueAmount === 0 ? '₹0' : formatCurrency(financials.upcomingDueAmount);
+  const availableLimitVal = '₹0';
+  const invoiceAmountDueVal = '₹0';
+  const creditScoreVal = '3';
+
+  // Helper to dynamically right-align and scale large numbers if they grow too large for the quadrant
+  const getNumberStyle = (text: string) => {
+    const isLarge = text.length > 7;
+    const isVeryLarge = text.length > 10;
+    
+    return {
+      containerClass: isLarge ? 'justify-end pr-1 text-right' : 'justify-center text-center',
+      textClass: isVeryLarge
+        ? 'text-right text-[13px] sm:text-[14px] font-black'
+        : isLarge
+        ? 'text-right text-[14px] sm:text-[16px] font-black'
+        : 'text-center text-[16px] sm:text-[18px] font-black'
+    };
+  };
+
+  const upcomingDueStyle = getNumberStyle(upcomingDueVal);
+  const availableLimitStyle = getNumberStyle(availableLimitVal);
+  const invoiceAmountDueStyle = getNumberStyle(invoiceAmountDueVal);
+  const creditScoreStyle = getNumberStyle(creditScoreVal);
+
   return (
     <section id="home-static-overview-section" className="w-full max-w-[285px] sm:max-w-[310px] mx-auto px-2 py-1 font-sans space-y-1.5">
       {/* Top Header */}
@@ -98,15 +124,15 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="available-limit-card"
           onClick={() => setActiveTab('quick-payments')}
-          className="border-r border-b border-gray-200/90 p-2.5 sm:p-3 flex flex-col justify-between items-start min-h-[72px] sm:min-h-[78px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none"
+          className="border-r border-b border-gray-200/90 p-2.5 sm:p-3 flex flex-col justify-between min-h-[72px] sm:min-h-[78px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0"
         >
-          <span className="text-[11px] sm:text-[12px] font-normal text-[#555d6e] leading-tight">
+          <span className="text-[11px] sm:text-[12px] font-normal text-[#555d6e] leading-tight text-center w-full truncate">
             Upcoming Due
           </span>
 
-          <div className="w-full mt-1">
-            <p className="text-[16px] sm:text-[18px] font-black text-slate-950 tracking-tight leading-tight">
-              {financials.upcomingDueAmount === 0 ? '₹0' : formatCurrency(financials.upcomingDueAmount)}
+          <div className={`w-full mt-1 flex items-center min-w-0 ${upcomingDueStyle.containerClass}`}>
+            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full ${upcomingDueStyle.textClass}`}>
+              {upcomingDueVal}
             </p>
           </div>
         </div>
@@ -115,15 +141,15 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="hold-cca-card"
           onClick={() => setActiveTab('account')}
-          className="border-b border-gray-200/90 p-2.5 sm:p-3 flex flex-col justify-between items-start min-h-[72px] sm:min-h-[78px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none"
+          className="border-b border-gray-200/90 p-2.5 sm:p-3 flex flex-col justify-between min-h-[72px] sm:min-h-[78px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0"
         >
-          <span className="text-[11px] sm:text-[12px] font-normal text-[#555d6e] leading-tight">
+          <span className="text-[11px] sm:text-[12px] font-normal text-[#555d6e] leading-tight text-center w-full truncate">
             Available Limit
           </span>
 
-          <div className="w-full mt-1">
-            <p className="text-[16px] sm:text-[18px] font-black text-slate-950 tracking-tight leading-tight">
-              ₹0
+          <div className={`w-full mt-1 flex items-center min-w-0 ${availableLimitStyle.containerClass}`}>
+            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full ${availableLimitStyle.textClass}`}>
+              {availableLimitVal}
             </p>
           </div>
         </div>
@@ -132,15 +158,15 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="total-cca-card"
           onClick={() => setActiveTab('quick-payments')}
-          className="border-r border-gray-200/90 p-2.5 sm:p-3 flex flex-col justify-between items-start min-h-[72px] sm:min-h-[78px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none"
+          className="border-r border-gray-200/90 p-2.5 sm:p-3 flex flex-col justify-between min-h-[72px] sm:min-h-[78px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0"
         >
-          <span className="text-[11px] sm:text-[12px] font-normal text-[#555d6e] leading-tight">
+          <span className="text-[11px] sm:text-[12px] font-normal text-[#555d6e] leading-tight text-center w-full truncate">
             Invoice Amount Due
           </span>
 
-          <div className="w-full mt-1">
-            <p className="text-[16px] sm:text-[18px] font-black text-slate-950 tracking-tight leading-tight">
-              ₹0
+          <div className={`w-full mt-1 flex items-center min-w-0 ${invoiceAmountDueStyle.containerClass}`}>
+            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full ${invoiceAmountDueStyle.textClass}`}>
+              {invoiceAmountDueVal}
             </p>
           </div>
         </div>
@@ -149,15 +175,15 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="invoice-amount-due-card"
           onClick={() => setActiveTab('account')}
-          className="p-2.5 sm:p-3 flex flex-col justify-between items-start min-h-[72px] sm:min-h-[78px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none"
+          className="p-2.5 sm:p-3 flex flex-col justify-between min-h-[72px] sm:min-h-[78px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0"
         >
-          <span className="text-[11px] sm:text-[12px] font-normal text-[#555d6e] leading-tight">
+          <span className="text-[11px] sm:text-[12px] font-normal text-[#555d6e] leading-tight text-center w-full truncate">
             Credit Score
           </span>
 
-          <div className="w-full mt-1">
-            <p className="text-center text-[16px] sm:text-[18px] font-black text-[#6e3ff5] tracking-tight leading-tight">
-              3
+          <div className={`w-full mt-1 flex items-center min-w-0 ${creditScoreStyle.containerClass}`}>
+            <p className={`text-[#6e3ff5] tracking-tight leading-tight truncate max-w-full ${creditScoreStyle.textClass}`}>
+              {creditScoreVal}
             </p>
           </div>
         </div>

@@ -128,28 +128,28 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className={`sticky top-0 z-[100010] backdrop-blur-xl bg-white/95 transition-all duration-200 ${
+    <header className={`sticky top-0 z-[100010] backdrop-blur-xl bg-white/95 transition-all duration-200 w-full max-w-full overflow-x-clip ${
       isScrolled
         ? 'border-b border-slate-200/90 shadow-sm'
         : 'border-b border-slate-100/80 shadow-2xs'
     }`}>
       {/* Top Announcement Bar */}
-      <div className="bg-slate-100 text-slate-700 border-b border-slate-200 text-[10px] sm:text-xs py-1 px-2 sm:px-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-1.5 sm:space-x-3">
-            <span className="flex items-center text-slate-800 font-semibold">
-              <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-0.5 sm:mr-1 text-emerald-600 flex-shrink-0" />
-              100% Authorised Dealer Warranty | GST-Ready Business Partner
+      <div className="bg-slate-100 text-slate-700 border-b border-slate-200 text-[10px] sm:text-xs py-1 px-2.5 sm:px-4 w-full overflow-hidden">
+        <div className="max-w-7xl mx-auto flex justify-between items-center gap-2 min-w-0">
+          <div className="flex items-center space-x-1.5 sm:space-x-3 min-w-0 flex-1 overflow-hidden">
+            <span className="flex items-center text-slate-800 font-semibold truncate text-[10px] sm:text-xs">
+              <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 text-emerald-600 flex-shrink-0" />
+              <span className="truncate">100% Authorised Dealer Warranty | GST-Ready Partner</span>
             </span>
             <span className="hidden md:inline text-slate-300">|</span>
-            <span className="hidden md:inline text-slate-500 font-medium">
-              Certified quality, trusted wholesale supply
+            <span className="hidden md:inline text-slate-500 font-medium truncate">
+              Certified quality wholesale supply
             </span>
           </div>
-          <div className="flex items-center space-x-2 sm:space-x-3 text-[10px] sm:text-xs">
+          <div className="flex items-center text-[10px] sm:text-xs shrink-0 whitespace-nowrap">
             <a href="tel:6371231522" className="text-slate-700 hover:text-slate-950 font-bold flex items-center transition-colors">
-              <PhoneCall className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1 text-slate-600 flex-shrink-0" />
-              Support: 6371-23-1522
+              <PhoneCall className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1 text-slate-600 flex-shrink-0" />
+              <span>Support: 6371-23-1522</span>
             </a>
           </div>
         </div>

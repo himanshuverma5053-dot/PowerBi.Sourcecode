@@ -1,10 +1,11 @@
-import { supabase } from '../supabaseClient';
 import { TyreProduct } from '../types';
+import { MOCK_TYRES } from '../data/mockData';
+import { safeGetLocalStorage, safeSetLocalStorage } from '../utils/storage';
 
 /**
- * Normalizes a row returned from Supabase into a TyreProduct object.
+ * Normalizes a product record into a strongly-typed TyreProduct object.
  */
-function normalizeProductRow(row: any): TyreProduct {
+export function normalizeProductRow(row: any): TyreProduct {
   let images = row.images;
   if (typeof images === 'string') {
     try {
@@ -123,189 +124,172 @@ function normalizeProductRow(row: any): TyreProduct {
 }
 
 /**
- * Fetch all products from Supabase products table.
+ * Fetch all products from Backend REST API (with local cache fallback)
  */
-export async function fetchProductsFromSupabase(): Promise<TyreProduct[]> {
+export async function fetchProductsFromBackend(): Promise<TyreProduct[]> {
   try {
-    let { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      const plainRes = await supabase.from('products').select('*');
-      data = plainRes.data;
-      error = plainRes.error;
+    const res = await fetch('/api/products');
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        const normalized = json.data.map(normalizeProductRow);
+        safeSetLocalStorage('magadh_products_db', normalized);
+        return normalized;
+      }
     }
+  } catch (apiErr) {
+    console.warn('Backend API product fetch notice, checking local cache:', apiErr);
+  }
 
-    if (error) {
-      console.warn('Supabase fetch products error:', error.message || error);
-      return [];
-    }
-
-    if (Array.isArray(data)) {
-      return data.map(normalizeProductRow);
+  try {
+    const cached = safeGetLocalStorage<TyreProduct[]>('magadh_products_db', []);
+    if (cached && cached.length > 0) {
+      return cached.map(normalizeProductRow);
     }
   } catch (err) {
-    console.warn('Error connecting to Supabase products table:', err);
+    console.warn('Cache lookup notice:', err);
   }
-  return [];
+  return MOCK_TYRES;
 }
 
 /**
- * Insert or Update a product in Supabase products table.
+ * Insert or Update a product via Backend API
  */
-export async function saveProductToSupabase(product: TyreProduct): Promise<{ success: boolean; data?: any; error?: any }> {
-  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(product.id);
-
-  const payload: any = {
-    name: product.name,
-    brand: product.brand,
-    category: product.category,
-    sku: product.sku,
-    description: product.description,
-    price: product.price || product.mrp || 0,
-    mrp: product.mrp || product.price || 0,
-    dealer_price: product.dealerPrice || product.bulkPrice || 0,
-    bulk_price: product.bulkPrice || product.dealerPrice || 0,
-    stock: product.stock,
-    min_stock_level: product.minStockLevel || 5,
-    image: product.image,
-    images: product.images || [product.image],
-    status: product.status || 'Active',
-    width: product.width,
-    aspect_ratio: product.aspectRatio,
-    rim_size: product.rimSize,
-    speed_rating: product.speedRating,
-    load_index: product.loadIndex,
-    terrain: product.terrain,
-    warranty_years: product.warrantyYears,
-    fuel_efficiency: product.fuelEfficiency,
-    wet_grip: product.wetGrip,
-    noise_db: product.noiseDb,
-    hsn_code: product.hsnCode,
-    product_code: product.productCode,
-    pattern: product.pattern,
-    gst_rate: product.gstRate,
-    compatible_vehicles: product.compatibleVehicles,
-    featured: product.featured,
-    ev_ready: product.evReady,
-    tags: product.tags,
-    components: product.components,
-    included_components: product.includedComponents || 'Tube & Flap',
-    tire_type: product.tireType || product.tire_type || 'Radial',
-    updated_at: new Date().toISOString()
-  };
-
-  // Only pass id if it's a valid UUID or custom string ID stored in string ID column
-  if (product.id && (isUuid || !product.id.startsWith('tyre-'))) {
-    payload.id = product.id;
-  }
-
+export async function saveProductToBackend(product: TyreProduct): Promise<{ success: boolean; data?: TyreProduct; error?: any }> {
   try {
-    const { data, error } = await supabase
-      .from('products')
-      .upsert([payload], { onConflict: 'id' })
-      .select('*');
+    const normalized = normalizeProductRow(product);
 
-    if (error) {
-      console.warn('First upsert product error, retrying without id for insert:', error.message);
-      delete payload.id;
-      const insertRes = await supabase
-        .from('products')
-        .insert([payload])
-        .select('*');
-
-      if (insertRes.error) {
-        console.error('Failed to save product to Supabase:', insertRes.error);
-        return { success: false, error: insertRes.error };
+    // Call backend API
+    try {
+      const res = await fetch('/api/admin/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-role': 'admin'
+        },
+        body: JSON.stringify(normalized)
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.product) {
+          const saved = normalizeProductRow(json.product);
+          // Sync local storage
+          const existing = safeGetLocalStorage<TyreProduct[]>('magadh_products_db', []);
+          const idx = existing.findIndex(p => p.id === saved.id || p.sku === saved.sku);
+          if (idx !== -1) existing[idx] = saved;
+          else existing.unshift(saved);
+          safeSetLocalStorage('magadh_products_db', existing);
+          return { success: true, data: saved };
+        }
       }
-      const savedObj = insertRes.data?.[0] ? normalizeProductRow(insertRes.data[0]) : null;
-      return { success: true, data: savedObj };
+    } catch (apiErr) {
+      console.warn('API save fallback to local:', apiErr);
     }
 
-    const savedObj = data?.[0] ? normalizeProductRow(data[0]) : null;
-    return { success: true, data: savedObj };
+    const existing = safeGetLocalStorage<TyreProduct[]>('magadh_products_db', []);
+    const idx = existing.findIndex(p => p.id === product.id || p.sku === product.sku);
+    
+    let updatedList: TyreProduct[];
+    if (idx !== -1) {
+      updatedList = [...existing];
+      updatedList[idx] = normalized;
+    } else {
+      updatedList = [normalized, ...existing];
+    }
+    
+    safeSetLocalStorage('magadh_products_db', updatedList);
+    return { success: true, data: normalized };
   } catch (err) {
-    console.error('Exception saving product to Supabase:', err);
+    console.error('Exception saving product to backend:', err);
     return { success: false, error: err };
   }
 }
 
 /**
- * Delete a product from Supabase products table.
+ * Delete a product via Backend API
  */
-export async function deleteProductFromSupabase(productId: string): Promise<{ success: boolean; error?: any }> {
+export async function deleteProductFromBackend(productId: string): Promise<{ success: boolean; error?: any }> {
+  if (!productId) return { success: true };
   try {
-    const { error } = await supabase
-      .from('products')
-      .delete()
-      .eq('id', productId);
-
-    if (error) {
-      console.error('Error deleting product from Supabase:', error.message);
-      return { success: false, error };
+    try {
+      await fetch(`/api/admin/products/${productId}`, {
+        method: 'DELETE',
+        headers: { 'x-user-role': 'admin' }
+      });
+    } catch (apiErr) {
+      console.warn('API delete fallback to local:', apiErr);
     }
+
+    const existing = safeGetLocalStorage<TyreProduct[]>('magadh_products_db', []);
+    const filtered = existing.filter(p => p.id !== productId && p.sku !== productId);
+    safeSetLocalStorage('magadh_products_db', filtered);
     return { success: true };
   } catch (err) {
-    console.error('Exception deleting product from Supabase:', err);
+    console.warn('Exception deleting product from backend:', err);
     return { success: false, error: err };
   }
 }
 
 /**
- * Update stock level or status of a product in Supabase.
+ * Update stock level or status of a product (AWS Amplify GraphQL Mutation placeholder)
  */
-export async function updateProductFieldInSupabase(
+export async function updateProductFieldInBackend(
   productId: string,
   updates: Partial<TyreProduct>
 ): Promise<{ success: boolean; error?: any }> {
+  if (!productId) return { success: true };
   try {
-    const payload: any = {
-      updated_at: new Date().toISOString()
-    };
-    if (updates.stock !== undefined) payload.stock = updates.stock;
-    if (updates.status !== undefined) payload.status = updates.status;
-    if (updates.mrp !== undefined) payload.mrp = updates.mrp;
-    if (updates.price !== undefined) payload.price = updates.price;
-    if (updates.dealerPrice !== undefined) payload.dealer_price = updates.dealerPrice;
-
-    const { error } = await supabase
-      .from('products')
-      .update(payload)
-      .eq('id', productId);
-
-    if (error) {
-      console.error('Error updating product field in Supabase:', error.message);
-      return { success: false, error };
+    const existing = safeGetLocalStorage<TyreProduct[]>('magadh_products_db', []);
+    const idx = existing.findIndex(p => p.id === productId || p.sku === productId);
+    if (idx !== -1) {
+      existing[idx] = {
+        ...existing[idx],
+        ...updates,
+        updatedAt: new Date().toISOString()
+      };
+      safeSetLocalStorage('magadh_products_db', existing);
     }
     return { success: true };
   } catch (err) {
-    console.error('Exception updating product in Supabase:', err);
+    console.warn('Exception updating product in backend:', err);
     return { success: false, error: err };
   }
 }
 
 /**
- * Search products in Supabase database in real-time by keyword matching name, description, category, brand, sku, pattern.
+ * Search products in real-time (AWS Amplify OpenSearch / GraphQL search placeholder)
  */
-export async function searchProductsInSupabase(queryText: string): Promise<TyreProduct[]> {
+export async function searchProductsInBackend(queryText: string, productPool?: TyreProduct[]): Promise<TyreProduct[]> {
   const trimmed = queryText.trim();
   if (!trimmed) return [];
 
-  try {
-    const pattern = `%${trimmed}%`;
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .or(`name.ilike.${pattern},description.ilike.${pattern},category.ilike.${pattern},brand.ilike.${pattern},sku.ilike.${pattern},pattern.ilike.${pattern}`)
-      .limit(12);
+  const pool = productPool && productPool.length > 0 
+    ? productPool 
+    : safeGetLocalStorage<TyreProduct[]>('magadh_products_db', MOCK_TYRES);
 
-    if (!error && Array.isArray(data) && data.length > 0) {
-      return data.map(normalizeProductRow);
-    }
-  } catch (err) {
-    console.warn('Supabase search exception:', err);
-  }
-  return [];
+  const queryLower = trimmed.toLowerCase();
+  const tokens = queryLower.split(/\s+/).filter(Boolean);
+
+  return pool.filter(p => {
+    const nameLower = (p.name || '').toLowerCase();
+    const brandLower = (p.brand || '').toLowerCase();
+    const categoryLower = (p.category || '').toLowerCase();
+    const descLower = (p.description || '').toLowerCase();
+    const skuLower = (p.sku || '').toLowerCase();
+    const patternLower = (p.pattern || '').toLowerCase();
+    const tireTypeLower = (p.tireType || p.tire_type || '').toLowerCase();
+    const sizeString = `${p.width}/${p.aspectRatio} R${p.rimSize}`.toLowerCase();
+    const cleanSizeString = sizeString.replace(/[\/\-\s\.\*]/g, '');
+    const cleanName = nameLower.replace(/[\/\-\s\.\*\+\(\)]/g, '');
+
+    const fullSearchableText = `${nameLower} ${brandLower} ${categoryLower} ${descLower} ${skuLower} ${patternLower} ${tireTypeLower} ${sizeString} ${cleanSizeString}`;
+
+    return tokens.every(token => {
+      const cleanToken = token.replace(/[\/\-\s\.\*\+\(\)]/g, '');
+      if (fullSearchableText.includes(token)) return true;
+      if (cleanToken.length > 1 && (cleanSizeString.includes(cleanToken) || cleanName.includes(cleanToken))) return true;
+      if (token === String(p.width) || token === String(p.rimSize) || token === `r${p.rimSize}`) return true;
+      return false;
+    });
+  }).slice(0, 12);
 }

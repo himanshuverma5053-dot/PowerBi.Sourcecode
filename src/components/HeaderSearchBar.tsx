@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Loader2, X, Tag, Lightbulb, Disc, AlertCircle, ExternalLink, ArrowRight, ChevronRight } from 'lucide-react';
 import { TyreProduct } from '../types';
-import { searchProductsInSupabase } from '../utils/supabaseProducts';
+import { searchProductsInBackend } from '../services/productService';
 import { MOCK_TYRES } from '../data/mockData';
 
 interface HeaderSearchBarProps {
@@ -116,8 +116,8 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
 
     const timer = setTimeout(async () => {
       try {
-        // 1. Query Supabase database in real time
-        const supabaseResults = await searchProductsInSupabase(trimmed);
+        // 1. Query product database in real time
+        const backendResults = await searchProductsInBackend(trimmed, activeProductPool);
 
         // 2. Strict token-based customer requirement matching
         const queryLower = trimmed.toLowerCase();
@@ -156,7 +156,7 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
 
         // 3. Filter and deduplicate combined results
         const combinedMap = new Map<string, TyreProduct>();
-        supabaseResults.forEach((p) => {
+        backendResults.forEach((p) => {
           if (checkMatch(p)) {
             combinedMap.set(p.id, p);
           }

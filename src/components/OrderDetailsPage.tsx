@@ -82,65 +82,11 @@ export const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 animate-fade-in">
-      {/* Top Navigation Bar */}
-      <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-        <button
-          type="button"
-          onClick={onBack}
-          className="inline-flex items-center space-x-2 text-xs sm:text-sm font-bold text-slate-700 hover:text-purple-700 bg-white hover:bg-purple-50 px-4 py-2 rounded-xl border border-slate-200 shadow-2xs transition-colors cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Catalogue</span>
-        </button>
-
-        <div className="flex items-center space-x-2">
-          <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-purple-100 text-[#8a14d4] border border-purple-200">
-            {product.brand} {product.category}
-          </span>
-        </div>
-      </div>
-
-      {/* Main Grid: Left (Product Demonstration Showcase) & Right (Order Summary & Proceed) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
-        {/* Left 8 Columns: Pure Product Demonstration */}
-        <div className="lg:col-span-8 space-y-6">
-          <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-            
-            {/* Header / Title */}
-            <div className="pb-4 border-b border-slate-100">
-              <h1 className="text-2xl sm:text-3xl font-black font-display text-slate-900 tracking-tight">
-                {product.name}
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-500 font-semibold mt-1">
-                Size: <span className="text-slate-900 font-bold">{product.width}/{product.aspectRatio} R{product.rimSize}</span> • Load & Speed: <span className="text-slate-900 font-bold">{product.loadIndex}{product.speedRating}</span>
-              </p>
-            </div>
-
-            {/* Product Visual Demonstration Stage */}
-            <div className="rounded-2xl bg-gradient-to-b from-slate-50 to-slate-100/80 p-8 border border-slate-200 flex items-center justify-center min-h-[360px]">
-              <div className="w-full max-w-md h-72 sm:h-80 flex items-center justify-center">
-                {product.image ? (
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="max-h-full max-w-full object-contain mix-blend-multiply"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                    }}
-                  />
-                ) : (
-                  <Disc3 className="w-24 h-24 text-slate-300 animate-spin-slow" />
-                )}
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        {/* Right 4 Columns: Order Summary & Proceed Action */}
-        <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-md space-y-5">
+      {/* Main Grid: Centered Order Summary & Proceed Form */}
+      <div className="max-w-xl mx-auto w-full">
+        {/* Order Summary & Proceed Action */}
+        <div className="space-y-6">
+          <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-md space-y-5">
             
             <h2 className="text-lg font-black text-slate-900 border-b border-slate-100 pb-3">
               Order Summary
@@ -222,17 +168,17 @@ export const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
               </div>
             </div>
 
-            {/* Action Buttons: Cancel & Proceed Horizontally */}
-            <div className="flex items-center gap-3 pt-2">
+            {/* Action Buttons: Cancel & Proceed Horizontally with Equal Width & Size */}
+            <div className="grid grid-cols-2 gap-3 pt-2">
               <button
                 type="button"
                 id="btn-cancel-order"
                 onClick={onBack}
                 disabled={isSubmitting}
-                className="px-5 py-4 rounded-2xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-bold text-sm sm:text-base transition-all flex items-center justify-center space-x-1.5 border border-slate-200 cursor-pointer disabled:opacity-50"
+                className="w-full py-4 px-4 sm:px-6 rounded-2xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-bold text-sm sm:text-base transition-all flex items-center justify-center space-x-1.5 border border-slate-200 cursor-pointer disabled:opacity-50"
               >
-                <X className="w-4 h-4 text-slate-500" />
-                <span>Cancel</span>
+                <ArrowLeft className="w-4 h-4 text-slate-500 shrink-0" />
+                <span className="truncate">Back to Catalogue</span>
               </button>
 
               <button
@@ -240,7 +186,7 @@ export const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
                 id="btn-proceed-order"
                 onClick={handleProceed}
                 disabled={isSubmitting}
-                className="flex-1 py-4 px-6 rounded-2xl font-black text-base flex items-center justify-center space-x-2 transition-all duration-200 shadow-md cursor-pointer active:scale-[0.98] bg-[#9800ff] hover:bg-[#8500df] active:bg-[#7200be] text-white disabled:opacity-50"
+                className="w-full py-4 px-4 sm:px-6 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center space-x-2 transition-all duration-200 shadow-md cursor-pointer active:scale-[0.98] bg-[#9800ff] hover:bg-[#8500df] active:bg-[#7200be] text-white disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <span className="inline-flex items-center space-x-2">
@@ -249,7 +195,7 @@ export const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
                   </span>
                 ) : (
                   <>
-                    <Zap className="w-5 h-5 fill-white text-white" />
+                    <Zap className="w-5 h-5 fill-white text-white shrink-0" />
                     <span>Proceed</span>
                   </>
                 )}

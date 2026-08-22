@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TyreProduct, Order, PaymentRecord, Coupon, CustomerAccount, ProductComponentConfig } from './types';
 import { Navbar } from './components/Navbar';
 import { HomeSummaryBar } from './components/HomeSummaryBar';
+import { PaymentProgressBar } from './components/PaymentProgressBar';
 import { HomeBannerSection } from './components/HomeBannerSection';
 import { NexusTelemetrySection } from './components/NexusTelemetrySection';
 import { ForYourKnowledgeSection } from './components/ForYourKnowledgeSection';
@@ -22,11 +23,11 @@ import { TyreLogo } from './components/TyreLogo';
 import { TyreLoader } from './components/TyreLoader';
 import { Footer } from './components/Footer';
 import { AuthPage } from './components/AuthPage';
-import { supabase } from './supabaseClient';
+import { amplifyAuth } from './services/amplifyClient';
 import { checkIsAdmin, ADMIN_CONFIG } from './utils/admin';
 import { getCustomerEffectivePrice, isProductVisibleToCustomer } from './utils/customerPricing';
-import { fetchOrdersFromSupabase, saveOrderToSupabase, updateOrderStatusInSupabase } from './utils/supabaseOrders';
-import { fetchProductsFromSupabase, saveProductToSupabase, deleteProductFromSupabase, updateProductFieldInSupabase } from './utils/supabaseProducts';
+import { fetchOrdersFromBackend, saveOrderToBackend, updateOrderStatusInBackend } from './services/orderService';
+import { fetchProductsFromBackend, saveProductToBackend, deleteProductFromBackend, updateProductFieldInBackend } from './services/productService';
 import { isRadialProduct, isNonRadialProduct } from './utils/productCategories';
 import { safeSetLocalStorage, safeGetLocalStorage } from './utils/storage';
 import { calculateCustomerFinancials } from './utils/customerFinancials';
@@ -93,7 +94,7 @@ export default function App() {
     });
   };
 
-  // Shared Master State 1: Products (fetched live from Supabase database or fallback)
+  // Shared Master State 1: Products (fetched live from backend or fallback)
   const [products, setProducts] = useState<TyreProduct[]>(() => {
     const cached = safeGetLocalStorage<TyreProduct[]>('magadh_products', []);
     if (cached && cached.length > 0) {
@@ -170,11 +171,11 @@ export default function App() {
   const loadProductsFromDb = async (showNotification = false) => {
     setIsProductsLoading(true);
     try {
-      const dbProducts = await fetchProductsFromSupabase();
+      const dbProducts = await fetchProductsFromBackend();
       if (dbProducts && Array.isArray(dbProducts) && dbProducts.length > 0) {
         setProducts(dbProducts);
         if (showNotification) {
-          showToast(`Loaded ${dbProducts.length} live products from Supabase`);
+          showToast(`Loaded ${dbProducts.length} live products from catalogue`);
         }
       } else {
         setProducts(MOCK_TYRES);
@@ -197,14 +198,14 @@ export default function App() {
     // Clear any legacy cached demo products
     localStorage.removeItem('magadh_products');
 
-    // Sync products from Supabase database (with local catalog fallback)
+    // Sync products from backend database (with local catalog fallback)
     loadProductsFromDb();
 
-    // Sync initial orders from Supabase database
-    fetchOrdersFromSupabase().then(dbOrders => {
+    // Sync initial orders from backend database
+    fetchOrdersFromBackend().then(dbOrders => {
       if (dbOrders && dbOrders.length > 0) {
         setOrders(prev => {
-          // Merge Supabase orders with any local orders not yet in DB
+          // Merge backend orders with any local orders not yet in DB
           const existingIds = new Set(dbOrders.map(o => o.id));
           const localOnly = prev.filter(o => !existingIds.has(o.id));
           return [...localOnly, ...dbOrders];
@@ -212,7 +213,7 @@ export default function App() {
       }
     });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    amplifyAuth.getSession().then(({ data: { session } }) => {
       if (session?.user?.email) {
         setCurrentUserEmail(session.user.email);
         const userIsAdmin = checkIsAdmin(undefined, session.user.email);
@@ -224,7 +225,7 @@ export default function App() {
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = amplifyAuth.onAuthStateChange((event, session) => {
       if (session?.user?.email) {
         setCurrentUserEmail(session.user.email);
         const userIsAdmin = checkIsAdmin(undefined, session.user.email);
@@ -357,14 +358,14 @@ export default function App() {
 
     setOrders(prev => [newOrder, ...prev]);
 
-    // Persist order to Supabase database
-    saveOrderToSupabase(newOrder).catch(err => {
-      console.warn('Background Supabase order save exception:', err);
+    // Persist order to backend database
+    saveOrderToBackend(newOrder).catch(err => {
+      console.warn('Background backend order save exception:', err);
     });
 
-    // Update product inventory locally and sync to Supabase
+    // Update product inventory locally and sync to backend
     const newStock = Math.max(0, (product.stock || 0) - quantity);
-    updateProductFieldInSupabase(product.id, { stock: newStock }).catch(err => console.warn(err));
+    updateProductFieldInBackend(product.id, { stock: newStock }).catch(err => console.warn(err));
     setProducts(prevProducts =>
       prevProducts.map(p => p.id === product.id ? { ...p, stock: newStock } : p)
     );
@@ -437,13 +438,13 @@ export default function App() {
       return [productToSave, ...prev];
     });
 
-    saveProductToSupabase(productToSave).then(res => {
+    saveProductToBackend(productToSave).then(res => {
       if (res.success && res.data && res.data.id && res.data.id !== productToSave.id) {
-        // Sync generated Supabase UUID to local state
+        // Sync generated backend ID to local state
         setProducts(prev => prev.map(p => p.id === productToSave.id ? res.data : p));
       }
     }).catch(err => {
-      console.warn('Background Supabase product save exception:', err);
+      console.warn('Background product save exception:', err);
     });
 
     showToast(isEdit ? `Product "${productToSave.name}" updated!` : `New Product "${productToSave.name}" created!`);
@@ -451,8 +452,8 @@ export default function App() {
 
   const handleDeleteProduct = (productId: string) => {
     setProducts(prev => prev.filter(p => p.id !== productId));
-    deleteProductFromSupabase(productId).catch(err => {
-      console.warn('Background Supabase product delete exception:', err);
+    deleteProductFromBackend(productId).catch(err => {
+      console.warn('Background product delete exception:', err);
     });
     showToast("Product deleted from catalogue!");
   };
@@ -466,8 +467,8 @@ export default function App() {
       }
       return p;
     }));
-    updateProductFieldInSupabase(productId, { status: targetStatus }).catch(err => {
-      console.warn('Background Supabase product status update exception:', err);
+    updateProductFieldInBackend(productId, { status: targetStatus }).catch(err => {
+      console.warn('Background product status update exception:', err);
     });
     showToast("Product status updated!");
   };
@@ -503,8 +504,8 @@ export default function App() {
     setOrders(prev =>
       prev.map(o => (o.id === orderId || o.orderNumber === orderId ? { ...o, orderStatus: newStatus } : o))
     );
-    updateOrderStatusInSupabase(orderId, newStatus).catch(err => {
-      console.warn('Background Supabase order status update exception:', err);
+    updateOrderStatusInBackend(orderId, newStatus).catch(err => {
+      console.warn('Background order status update exception:', err);
     });
     showToast(`Order status updated to ${newStatus}`);
   };
@@ -563,7 +564,7 @@ export default function App() {
   });
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7] text-slate-900 font-sans flex flex-col selection:bg-slate-900 selection:text-white">
+    <div className="min-h-screen bg-[#F7F7F7] text-slate-900 font-sans flex flex-col selection:bg-slate-900 selection:text-white overflow-x-hidden w-full max-w-full">
       
       {/* Toast Popup Notification */}
       {toastMessage && (
@@ -588,7 +589,7 @@ export default function App() {
       />
 
       {/* Main Dynamic View Content */}
-      <main className="flex-1">
+      <main className="flex-1 w-full max-w-full overflow-x-hidden">
         {(!isLoggedIn && (activeTab === 'account' || activeTab === 'admin' || activeTab === 'signin')) ? (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <AuthPage
@@ -620,7 +621,7 @@ export default function App() {
               setActiveTab={setActiveTab}
               onRefreshData={() => {
                 loadProductsFromDb(false);
-                fetchOrdersFromSupabase().then(dbOrders => {
+                fetchOrdersFromBackend().then(dbOrders => {
                   if (dbOrders && dbOrders.length > 0) {
                     setOrders(prev => {
                       const existingIds = new Set(dbOrders.map(o => o.id));
@@ -630,6 +631,20 @@ export default function App() {
                   }
                   showToast('Live trade metrics synced with database');
                 });
+              }}
+            />
+
+            {/* Horizontal Water Wave Payment Progress Bar */}
+            <PaymentProgressBar
+              orders={orders}
+              payments={payments}
+              currentCustomerAccount={currentCustomerAccount}
+              currentUser={currentUser}
+              currentUserEmail={currentUserEmail}
+              isAdmin={isAdmin}
+              onPayNow={() => {
+                setActiveTab('quick-payments');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
             />
 
@@ -774,57 +789,55 @@ export default function App() {
 
         {/* TAB 4: PAYMENT PAGE */}
         {activeTab === 'quick-payments' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <PaymentPage
-              payments={payments}
-              orders={orders}
-              incomingOrderToPay={orderToPay}
-              onProcessPayment={(newPayment) => {
-                setPayments(prev => [newPayment, ...prev]);
-                setOrders(prev => prev.map(o => {
-                  if (o.orderNumber === newPayment.orderId || o.id === newPayment.orderId) {
-                    const updatedOrder: Order = {
-                      ...o,
-                      paymentStatus: 'Paid',
-                      timeline: o.timeline.map(t =>
-                        t.status === 'Confirmed' || t.status === 'Order Placed' ? { ...t, done: true } : t
-                      )
-                    };
-                    saveOrderToSupabase(updatedOrder).catch(err => console.warn(err));
-                    return updatedOrder;
-                  }
-                  return o;
-                }));
-                showToast(`Payment for #${newPayment.orderId} recorded successfully!`);
-              }}
-              onPaymentSuccess={(paidOrder) => {
-                setOrderToPay(null);
-                setActiveTab('quick-order');
-                showToast(`Payment successful! Order #${paidOrder.orderNumber} confirmed.`);
-              }}
-              onCancelPayment={(cancelledOrder) => {
-                const targetOrder = cancelledOrder || orderToPay;
-                if (targetOrder && targetOrder.items && targetOrder.items.length > 0) {
-                  setCheckoutOrderProduct({
-                    product: targetOrder.items[0].product,
-                    quantity: targetOrder.items[0].quantity
-                  });
-                  // Remove the unconfirmed pending order
-                  setOrders(prev => prev.filter(o => o.id !== targetOrder.id && o.orderNumber !== targetOrder.orderNumber));
-                } else if (!checkoutOrderProduct && visibleProducts.length > 0) {
-                  setCheckoutOrderProduct({
-                    product: visibleProducts[0],
-                    quantity: 1
-                  });
+          <PaymentPage
+            payments={payments}
+            orders={orders}
+            incomingOrderToPay={orderToPay}
+            onProcessPayment={(newPayment) => {
+              setPayments(prev => [newPayment, ...prev]);
+              setOrders(prev => prev.map(o => {
+                if (o.orderNumber === newPayment.orderId || o.id === newPayment.orderId) {
+                  const updatedOrder: Order = {
+                    ...o,
+                    paymentStatus: 'Paid',
+                    timeline: o.timeline.map(t =>
+                      t.status === 'Confirmed' || t.status === 'Order Placed' ? { ...t, done: true } : t
+                    )
+                  };
+                  saveOrderToBackend(updatedOrder).catch(err => console.warn(err));
+                  return updatedOrder;
                 }
-                setOrderToPay(null);
-                setActiveTab('order-details');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                showToast('Payment cancelled. Returned to order details.');
-              }}
-              onViewInvoice={setSelectedOrderForInvoice}
-            />
-          </div>
+                return o;
+              }));
+              showToast(`Payment for #${newPayment.orderId} recorded successfully!`);
+            }}
+            onPaymentSuccess={(paidOrder) => {
+              setOrderToPay(null);
+              setActiveTab('quick-order');
+              showToast(`Payment successful! Order #${paidOrder.orderNumber} confirmed.`);
+            }}
+            onCancelPayment={(cancelledOrder) => {
+              const targetOrder = cancelledOrder || orderToPay;
+              if (targetOrder && targetOrder.items && targetOrder.items.length > 0) {
+                setCheckoutOrderProduct({
+                  product: targetOrder.items[0].product,
+                  quantity: targetOrder.items[0].quantity
+                });
+                // Remove the unconfirmed pending order
+                setOrders(prev => prev.filter(o => o.id !== targetOrder.id && o.orderNumber !== targetOrder.orderNumber));
+              } else if (!checkoutOrderProduct && visibleProducts.length > 0) {
+                setCheckoutOrderProduct({
+                  product: visibleProducts[0],
+                  quantity: 1
+                });
+              }
+              setOrderToPay(null);
+              setActiveTab('order-details');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              showToast('Payment cancelled. Returned to order details.');
+            }}
+            onViewInvoice={setSelectedOrderForInvoice}
+          />
         )}
 
         {/* TAB 5: MY PROFILE PAGE */}

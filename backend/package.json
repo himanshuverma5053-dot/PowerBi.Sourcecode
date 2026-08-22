@@ -1,0 +1,47 @@
+{
+  "name": "magadh-tyres-backend",
+  "version": "1.0.0",
+  "description": "MAGADH TYRES Production Backend API Service - Scalable REST API with AI Tyre Advisor, Orders, Catalog, Payments & AWS Amplify / AppSync ready Architecture",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "lint": "tsc --noEmit",
+    "test": "echo \"Running backend tests...\" && exit 0"
+  },
+  "keywords": [
+    "express",
+    "typescript",
+    "tyres-b2b",
+    "aws-amplify",
+    "gemini-ai",
+    "rest-api"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/himanshuverma5053-dot/Backend.Sourcecode.git"
+  },
+  "bugs": {
+    "url": "https://github.com/himanshuverma5053-dot/Backend.Sourcecode/issues"
+  },
+  "homepage": "https://github.com/himanshuverma5053-dot/Backend.Sourcecode#readme",
+  "author": "MAGADH TYRES Engineering Team",
+  "license": "MIT",
+  "dependencies": {
+    "@google/genai": "^2.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.17.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

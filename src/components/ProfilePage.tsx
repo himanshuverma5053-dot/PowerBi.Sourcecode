@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Order, CustomerAccount } from '../types';
 import { safeSetLocalStorage } from '../utils/storage';
 import { checkIsAdmin } from '../utils/admin';
-import { supabase } from '../supabaseClient';
+import { amplifyAuth } from '../services/amplifyClient';
 import {
   Save,
   MinusCircle,
@@ -186,7 +186,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   // Logout
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      await amplifyAuth.signOut();
     } catch (err) {
       console.error('Logout error:', err);
     }

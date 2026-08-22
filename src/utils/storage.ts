@@ -46,7 +46,7 @@ export function safeSetLocalStorage(key: string, data: any): boolean {
       localStorage.setItem(key, JSON.stringify(data));
       return true;
     } catch (finalErr) {
-      console.warn(`Unable to save "${key}" to localStorage (QuotaExceeded). State will persist in memory and Supabase.`, finalErr);
+      console.warn(`Unable to save "${key}" to localStorage (QuotaExceeded). State will persist in memory and backend storage.`, finalErr);
       return false;
     }
   }
