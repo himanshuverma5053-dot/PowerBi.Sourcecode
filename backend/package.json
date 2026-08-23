@@ -1,7 +1,7 @@
 {
   "name": "magadh-tyres-backend",
   "version": "1.0.0",
-  "description": "MAGADH TYRES Production Backend API Service - Scalable REST API with AI Tyre Advisor, Orders, Catalog, Payments & AWS Amplify / AppSync ready Architecture",
+  "description": "MAGADH TYRES Production Backend API Service - Scalable REST API with AWS Cognito, Lambda, DynamoDB, S3, API Gateway & Gemini AI",
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
@@ -15,26 +15,26 @@
     "typescript",
     "tyres-b2b",
     "aws-amplify",
+    "aws-cognito",
+    "dynamodb",
+    "aws-lambda",
     "gemini-ai",
     "rest-api"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/himanshuverma5053-dot/Backend.Sourcecode.git"
-  },
-  "bugs": {
-    "url": "https://github.com/himanshuverma5053-dot/Backend.Sourcecode/issues"
-  },
-  "homepage": "https://github.com/himanshuverma5053-dot/Backend.Sourcecode#readme",
   "author": "MAGADH TYRES Engineering Team",
   "license": "MIT",
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.714.0",
+    "@aws-sdk/client-s3": "^3.714.0",
+    "@aws-sdk/lib-dynamodb": "^3.714.0",
+    "@aws-sdk/s3-request-presigner": "^3.714.0",
     "@google/genai": "^2.4.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^4.21.2"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.146",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^20.17.10",

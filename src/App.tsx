@@ -195,21 +195,26 @@ export default function App() {
   };
 
   useEffect(() => {
-    // Clear any legacy cached demo products
+    // Clear legacy cached demo products and initial dummy orders
     localStorage.removeItem('magadh_products');
-
+    
     // Sync products from backend database (with local catalog fallback)
     loadProductsFromDb();
 
+    // Clean legacy demo orders if any
+    const localOrders = safeGetLocalStorage<Order[]>('magadh_orders', []);
+    const cleanOrders = localOrders.filter(o => o.id !== 'ord-1786968800000' && o.orderNumber !== 'MT-2026-8492');
+    if (cleanOrders.length !== localOrders.length) {
+      safeSetLocalStorage('magadh_orders', cleanOrders);
+      safeSetLocalStorage('magadh_orders_db', cleanOrders);
+      setOrders(cleanOrders);
+    }
+
     // Sync initial orders from backend database
     fetchOrdersFromBackend().then(dbOrders => {
-      if (dbOrders && dbOrders.length > 0) {
-        setOrders(prev => {
-          // Merge backend orders with any local orders not yet in DB
-          const existingIds = new Set(dbOrders.map(o => o.id));
-          const localOnly = prev.filter(o => !existingIds.has(o.id));
-          return [...localOnly, ...dbOrders];
-        });
+      if (dbOrders && Array.isArray(dbOrders)) {
+        const cleanDb = dbOrders.filter(o => o.id !== 'ord-1786968800000' && o.orderNumber !== 'MT-2026-8492');
+        setOrders(cleanDb);
       }
     });
 

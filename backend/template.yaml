@@ -1,0 +1,306 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  MAGADH TYRES Production Backend Infrastructure (AWS SAM)
+  Serverless Architecture with AWS Cognito, API Gateway, Lambda, DynamoDB, and S3.
+
+Parameters:
+  Environment:
+    Type: String
+    Default: prod
+    AllowedValues: [dev, staging, prod]
+    Description: Deployment environment stage.
+  GeminiApiKey:
+    Type: String
+    NoEcho: true
+    Default: ""
+    Description: Google Gemini API Key for Tyre Advisor AI engine.
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: nodejs20.x
+    Architectures:
+      - arm64
+    Environment:
+      Variables:
+        NODE_ENV: !Ref Environment
+        PRODUCTS_TABLE: !Ref ProductsTable
+        ORDERS_TABLE: !Ref OrdersTable
+        PAYMENTS_TABLE: !Ref PaymentsTable
+        COUPONS_TABLE: !Ref CouponsTable
+        MEDIA_BUCKET: !Ref MediaStorageBucket
+        GEMINI_API_KEY: !Ref GeminiApiKey
+        USER_POOL_ID: !Ref CognitoUserPool
+        CLIENT_ID: !Ref CognitoUserPoolClient
+
+Resources:
+  # ============================================================================
+  # 1. AUTHENTICATION (AWS Cognito with Admin & Customer Groups / Roles)
+  # ============================================================================
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub magadh-tyres-userpool-${Environment}
+      AutoVerifiedAttributes:
+        - email
+      UsernameAttributes:
+        - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireUppercase: true
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: false
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Required: true
+          Mutable: true
+        - Name: name
+          AttributeDataType: String
+          Required: false
+          Mutable: true
+        - Name: company_name
+          AttributeDataType: String
+          Required: false
+          Mutable: true
+        - Name: gst_number
+          AttributeDataType: String
+          Required: false
+          Mutable: true
+        - Name: role
+          AttributeDataType: String
+          Required: false
+          Mutable: true
+
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: !Sub magadh-tyres-client-${Environment}
+      UserPoolId: !Ref CognitoUserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      PreventUserExistenceErrors: ENABLED
+
+  CognitoAdminGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: Admin
+      Description: Magadh Tyres Executive & Warehouse Admin Group
+      UserPoolId: !Ref CognitoUserPool
+      Precedence: 0
+
+  CognitoCustomerGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: Customer
+      Description: B2B Dealers, Fleet Transporters & Retail Customers
+      UserPoolId: !Ref CognitoUserPool
+      Precedence: 10
+
+  # ============================================================================
+  # 2. DATA PERSISTENCE (Amazon DynamoDB Tables with On-Demand Capacity)
+  # ============================================================================
+  ProductsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub magadh-tyres-products-${Environment}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: category
+          AttributeType: S
+        - AttributeName: brand
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: CategoryIndex
+          KeySchema:
+            - AttributeName: category
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+        - IndexName: BrandIndex
+          KeySchema:
+            - AttributeName: brand
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+  OrdersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub magadh-tyres-orders-${Environment}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: orderNumber
+          AttributeType: S
+        - AttributeName: phone
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: OrderNumberIndex
+          KeySchema:
+            - AttributeName: orderNumber
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+        - IndexName: PhoneIndex
+          KeySchema:
+            - AttributeName: phone
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+  PaymentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub magadh-tyres-payments-${Environment}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: orderId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: OrderPaymentIndex
+          KeySchema:
+            - AttributeName: orderId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+  CouponsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub magadh-tyres-coupons-${Environment}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: code
+          AttributeType: S
+      KeySchema:
+        - AttributeName: code
+          KeyType: HASH
+
+  # ============================================================================
+  # 3. ASSET STORAGE (Amazon S3 for Product Catalog & Invoices)
+  # ============================================================================
+  MediaStorageBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub magadh-tyres-media-${AWS::AccountId}-${Environment}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: false
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: false
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: [GET, PUT, POST, HEAD]
+            AllowedOrigins: ['*']
+            MaxAge: 3600
+
+  MediaBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref MediaStorageBucket
+      PolicyDocument:
+        Statement:
+          - Sid: PublicReadForGetBucketObjects
+            Effect: Allow
+            Principal: '*'
+            Action: s3:GetObject
+            Resource: !Sub arn:aws:s3:::${MediaStorageBucket}/*
+
+  # ============================================================================
+  # 4. API GATEWAY REST API
+  # ============================================================================
+  MagadhApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Environment
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,x-user-role,x-user-email,x-admin-console'"
+        AllowOrigin: "'*'"
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt CognitoUserPool.Arn
+            Identity:
+              Header: Authorization
+
+  # ============================================================================
+  # 5. SERVERLESS LAMBDA HANDLERS
+  # ============================================================================
+  ApiHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: dist/serverless/handler.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref OrdersTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PaymentsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CouponsTable
+        - S3CrudPolicy:
+            BucketName: !Ref MediaStorageBucket
+      Events:
+        ProxyApiRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MagadhApi
+            Path: /
+            Method: ANY
+            Auth:
+              Authorizer: NONE
+        ProxyApiGreedy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MagadhApi
+            Path: /{proxy+}
+            Method: ANY
+            Auth:
+              Authorizer: NONE
+
+Outputs:
+  ApiUrl:
+    Description: Production API Gateway Endpoint URL
+    Value: !Sub https://${MagadhApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/
+  UserPoolId:
+    Description: AWS Cognito User Pool ID
+    Value: !Ref CognitoUserPool
+  UserPoolClientId:
+    Description: AWS Cognito App Client ID
+    Value: !Ref CognitoUserPoolClient
+  MediaBucketName:
+    Description: Amazon S3 Bucket for Tyre Media & Assets
+    Value: !Ref MediaStorageBucket
+  ProductsTableName:
+    Description: DynamoDB Products Table Name
+    Value: !Ref ProductsTable
+  OrdersTableName:
+    Description: DynamoDB Orders Table Name
+    Value: !Ref OrdersTable
