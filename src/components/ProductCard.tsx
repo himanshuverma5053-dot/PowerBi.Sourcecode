@@ -190,7 +190,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               type="button"
               id={`btn-card-buy-now-${product.id}`}
               onClick={handleBuyNow}
-              className="flex-1 py-1.5 px-2 rounded-xl bg-[#9800ff] hover:bg-[#8500df] active:bg-[#7200be] text-white text-[11px] font-black transition-all flex items-center justify-center space-x-1 cursor-pointer shadow-2xs active:scale-95"
+              className="flex-1 py-1.5 px-2 rounded-xl bg-[#0972D3] hover:bg-[#075ea8] active:bg-[#064c87] text-white text-[11px] font-black transition-all flex items-center justify-center space-x-1 cursor-pointer shadow-2xs active:scale-95"
             >
               <Zap className="w-3 h-3 fill-white text-white" />
               <span>Buy Now</span>

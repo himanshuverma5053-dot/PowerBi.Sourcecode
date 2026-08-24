@@ -1,37 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 140" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 150" width="100%" height="100%" fill="none">
   <defs>
-    <linearGradient id="sparshGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#536DFE" />
-      <stop offset="25%" stop-color="#7C4DFF" />
-      <stop offset="55%" stop-color="#9C27B0" />
-      <stop offset="80%" stop-color="#E040FB" />
-      <stop offset="100%" stop-color="#FF4081" />
+    <linearGradient id="sparshGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4F6BFF" />
+      <stop offset="22%" stop-color="#6B5CFA" />
+      <stop offset="48%" stop-color="#934EEB" />
+      <stop offset="72%" stop-color="#C73ECB" />
+      <stop offset="88%" stop-color="#E837B5" />
+      <stop offset="100%" stop-color="#FA439C" />
     </linearGradient>
 
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900&amp;family=Montserrat:ital,wght@1,800;1,900&amp;family=Poppins:ital,wght@1,800;1,900&amp;display=swap');
-      .magadh-brand {
-        font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
-        font-size: 78px;
+      @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&amp;family=Montserrat:ital,wght@1,800;1,900&amp;display=swap');
+      
+      .brand-magadh {
+        font-family: 'Playfair Display', 'Bodoni MT', 'Didot', 'Georgia', 'Times New Roman', serif;
+        font-size: 82px;
         font-weight: 900;
         fill: #000000;
         letter-spacing: -2px;
       }
-      .sparsh-brand {
-        font-family: 'Poppins', 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        font-size: 60px;
+      
+      .brand-sparsh {
+        font-family: 'Montserrat', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 64px;
         font-weight: 900;
         font-style: italic;
-        fill: url(#sparshGradient);
-        letter-spacing: -1px;
+        fill: url(#sparshGrad);
+        letter-spacing: -0.5px;
       }
     </style>
   </defs>
 
-  <g transform="translate(10, 68)">
-    <!-- magadh in black serif -->
-    <text class="magadh-brand" x="0" y="0">magadh</text>
-    <!-- Sparsh in bold italic gradient under adh -->
-    <text class="sparsh-brand" x="172" y="58">Sparsh</text>
-  </g>
+  <!-- Magadh main text -->
+  <text class="brand-magadh" x="6" y="78">magadh</text>
+  
+  <!-- Sparsh gradient italic subtext -->
+  <text class="brand-sparsh" x="186" y="136">Sparsh</text>
 </svg>

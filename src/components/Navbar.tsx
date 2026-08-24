@@ -91,21 +91,13 @@ export const Navbar: React.FC<NavbarProps> = ({
     },
   ];
 
-  const userNavItems: NavItem[] = isLoggedIn
-    ? [
-        {
-          id: 'account',
-          label: 'My Profile',
-          icon: UserCircle2,
-        },
-      ]
-    : [
-        {
-          id: 'signin',
-          label: 'Sign In / Register',
-          icon: UserCircle2,
-        },
-      ];
+  const userNavItems: NavItem[] = [
+    {
+      id: 'account',
+      label: 'My Profile',
+      icon: UserCircle2,
+    },
+  ];
 
   const categoryShortcuts = [
     { id: 'RADIAL', label: 'Car & SUV (Radial)', icon: Car },
@@ -255,25 +247,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className={`flex items-center space-x-1 sm:space-x-2 transition-all duration-300 ${
               isMobileSearchExpanded ? 'blur-[1.5px] opacity-60' : ''
             }`}>
-              {isLoggedIn ? (
-                <button
-                  onClick={() => setActiveTab('account')}
-                  className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-900 font-bold text-xs transition-all"
-                  title="My Profile"
-                >
-                  <UserCircle2 className="w-4 h-4 text-slate-700" />
-                  <span className="truncate max-w-[120px]">{currentUser || 'Account'}</span>
-                </button>
-              ) : (
-                <button
-                  onClick={() => setActiveTab('signin')}
-                  className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs shadow-xs transition-all"
-                  title="Sign In"
-                >
-                  <UserCircle2 className="w-4 h-4 text-slate-950" />
-                  <span>Sign In</span>
-                </button>
-              )}
+              <button
+                onClick={() => setActiveTab('account')}
+                className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-900 font-bold text-xs transition-all cursor-pointer"
+                title="My Profile"
+              >
+                <UserCircle2 className="w-4 h-4 text-slate-700" />
+                <span className="truncate max-w-[120px]">{currentUser || 'My Profile'}</span>
+              </button>
             </div>
           </div>
         </div>

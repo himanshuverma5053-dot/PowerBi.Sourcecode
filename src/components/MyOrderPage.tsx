@@ -128,7 +128,7 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full h-12 pl-4 pr-10 bg-slate-100/80 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 appearance-none focus:outline-none focus:ring-2 focus:ring-[#9800ff] transition-all cursor-pointer"
+              className="w-full h-12 pl-4 pr-10 bg-slate-100/80 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 appearance-none focus:outline-none focus:ring-2 focus:ring-[#0972D3] transition-all cursor-pointer"
             >
               {statusOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -194,7 +194,7 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
                 setEndDate('');
                 setSearchQuery('');
               }}
-              className="text-[#9800ff] hover:underline cursor-pointer font-bold"
+              className="text-[#0972D3] hover:underline cursor-pointer font-bold"
             >
               Reset Filters
             </button>
@@ -234,7 +234,7 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="text-sm sm:text-base font-bold text-slate-900 flex items-center flex-wrap gap-1">
                     <span>Cust. Order No.</span>
-                    <span className="text-[#8a14d4] font-extrabold tracking-tight font-display ml-1">
+                    <span className="text-[#0972D3] font-extrabold tracking-tight font-display ml-1">
                       {custOrderNo}
                     </span>
                   </div>
@@ -242,7 +242,7 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
                   {/* Qty Badge */}
                   <div className="text-sm sm:text-base font-bold text-slate-900 shrink-0">
                     <span>Qty: </span>
-                    <span className="text-[#8a14d4] font-black">{totalQty}</span>
+                    <span className="text-[#0972D3] font-black">{totalQty}</span>
                   </div>
                 </div>
 
@@ -297,10 +297,10 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
                       e.stopPropagation();
                       if (onViewInvoice) onViewInvoice(order);
                     }}
-                    className="flex-1 py-2.5 px-3.5 rounded-2xl bg-white hover:bg-purple-50/70 border-2 border-[#9800ff] text-[#9800ff] text-xs sm:text-sm font-bold transition-all flex items-center justify-center space-x-2 cursor-pointer shadow-2xs active:scale-[0.98]"
+                    className="flex-1 py-2.5 px-3.5 rounded-2xl bg-white hover:bg-sky-50/70 border-2 border-[#0972D3] text-[#0972D3] text-xs sm:text-sm font-bold transition-all flex items-center justify-center space-x-2 cursor-pointer shadow-2xs active:scale-[0.98]"
                   >
                     <span>Generate PDF</span>
-                    <Download className="w-4 h-4 text-[#9800ff] stroke-[2.2]" />
+                    <Download className="w-4 h-4 text-[#0972D3] stroke-[2.2]" />
                   </button>
 
                   <button
@@ -308,10 +308,10 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
                       e.stopPropagation();
                       if (onTrackOrder) onTrackOrder(order.orderNumber);
                     }}
-                    className="flex-1 py-2.5 px-3.5 rounded-2xl bg-white hover:bg-purple-50/70 border-2 border-[#9800ff] text-[#9800ff] text-xs sm:text-sm font-bold transition-all flex items-center justify-center space-x-2 shadow-2xs cursor-pointer active:scale-[0.98]"
+                    className="flex-1 py-2.5 px-3.5 rounded-2xl bg-white hover:bg-sky-50/70 border-2 border-[#0972D3] text-[#0972D3] text-xs sm:text-sm font-bold transition-all flex items-center justify-center space-x-2 shadow-2xs cursor-pointer active:scale-[0.98]"
                   >
                     <span>Track Order</span>
-                    <Truck className="w-4 h-4 text-[#9800ff] stroke-[2.2]" />
+                    <Truck className="w-4 h-4 text-[#0972D3] stroke-[2.2]" />
                   </button>
                 </div>
               </div>
@@ -320,7 +320,7 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
         ) : (
           /* Empty state */
           <div className="bg-white rounded-3xl p-10 sm:p-12 text-center border border-slate-200 shadow-2xs space-y-3">
-            <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center mx-auto text-[#8a14d4]">
+            <div className="w-14 h-14 bg-sky-50 rounded-2xl flex items-center justify-center mx-auto text-[#0972D3]">
               <PackageX className="w-7 h-7" />
             </div>
             <h3 className="text-base font-black text-slate-900">
@@ -332,10 +332,10 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
             {setActiveTab && (
               <button
                 onClick={() => setActiveTab('catalogue')}
-                className="mt-2 px-5 py-2.5 bg-white hover:bg-purple-50 border-2 border-[#9800ff] text-[#9800ff] rounded-2xl text-xs sm:text-sm font-bold shadow-2xs transition-all cursor-pointer inline-flex items-center space-x-2 active:scale-95"
+                className="mt-2 px-5 py-2.5 bg-white hover:bg-sky-50 border-2 border-[#0972D3] text-[#0972D3] rounded-2xl text-xs sm:text-sm font-bold shadow-2xs transition-all cursor-pointer inline-flex items-center space-x-2 active:scale-95"
               >
                 <span>Browse Products</span>
-                <ArrowRight className="w-4 h-4 text-[#9800ff]" />
+                <ArrowRight className="w-4 h-4 text-[#0972D3]" />
               </button>
             )}
           </div>
@@ -406,7 +406,7 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
             <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
               <div>
                 <span className="text-xs text-slate-500 block">Total Amount</span>
-                <span className="text-lg font-black text-[#8a14d4]">
+                <span className="text-lg font-black text-[#0972D3]">
                   ₹{selectedOrderDetails.totalAmount.toLocaleString('en-IN')}
                 </span>
               </div>
@@ -417,10 +417,10 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
                     setSelectedOrderDetails(null);
                     if (onViewInvoice) onViewInvoice(ord);
                   }}
-                  className="px-4 py-2 bg-white hover:bg-purple-50 border-2 border-[#9800ff] text-[#9800ff] rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center space-x-1.5 active:scale-95"
+                  className="px-4 py-2 bg-white hover:bg-sky-50 border-2 border-[#0972D3] text-[#0972D3] rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center space-x-1.5 active:scale-95"
                 >
                   <span>Generate PDF</span>
-                  <Download className="w-3.5 h-3.5 text-[#9800ff]" />
+                  <Download className="w-3.5 h-3.5 text-[#0972D3]" />
                 </button>
                 <button
                   onClick={() => {
@@ -428,10 +428,10 @@ export const MyOrderPage: React.FC<MyOrderPageProps> = ({
                     setSelectedOrderDetails(null);
                     if (onTrackOrder) onTrackOrder(ord.orderNumber);
                   }}
-                  className="px-4 py-2 bg-white hover:bg-purple-50 border-2 border-[#9800ff] text-[#9800ff] rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center space-x-1.5 active:scale-95"
+                  className="px-4 py-2 bg-white hover:bg-sky-50 border-2 border-[#0972D3] text-[#0972D3] rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center space-x-1.5 active:scale-95"
                 >
                   <span>Track</span>
-                  <Truck className="w-3.5 h-3.5 text-[#9800ff]" />
+                  <Truck className="w-3.5 h-3.5 text-[#0972D3]" />
                 </button>
               </div>
             </div>

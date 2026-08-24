@@ -70,7 +70,7 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
       <div>
         <div className="flex items-start justify-between gap-2">
           <div>
-            <h2 className="text-lg sm:text-xl font-bold font-display text-[#8a14d4] tracking-tight uppercase">
+            <h2 className="text-lg sm:text-xl font-bold font-display text-[#0972D3] tracking-tight uppercase">
               {product.name}
             </h2>
           </div>
@@ -79,8 +79,8 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
           <div className="flex items-center text-right shrink-0">
             {brandName.toLowerCase().includes('apollo') ? (
               <div className="flex items-center">
-                <span className="font-extrabold text-[#431268] text-base tracking-tighter">apollo</span>
-                <span className="text-[7px] font-black text-[#8a14d4] uppercase ml-0.5 mt-2">TYRES</span>
+                <span className="font-extrabold text-[#0972D3] text-base tracking-tighter">apollo</span>
+                <span className="text-[7px] font-black text-[#0972D3] uppercase ml-0.5 mt-2">TYRES</span>
               </div>
             ) : (
               <span className="font-black text-xs text-slate-800 tracking-wider uppercase px-2 py-0.5 rounded-md bg-slate-100">
@@ -92,7 +92,7 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
 
         {/* Pill Icon & Spec String */}
         <div className="flex items-center space-x-2.5 mt-2.5">
-          <div className="w-5 h-5 rounded-md bg-[#4c1d77] flex items-center justify-center shrink-0 shadow-2xs">
+          <div className="w-5 h-5 rounded-md bg-[#0972D3] flex items-center justify-center shrink-0 shadow-2xs">
             <div className="w-1.5 h-1.5 rounded-full bg-white" />
           </div>
           <span className="text-xs sm:text-[13px] font-medium text-slate-800 leading-tight">
@@ -146,7 +146,7 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
       <div className="space-y-3.5">
         {/* Price tag */}
         <div className="text-left flex items-baseline justify-between">
-          <div className="text-xl sm:text-2xl font-black text-[#8a14d4] tracking-tight">
+          <div className="text-xl sm:text-2xl font-black text-[#0972D3] tracking-tight">
             {formattedPrice}
           </div>
           {product.bulkPrice && product.bulkPrice < effectivePrice && (
@@ -183,12 +183,12 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
             </button>
           </div>
 
-          {/* Buy Now Purple Button */}
+          {/* Buy Now Button */}
           <button
             type="button"
             id={`btn-buy-now-${product.id}`}
             onClick={handleBuyNow}
-            className="flex-1 h-11 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center space-x-1.5 transition-all duration-200 shadow-sm cursor-pointer active:scale-[0.98] bg-[#9800ff] hover:bg-[#8500df] active:bg-[#7200be] text-white"
+            className="flex-1 h-11 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center space-x-1.5 transition-all duration-200 shadow-sm cursor-pointer active:scale-[0.98] bg-[#0972D3] hover:bg-[#075ea8] active:bg-[#064c87] text-white"
           >
             <Zap className="w-4 h-4 fill-white text-white" />
             <span className="tracking-tight">Buy Now</span>

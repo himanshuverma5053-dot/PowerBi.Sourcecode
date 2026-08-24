@@ -105,13 +105,13 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
           id="static-overview-refresh-bar"
           onClick={handleRefresh}
           aria-label="Refresh overview metrics"
-          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#f2e7fe] hover:bg-[#ebd5fc] active:scale-95 transition-all text-[#6b21a8] cursor-pointer select-none border border-purple-200/60 shadow-2xs shrink-0 -translate-x-1 sm:-translate-x-1.5"
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#0972D3]/10 hover:bg-[#0972D3]/20 active:scale-95 transition-all text-[#0972D3] cursor-pointer select-none border border-[#0972D3]/30 shadow-2xs shrink-0 -translate-x-1 sm:-translate-x-1.5"
         >
           <RefreshCw 
-            className={`w-3.5 h-3.5 text-[#7c3aed] transition-transform duration-700 ${isRefreshing ? 'animate-spin' : ''}`} 
+            className={`w-3.5 h-3.5 text-[#0972D3] transition-transform duration-700 ${isRefreshing ? 'animate-spin' : ''}`} 
             strokeWidth={2.5}
           />
-          <span className="text-xs sm:text-sm font-semibold text-[#6b21a8] tracking-tight">Refresh</span>
+          <span className="text-xs sm:text-sm font-semibold text-[#0972D3] tracking-tight">Refresh</span>
         </button>
       </div>
 
@@ -182,7 +182,7 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
           </span>
 
           <div className={`w-full mt-1 flex items-center min-w-0 ${creditScoreStyle.containerClass}`}>
-            <p className={`text-[#6e3ff5] tracking-tight leading-tight truncate max-w-full ${creditScoreStyle.textClass}`}>
+            <p className={`text-[#0972D3] tracking-tight leading-tight truncate max-w-full ${creditScoreStyle.textClass}`}>
               {creditScoreVal}
             </p>
           </div>

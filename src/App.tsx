@@ -22,8 +22,6 @@ import { AdminPanel } from './components/AdminPanel';
 import { TyreLogo } from './components/TyreLogo';
 import { TyreLoader } from './components/TyreLoader';
 import { Footer } from './components/Footer';
-import { AuthPage } from './components/AuthPage';
-import { amplifyAuth } from './services/amplifyClient';
 import { checkIsAdmin, ADMIN_CONFIG } from './utils/admin';
 import { getCustomerEffectivePrice, isProductVisibleToCustomer } from './utils/customerPricing';
 import { fetchOrdersFromBackend, saveOrderToBackend, updateOrderStatusInBackend } from './services/orderService';
@@ -195,74 +193,27 @@ export default function App() {
   };
 
   useEffect(() => {
-    // Clear legacy cached demo products and initial dummy orders
+    // Clear legacy cached demo products and all previous order and payment history
     localStorage.removeItem('magadh_products');
+    localStorage.removeItem('magadh_orders');
+    localStorage.removeItem('magadh_orders_db');
+    localStorage.removeItem('magadh_payments');
+    localStorage.removeItem('magadh_payments_db');
+    safeSetLocalStorage('magadh_orders', []);
+    safeSetLocalStorage('magadh_orders_db', []);
+    safeSetLocalStorage('magadh_payments', []);
+    setOrders([]);
+    setPayments([]);
     
     // Sync products from backend database (with local catalog fallback)
     loadProductsFromDb();
 
-    // Clean legacy demo orders if any
-    const localOrders = safeGetLocalStorage<Order[]>('magadh_orders', []);
-    const cleanOrders = localOrders.filter(o => o.id !== 'ord-1786968800000' && o.orderNumber !== 'MT-2026-8492');
-    if (cleanOrders.length !== localOrders.length) {
-      safeSetLocalStorage('magadh_orders', cleanOrders);
-      safeSetLocalStorage('magadh_orders_db', cleanOrders);
-      setOrders(cleanOrders);
-    }
-
-    // Sync initial orders from backend database
+    // Sync orders from backend database
     fetchOrdersFromBackend().then(dbOrders => {
       if (dbOrders && Array.isArray(dbOrders)) {
-        const cleanDb = dbOrders.filter(o => o.id !== 'ord-1786968800000' && o.orderNumber !== 'MT-2026-8492');
-        setOrders(cleanDb);
+        setOrders(dbOrders);
       }
     });
-
-    amplifyAuth.getSession().then(({ data: { session } }) => {
-      if (session?.user?.email) {
-        setCurrentUserEmail(session.user.email);
-        const userIsAdmin = checkIsAdmin(undefined, session.user.email);
-        if (userIsAdmin) {
-          setCurrentUser(ADMIN_CONFIG.username);
-        } else {
-          setCurrentUser(session.user.email.split('@')[0]);
-        }
-      }
-    });
-
-    const { data: { subscription } } = amplifyAuth.onAuthStateChange((event, session) => {
-      if (session?.user?.email) {
-        setCurrentUserEmail(session.user.email);
-        const userIsAdmin = checkIsAdmin(undefined, session.user.email);
-        const namePart = userIsAdmin 
-          ? ADMIN_CONFIG.username 
-          : session.user.email.split('@')[0];
-        setCurrentUser(namePart);
-
-        if (event === 'SIGNED_IN') {
-          if (userIsAdmin) {
-            setActiveTab('admin');
-          } else {
-            setActiveTab('account');
-          }
-        }
-
-        if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
-          // If hash contains access_token or type=signup, it was verified via link
-          if (window.location.hash.includes('access_token') || window.location.search.includes('code')) {
-            showToast('Email verified successfully! Welcome to Magadh Tyres.');
-            // Clean hash/query params from URL
-            if (window.history.replaceState) {
-              window.history.replaceState({}, document.title, window.location.pathname);
-            }
-          }
-        }
-      } else {
-        setCurrentUserEmail('');
-      }
-    });
-
-    return () => subscription.unsubscribe();
   }, []);
 
   const isAdmin = checkIsAdmin(currentUser, currentUserEmail);
@@ -595,26 +546,9 @@ export default function App() {
 
       {/* Main Dynamic View Content */}
       <main className="flex-1 w-full max-w-full overflow-x-hidden">
-        {(!isLoggedIn && (activeTab === 'account' || activeTab === 'admin' || activeTab === 'signin')) ? (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <AuthPage
-              initialMode="signin"
-              onSuccess={(targetTab) => {
-                if (targetTab) {
-                  setActiveTab(targetTab);
-                } else {
-                  setActiveTab(isAdmin ? 'admin' : 'account');
-                }
-              }}
-              showToast={showToast}
-              setCurrentUser={setCurrentUser}
-            />
-          </div>
-        ) : (
-          <>
         {/* TAB 1: HOMEPAGE */}
         {activeTab === 'home' && (
-          <div className="animate-fade-in py-4 space-y-6 sm:space-y-8">
+          <div className="animate-fade-in py-4 space-y-2 sm:space-y-3">
             {/* Section 1: Static Overview 2x2 Summary Bar */}
             <HomeSummaryBar
               orders={orders}
@@ -703,7 +637,7 @@ export default function App() {
                       placeholder="Search tyre name, size e.g. 140/70-17, brand..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-slate-100/80 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#9800ff] transition-all shadow-2xs"
+                      className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-slate-100/80 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0972D3] transition-all shadow-2xs"
                     />
                     {searchQuery && (
                       <button
@@ -735,7 +669,7 @@ export default function App() {
                 </div>
               ) : (
                 <div className="bg-white rounded-3xl p-12 sm:p-16 text-center border border-slate-200 shadow-2xs space-y-4">
-                  <div className="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center mx-auto text-[#8a14d4]">
+                  <div className="w-16 h-16 bg-sky-50 rounded-2xl flex items-center justify-center mx-auto text-[#0972D3]">
                     <PackageX className="w-8 h-8" />
                   </div>
                   <div>
@@ -751,7 +685,7 @@ export default function App() {
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery('')}
-                      className="mt-2 px-5 py-2.5 bg-[#9800ff] hover:bg-[#8500e0] text-white rounded-xl text-xs font-bold shadow-2xs transition-colors cursor-pointer inline-flex items-center space-x-1.5"
+                      className="mt-2 px-5 py-2.5 bg-[#0972D3] hover:bg-[#075ea8] text-white rounded-xl text-xs font-bold shadow-2xs transition-colors cursor-pointer inline-flex items-center space-x-1.5"
                     >
                       <X className="w-4 h-4" />
                       <span>Clear Search</span>
@@ -863,27 +797,6 @@ export default function App() {
 
         {/* TAB 6: ADMIN CONSOLE */}
         {activeTab === 'admin' && null}
-
-        {/* TAB 7: SIGN IN AUTH */}
-        {(activeTab === 'signin' || activeTab === 'signup' || activeTab === 'auth') && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <AuthPage
-              initialMode="signin"
-              onSuccess={(targetTab) => {
-                if (targetTab) {
-                  setActiveTab(targetTab);
-                } else {
-                  setActiveTab(isAdmin ? 'admin' : 'account');
-                }
-              }}
-              showToast={showToast}
-              setCurrentUser={setCurrentUser}
-            />
-          </div>
-        )}
-          </>
-        )}
-
       </main>
 
       {/* Modals & Overlays */}

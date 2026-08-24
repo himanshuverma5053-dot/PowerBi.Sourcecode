@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { TyreProduct, CustomerAccount } from '../types';
-import { evTyreGuideImg, fleetTyresGuideImg, apolloEndutraxImg } from '../assets/tyreImages';
+import { fleetTyresGuideImg } from '../assets/tyreImages';
 import {
-  BookOpen, Sparkles,
+  Sparkles,
   CheckCircle2, ArrowRight, X, Award
 } from 'lucide-react';
 
@@ -15,222 +15,267 @@ interface ForYourKnowledgeSectionProps {
   onExploreCatalogue?: (category?: string) => void;
 }
 
-interface KnowledgeArticle {
+interface ShowcaseProductItem {
   id: string;
-  date: string;
+  type: 'product';
+  dateOrCategory: string;
   title: string;
-  category: string;
-  readTime: string;
+  subtitle: string;
+  price?: number;
   image: string;
-  summary: string;
-  tag: string;
-  sections: {
-    heading: string;
-    content: string;
-    bulletPoints?: string[];
-  }[];
-  relatedFilter: {
-    category?: string;
-    isEv?: boolean;
-    tag?: string;
-  };
+  productData: Partial<TyreProduct>;
 }
 
-const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
+const SHOWCASE_PRODUCTS: ShowcaseProductItem[] = [
   {
-    id: 'tractor-tyre-weight-guide',
-    date: '27.07.2023',
-    title: 'A Guide to Understanding Tractor Tyre Weight',
-    category: 'Agricultural & Commercial',
-    readTime: '4 min read',
-    image: fleetTyresGuideImg,
-    summary: 'Proper tractor and commercial vehicle tyre weight distribution prevents soil compaction, maximizes drawbar pull, and significantly increases tyre casing service life.',
-    tag: 'Commercial',
-    sections: [
-      {
-        heading: 'Why Tyre Ballasting and Weight Matter',
-        content: 'Proper tyre weighting (ballasting) ensures optimal tractive efficiency, reduced slippage, and balanced axle load distribution under heavy agricultural and commercial payloads.',
-        bulletPoints: [
-          'Ballast Optimization: Minimizes wheel slip to ideal 10-15% range in agricultural and quarry terrains.',
-          'Sidewall Integrity: Heavy-duty commercial radial casings protect against bead separation under full axle load.',
-          'Fuel Economy: Correct ballasting and pressure reduce rolling resistance, saving fuel per working hour.'
-        ]
-      }
-    ],
-    relatedFilter: {
-      category: 'RADIAL'
+    id: 'tyre-endutrax-md-plus-s-d',
+    type: 'product',
+    dateOrCategory: 'Commercial Drive Axle',
+    title: 'ENDUTRAX MD+ (S)-D',
+    subtitle: '295/90 R20 • Extra Casing Life & High Torque Resistance',
+    price: 25685,
+    image: '/src/assets/images/regenerated_image_1786961965737.jpg',
+    productData: {
+      id: 'tyre-endutrax-md-plus-s-d',
+      name: 'ENDUTRAX MD+ (S)-D',
+      brand: 'Apollo',
+      category: 'Truck',
+      width: 295,
+      aspectRatio: 90,
+      rimSize: 20,
+      speedRating: 'J',
+      loadIndex: 152,
+      price: 25685,
+      bulkPrice: 25685,
+      image: '/src/assets/images/regenerated_image_1786961965737.jpg',
+      description: 'Heavy duty commercial drive axle tyre built for high torque and endurance.',
+      status: 'Active',
+      tireType: 'Radial',
+      tire_type: 'Radial'
     }
   },
   {
-    id: 'ev-tyre-guide',
-    date: '13.09.2023',
-    title: 'The Complete Guide to Electric Vehicle Tyres',
-    category: 'EV Technology',
-    readTime: '4 min read',
-    image: evTyreGuideImg,
-    summary: 'Electric vehicles deliver instantaneous torque and carry heavier battery payloads. Learn how specialised EV tyres maximize range and minimize tread wear.',
-    tag: 'EV Ready',
-    sections: [
-      {
-        heading: 'Why Electric Vehicles Require Specialized Tyres',
-        content: 'Electric Vehicles (EVs) exhibit distinct mechanical characteristics compared to internal combustion vehicles. The battery pack adds 20-30% extra curb weight, while electric motors deliver 100% of maximum torque instantly from zero RPM.',
-        bulletPoints: [
-          'Instantaneous Torque Management: Reinforced tread compounds prevent rapid rubber abrasion during high-acceleration starts.',
-          'Increased Load Carrying Capacity: Stiffer sidewall ply constructions accommodate heavy lithium battery packs without sidewall deformation.',
-          'Ultra-Low Rolling Resistance (RR): Aerodynamic sidewalls and specialized silica-infused resins extend battery driving range by up to 12%.',
-          'Acoustic Noise Reduction: Without engine noise, road tyre resonance is more noticeable; EV tyres utilize polyurethane foam liners inside the cavity.'
-        ]
-      },
-      {
-        heading: 'Key Factors for Selecting Commercial & Passenger EV Tyres',
-        content: 'When replacing or upgrading tyres on electric commercial vans, buses, or fleets, always verify the Load Index (LI) and Speed Rating, ensuring it matches or exceeds OEM specification ratings.'
-      }
-    ],
-    relatedFilter: {
-      isEv: true,
-      category: 'RADIAL'
-    }
-  },
-  {
-    id: 'fleet-radial-maintenance',
-    date: '28.11.2023',
-    title: 'Commercial Fleet Radial Maintenance & Retread Standards',
-    category: 'Fleet Efficiency',
-    readTime: '5 min read',
-    image: apolloEndutraxImg,
-    summary: 'Mastering CPKM (Cost Per Kilometer) through strict pressure telemetry, multi-stage retreading, and high-tensile steel belt casing preservation.',
-    tag: 'Fleet Tech',
-    sections: [
-      {
-        heading: 'Maximizing Tyre Casing Life for Up to 3 Retreads',
-        content: 'Tyres represent the second largest operating expense for commercial transport fleets after fuel. Maintaining casing integrity allows premium radial tyres like Apollo EnduTrax to undergo multiple retread cycles, cutting overall tyre costs by up to 45%.',
-        bulletPoints: [
-          'Nitrogen & Precision Inflation: A 10% under-inflation causes a 9% increase in tyre wear and 2.5% fuel efficiency loss.',
-          'Laser Telemetry Wheel Alignment: Correct toe-in and camber angles prevent irregular one-shoulder wear.',
-          'Regrooving at 3mm Depth: Timing regrooving before hitting the casing steel cord extends first-life mileage.'
-        ]
-      }
-    ],
-    relatedFilter: {
-      category: 'RADIAL',
-      tag: 'Radial'
+    id: 'tyre-endurace-ld-d',
+    type: 'product',
+    dateOrCategory: 'Long Haul Commercial',
+    title: 'ENDURACE LD-D',
+    subtitle: '295/90 R20 • High Fuel Mileage & Highway Grip',
+    price: 27917,
+    image: '/src/assets/images/apollo_endurace_ld_1786970458406.jpg',
+    productData: {
+      id: 'tyre-endurace-ld-d',
+      name: 'ENDURACE LD-D',
+      brand: 'Apollo',
+      category: 'Truck',
+      width: 295,
+      aspectRatio: 90,
+      rimSize: 20,
+      speedRating: 'K',
+      loadIndex: 154,
+      price: 27917,
+      bulkPrice: 27917,
+      image: '/src/assets/images/apollo_endurace_ld_1786970458406.jpg',
+      description: 'Heavy duty commercial drive axle tyre designed for high mileage and endurance. Complete set includes FLAP-D and TUBE-D.',
+      status: 'Active',
+      tireType: 'Radial',
+      tire_type: 'Radial'
     }
   }
 ];
 
+const BLOG_GUIDE = {
+  title: 'Commercial Radial Tyres: MD+ & LD Maintenance Guide',
+  date: '27.07.2023',
+  category: 'Commercial Radial Insights',
+  readTime: '4 min read',
+  summary: 'Achieving maximum casing life and lowest cost per kilometer (CPKM) with Apollo EnduTrax MD+ and EnduRace LD tyres.',
+  sections: [
+    {
+      heading: 'ENDUTRAX MD+ (S)-D vs. ENDURACE LD-D Applications',
+      content: 'Choosing the right radial drive tyre depends directly on road conditions, terrain topology, and gross axle load.',
+      bulletPoints: [
+        'ENDUTRAX MD+ (S)-D: Specially formulated for severe mining, quarry, and mixed-service terrain with cut-and-chip resistant compound.',
+        'ENDURACE LD-D: Engineered for long-haul national highway routes, delivering ultra-high mileage, even tread wear, and low rolling resistance.',
+        'Proper Inflation: Maintain cold tyre pressures according to payload charts to protect radial steel belts and enhance multiple retreadability cycles.'
+      ]
+    }
+  ]
+};
+
 export const ForYourKnowledgeSection: React.FC<ForYourKnowledgeSectionProps> = ({
-  products,
-  currentCustomerAccount,
-  isAdmin,
-  onInstantBuy,
+  products = [],
   onViewDetails,
   onExploreCatalogue,
 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [selectedArticle, setSelectedArticle] = useState<KnowledgeArticle | null>(null);
+  const [isBlogOpen, setIsBlogOpen] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchEndX, setTouchEndX] = useState<number | null>(null);
 
-  // Auto slide
+  // Auto slide interval
   useEffect(() => {
-    if (!isAutoPlaying || selectedArticle) return;
+    if (!isAutoPlaying || isBlogOpen || SHOWCASE_PRODUCTS.length <= 1) return;
     const timer = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % KNOWLEDGE_ARTICLES.length);
-    }, 6000);
+      setActiveIndex((prev) => (prev + 1) % SHOWCASE_PRODUCTS.length);
+    }, 5000);
     return () => clearInterval(timer);
-  }, [isAutoPlaying, selectedArticle]);
+  }, [isAutoPlaying, isBlogOpen]);
 
-  const currentArticle = KNOWLEDGE_ARTICLES[activeIndex];
+  // Touch swipe handling for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsAutoPlaying(false);
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX || !touchEndX) {
+      setIsAutoPlaying(true);
+      return;
+    }
+    const distance = touchStartX - touchEndX;
+    const isLeftSwipe = distance > 45;
+    const isRightSwipe = distance < -45;
+
+    if (isLeftSwipe) {
+      setActiveIndex((prev) => (prev + 1) % SHOWCASE_PRODUCTS.length);
+    } else if (isRightSwipe) {
+      setActiveIndex((prev) => (prev - 1 + SHOWCASE_PRODUCTS.length) % SHOWCASE_PRODUCTS.length);
+    }
+    setTouchStartX(null);
+    setTouchEndX(null);
+    setIsAutoPlaying(true);
+  };
+
+  const handleKnowMore = (item: ShowcaseProductItem) => {
+    const fullProduct = products.find(p => p.id === item.id) || (item.productData as TyreProduct);
+    if (onViewDetails && fullProduct) {
+      onViewDetails(fullProduct as TyreProduct);
+    }
+  };
 
   return (
-    <section className="space-y-6 sm:space-y-8" id="for-your-knowledge">
+    <section id="for-your-knowledge" className="py-6 sm:py-8 border-t border-slate-200/80">
       
-      {/* Section Header */}
-      <div className="text-center space-y-1 sm:space-y-2">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-black font-display text-slate-900 tracking-tight">
-          For&nbsp;&nbsp;Popular&nbsp;&nbsp;Choices
+      {/* Section Header & Subtitle */}
+      <div className="text-center space-y-1 mb-4 sm:mb-5 md:mb-7">
+        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black font-display tracking-wide text-slate-900">
+          For Popular Choices
         </h2>
-        <p className="text-xs sm:text-sm text-slate-500 font-medium max-w-xl mx-auto">
-          Expert tyre technology insights, commercial fleet engineering guides, and product specifications.
+        <p className="text-xs sm:text-sm md:text-base text-slate-500 font-medium max-w-md md:max-w-lg mx-auto">
+          Featured commercial tyres & recommendations
         </p>
       </div>
 
-      {/* Main Knowledge Featured Card Container */}
+      {/* Main Movable Card Container with Responsive Desktop Sizing */}
       <div
-        className="w-full max-w-[290px] sm:max-w-[320px] mx-auto px-1"
+        className="w-full max-w-[310px] sm:max-w-[340px] md:max-w-[540px] lg:max-w-[640px] xl:max-w-[720px] mx-auto px-1 select-none"
         onMouseEnter={() => setIsAutoPlaying(false)}
         onMouseLeave={() => setIsAutoPlaying(true)}
       >
-        <div className="bg-white rounded-[26px] sm:rounded-[28px] overflow-hidden border border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-lg transition-all duration-300 flex flex-col">
-          
-          {/* Card Top Image */}
-          <div className="relative w-full h-44 sm:h-52 bg-slate-100 overflow-hidden shrink-0">
-            <img 
-              src={currentArticle.image} 
-              alt={currentArticle.title} 
-              className="w-full h-full object-cover object-center"
-              loading="lazy"
-            />
-          </div>
+        {/* Full Card Sliding Track */}
+        <div 
+          className="w-full overflow-hidden rounded-[28px] sm:rounded-[32px] md:rounded-[36px] lg:rounded-[40px] border border-slate-200/90 shadow-[0_8px_30px_rgba(0,0,0,0.07)] bg-white"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div 
+            className="flex transition-transform duration-500 ease-out will-change-transform"
+            style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+          >
+            {SHOWCASE_PRODUCTS.map((item) => {
+              return (
+                <div 
+                  key={item.id} 
+                  className="w-full min-w-full shrink-0 flex flex-col bg-white"
+                >
+                  {/* Card Top Image */}
+                  <div className="relative w-full h-56 sm:h-64 md:h-96 lg:h-[440px] xl:h-[480px] bg-slate-100 overflow-hidden shrink-0">
+                    <img 
+                      src={item.image} 
+                      alt={item.title} 
+                      className="w-full h-full object-cover object-center"
+                      loading="lazy"
+                      draggable={false}
+                    />
+                  </div>
 
-          {/* Card Body */}
-          <div className="p-4 sm:p-5 flex flex-col flex-1 space-y-3 sm:space-y-4">
-            {/* Date */}
-            <div className="text-xs sm:text-sm font-bold text-slate-800 tracking-tight">
-              {currentArticle.date}
-            </div>
+                  {/* Card Body */}
+                  <div className="p-4 sm:p-5 md:p-6 lg:p-7 flex flex-col flex-1 min-h-[175px] sm:min-h-[185px] md:min-h-[220px] lg:min-h-[240px]">
+                    {/* Header Details */}
+                    <div className="space-y-1 sm:space-y-1.5 md:space-y-2 flex-1">
+                      {/* Category or Date */}
+                      <div className="text-xs sm:text-sm md:text-base font-bold text-slate-700 tracking-tight truncate">
+                        {item.dateOrCategory}
+                      </div>
 
-            {/* Title */}
-            <h3 className="text-base sm:text-lg font-black font-display text-slate-900 tracking-tight leading-snug">
-              {currentArticle.title}
-            </h3>
+                      {/* Title */}
+                      <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-extrabold font-display text-slate-900 tracking-tight leading-snug truncate">
+                        {item.title}
+                      </h3>
 
-            {/* Know More Button (Solid vibrant purple with white text as in screenshot) */}
-            <div className="pt-1 sm:pt-2">
-              <button
-                type="button"
-                onClick={() => setSelectedArticle(currentArticle)}
-                className="w-full py-2.5 sm:py-3 px-5 rounded-xl bg-[#9800ff] hover:bg-[#8500e0] active:scale-[0.98] transition-all text-white font-bold text-xs sm:text-sm tracking-wide shadow-sm flex items-center justify-center cursor-pointer select-none"
-              >
-                Know More
-              </button>
-            </div>
+                      {/* Subtitle / Spec */}
+                      <p className="text-xs md:text-sm lg:text-base text-slate-600 line-clamp-2 leading-relaxed h-[36px] md:h-[44px] lg:h-[50px]">
+                        {item.subtitle || ''}
+                      </p>
+                    </div>
+
+                    {/* Know More Button - Pin strictly to the same bottom position */}
+                    <div className="mt-auto pt-2 md:pt-4">
+                      <button
+                        type="button"
+                        onClick={() => handleKnowMore(item)}
+                        className="w-full h-10 md:h-12 lg:h-13 py-2 md:py-3 px-4 md:px-6 rounded-xl sm:rounded-2xl md:rounded-3xl bg-white hover:bg-sky-50/60 active:bg-sky-100/80 border-2 border-[#0972D3] text-[#0972D3] active:scale-[0.98] transition-all font-extrabold text-xs sm:text-sm md:text-base tracking-wide shadow-2xs flex items-center justify-center space-x-1.5 cursor-pointer select-none"
+                      >
+                        <span>Know More</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* Carousel Pagination Dots below the card */}
-        <div className="flex items-center justify-center space-x-2 mt-4">
-          {KNOWLEDGE_ARTICLES.map((article, idx) => {
+        {/* Carousel Pagination Dots */}
+        <div className="flex items-center justify-center space-x-2 md:space-x-3 mt-4 md:mt-6">
+          {SHOWCASE_PRODUCTS.map((item, idx) => {
             const isActive = idx === activeIndex;
             return (
               <button
-                key={article.id}
+                key={item.id}
                 type="button"
                 onClick={() => setActiveIndex(idx)}
-                aria-label={`Go to slide ${idx + 1}: ${article.title}`}
+                aria-label={`Go to slide ${idx + 1}: ${item.title}`}
                 className={`transition-all duration-300 rounded-full cursor-pointer ${
                   isActive
-                    ? 'w-7 h-2.5 bg-slate-900'
-                    : 'w-2.5 h-2.5 bg-slate-300 hover:bg-slate-400'
+                    ? 'w-7 md:w-10 h-2.5 md:h-3 bg-[#0972D3]'
+                    : 'w-2.5 md:w-3 h-2.5 md:h-3 bg-slate-300 hover:bg-slate-400'
                 }`}
               />
             );
           })}
         </div>
 
-        {/* View Blog Link */}
-        <div className="text-center mt-3">
+        {/* View Blog Link below */}
+        <div className="flex items-center justify-center text-center mt-3.5 md:mt-5">
           <button
             type="button"
-            onClick={() => setSelectedArticle(currentArticle)}
-            className="text-[#9800ff] hover:text-[#7b00cc] text-sm sm:text-base font-semibold underline underline-offset-4 decoration-2 transition-colors cursor-pointer"
+            onClick={() => setIsBlogOpen(true)}
+            className="text-[#0972D3] hover:text-[#075ea8] text-base md:text-lg font-bold underline underline-offset-4 decoration-2 transition-colors cursor-pointer"
           >
             View Blog
           </button>
         </div>
       </div>
 
-      {/* ARTICLE READER MODAL (When user clicks "Know More") */}
-      {selectedArticle && (
+      {/* ARTICLE / BLOG MODAL */}
+      {isBlogOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-fade-in">
           <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-8 max-h-[90vh] flex flex-col">
             
@@ -238,34 +283,34 @@ export const ForYourKnowledgeSection: React.FC<ForYourKnowledgeSectionProps> = (
             <div className="relative bg-slate-900 text-white p-6 sm:p-7 shrink-0">
               <button
                 type="button"
-                onClick={() => setSelectedArticle(null)}
+                onClick={() => setIsBlogOpen(false)}
                 className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="flex items-center space-x-2 text-xs font-bold text-purple-300 uppercase tracking-wider mb-2">
-                <Sparkles className="w-4 h-4 text-purple-400" />
-                <span>{selectedArticle.category} • {selectedArticle.readTime}</span>
+              <div className="flex items-center space-x-2 text-xs font-bold text-sky-300 uppercase tracking-wider mb-2">
+                <Sparkles className="w-4 h-4 text-sky-400" />
+                <span>{BLOG_GUIDE.category} • {BLOG_GUIDE.readTime}</span>
               </div>
 
               <h2 className="text-xl sm:text-2xl font-black font-display tracking-tight text-white pr-8">
-                {selectedArticle.title}
+                {BLOG_GUIDE.title}
               </h2>
               <div className="text-xs text-slate-400 mt-1">
-                Published on {selectedArticle.date} • Magadh Sparsh Technical Desk
+                Published on {BLOG_GUIDE.date} • Magadh Sparsh Technical Desk
               </div>
             </div>
 
             {/* Modal Scrollable Article Body */}
             <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-slate-700 text-sm leading-relaxed">
               {/* Summary */}
-              <div className="p-4 bg-purple-50/70 rounded-2xl border border-purple-100 text-slate-800 font-medium">
-                {selectedArticle.summary}
+              <div className="p-4 bg-sky-50/70 rounded-2xl border border-sky-100 text-slate-800 font-medium">
+                {BLOG_GUIDE.summary}
               </div>
 
               {/* Article Sections */}
-              {selectedArticle.sections.map((sec, idx) => (
+              {BLOG_GUIDE.sections.map((sec, idx) => (
                 <div key={idx} className="space-y-3">
                   <h3 className="text-base sm:text-lg font-black font-display text-slate-900">
                     {sec.heading}
@@ -290,22 +335,22 @@ export const ForYourKnowledgeSection: React.FC<ForYourKnowledgeSectionProps> = (
               <div className="p-5 bg-slate-900 rounded-2xl text-white space-y-3">
                 <div className="flex items-center space-x-2 text-amber-400 text-xs font-bold">
                   <Award className="w-4 h-4" />
-                  <span>Certified Commercial & EV Range</span>
+                  <span>Tested Apollo Commercial Radials</span>
                 </div>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  Browse our certified commercial radial catalogue. All products are sourced with official manufacturer warranties and GST tax input credit compliance.
+                  Explore Apollo EnduTrax MD+ and EnduRace LD tyres with genuine warranties, GST invoicing, and competitive wholesale pricing.
                 </p>
                 <button
                   type="button"
                   onClick={() => {
-                    setSelectedArticle(null);
+                    setIsBlogOpen(false);
                     if (onExploreCatalogue) {
                       onExploreCatalogue('RADIAL');
                     }
                   }}
                   className="w-full py-2.5 px-4 bg-white text-slate-900 hover:bg-slate-100 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 transition-colors cursor-pointer"
                 >
-                  <span>Explore Tested Tyres in Catalogue</span>
+                  <span>Explore in Catalogue</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -315,7 +360,7 @@ export const ForYourKnowledgeSection: React.FC<ForYourKnowledgeSectionProps> = (
             <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end shrink-0">
               <button
                 type="button"
-                onClick={() => setSelectedArticle(null)}
+                onClick={() => setIsBlogOpen(false)}
                 className="px-5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-colors cursor-pointer"
               >
                 Close Guide

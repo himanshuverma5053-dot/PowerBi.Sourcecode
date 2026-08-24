@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Order, CustomerAccount } from '../types';
 import { safeSetLocalStorage } from '../utils/storage';
 import { checkIsAdmin } from '../utils/admin';
-import { amplifyAuth } from '../services/amplifyClient';
 import {
   Save,
   MinusCircle,
@@ -13,7 +12,7 @@ import {
   MapPin,
   Home,
   CheckCircle2,
-  LogOut,
+  RotateCcw,
   Edit3
 } from 'lucide-react';
 
@@ -183,17 +182,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     showToast(`User status updated to: ${newStatus}`);
   };
 
-  // Logout
-  const handleLogout = async () => {
-    try {
-      await amplifyAuth.signOut();
-    } catch (err) {
-      console.error('Logout error:', err);
-    }
-    const userKey = currentUser ? currentUser.toLowerCase() : 'default';
-    localStorage.removeItem(`user_profile_${userKey}`);
-    localStorage.removeItem('user_profile');
-    setCurrentUser('');
+  // Reset Profile details to defaults
+  const handleResetProfile = () => {
     setName('');
     setUserId('');
     setCompanyName('');
@@ -201,10 +191,12 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     setGstNumber('');
     setDeliveryLocation('');
     setAddress('');
-    showToast('Logged out successfully.');
-    if (setActiveTab) {
-      setActiveTab('signin');
+    localStorage.removeItem('user_profile');
+    if (currentUser) {
+      localStorage.removeItem(`user_profile_${currentUser.toLowerCase()}`);
     }
+    setCurrentUser('');
+    showToast('Profile form cleared.');
   };
 
   return (
@@ -499,11 +491,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-slate-200">
               <button
                 type="button"
-                onClick={handleLogout}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold flex items-center justify-center space-x-2 transition-all cursor-pointer"
+                onClick={handleResetProfile}
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold flex items-center justify-center space-x-2 transition-all cursor-pointer"
               >
-                <LogOut className="w-4 h-4 text-red-600" />
-                <span>Log Out of Account</span>
+                <RotateCcw className="w-4 h-4 text-slate-600" />
+                <span>Clear Form Details</span>
               </button>
 
               <div className="flex items-center space-x-3 w-full sm:w-auto">

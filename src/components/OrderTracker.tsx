@@ -17,9 +17,9 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({
   initialSearchQuery = '',
   onViewInvoice,
 }) => {
-  const [searchQuery, setSearchQuery] = useState(initialSearchQuery || 'MT-2026-8841');
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery || '');
   const [searchedOrder, setSearchedOrder] = useState<Order | null>(
-    orders.find(o => o.orderNumber === searchQuery) || orders[0] || null
+    searchQuery ? (orders.find(o => o.orderNumber.toLowerCase() === searchQuery.toLowerCase()) || null) : null
   );
 
   const handleTrack = (e: React.FormEvent) => {
@@ -67,10 +67,10 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({
 
           <button
             type="submit"
-            className="px-6 py-3.5 rounded-2xl bg-white hover:bg-purple-50/70 border-2 border-[#9800ff] text-[#9800ff] font-extrabold text-sm shadow-2xs active:scale-95 transition-all cursor-pointer flex items-center gap-2"
+            className="px-6 py-3.5 rounded-2xl bg-white hover:bg-sky-50/70 border-2 border-[#0972D3] text-[#0972D3] font-extrabold text-sm shadow-2xs active:scale-95 transition-all cursor-pointer flex items-center gap-2"
           >
             <span>Track Order</span>
-            <Truck className="w-4 h-4 text-[#9800ff] stroke-[2.2]" />
+            <Truck className="w-4 h-4 text-[#0972D3] stroke-[2.2]" />
           </button>
         </form>
       </div>
@@ -98,10 +98,10 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => onViewInvoice(searchedOrder)}
-                className="px-5 py-2.5 rounded-2xl bg-white hover:bg-purple-50/70 border-2 border-[#9800ff] text-[#9800ff] text-xs sm:text-sm font-bold shadow-2xs flex items-center space-x-2 cursor-pointer transition-all active:scale-95"
+                className="px-5 py-2.5 rounded-2xl bg-white hover:bg-sky-50/70 border-2 border-[#0972D3] text-[#0972D3] text-xs sm:text-sm font-bold shadow-2xs flex items-center space-x-2 cursor-pointer transition-all active:scale-95"
               >
                 <span>Generate PDF</span>
-                <Download className="w-4 h-4 text-[#9800ff] stroke-[2.2]" />
+                <Download className="w-4 h-4 text-[#0972D3] stroke-[2.2]" />
               </button>
             </div>
           </div>

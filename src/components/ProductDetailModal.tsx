@@ -204,7 +204,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                     {formatCurrency(grandTotal)}
                   </span>
                   {quantity >= 4 && product.bulkPrice ? (
-                    <span className="text-[9px] font-extrabold text-purple-700 bg-purple-100 px-1.5 py-0.5 rounded inline-block mt-0.5">
+                    <span className="text-[9px] font-extrabold text-[#0972D3] bg-sky-100 px-1.5 py-0.5 rounded inline-block mt-0.5">
                       Bulk Price Applied
                     </span>
                   ) : (
@@ -221,7 +221,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   type="button"
                   id={`btn-modal-buy-now-${product.id}`}
                   onClick={handleBuyNow}
-                  className="flex-1 py-2.5 rounded-2xl bg-[#9800ff] hover:bg-[#8500df] active:bg-[#7200be] text-white font-black text-xs sm:text-sm shadow-sm flex items-center justify-center space-x-1.5 transition-all cursor-pointer active:scale-95"
+                  className="flex-1 py-2.5 rounded-2xl bg-[#0972D3] hover:bg-[#075ea8] active:bg-[#064c87] text-white font-black text-xs sm:text-sm shadow-sm flex items-center justify-center space-x-1.5 transition-all cursor-pointer active:scale-95"
                 >
                   <Zap className="w-4 h-4 fill-white text-white" />
                   <span>Buy Now ({quantity})</span>
