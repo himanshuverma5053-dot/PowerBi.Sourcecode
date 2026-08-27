@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 500" width="100%" height="100%" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ADFAFF" />
+      <stop offset="100%" stop-color="#80A8FF" />
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="500" fill="url(#skyGradient)" />
+</svg>

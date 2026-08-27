@@ -162,24 +162,24 @@ export const ForYourKnowledgeSection: React.FC<ForYourKnowledgeSectionProps> = (
     <section id="for-your-knowledge" className="py-6 sm:py-8 border-t border-slate-200/80">
       
       {/* Section Header & Subtitle */}
-      <div className="text-center space-y-1 mb-4 sm:mb-5 md:mb-7">
-        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black font-display tracking-wide text-slate-900">
+      <div className="text-center space-y-1.5 sm:space-y-2 mb-6 sm:mb-7 md:mb-9">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-slate-950 font-['Poppins',sans-serif] leading-tight">
           For Popular Choices
         </h2>
-        <p className="text-xs sm:text-sm md:text-base text-slate-500 font-medium max-w-md md:max-w-lg mx-auto">
+        <p className="text-sm sm:text-base md:text-lg text-slate-500 font-medium max-w-md md:max-w-lg mx-auto font-['Poppins',sans-serif]">
           Featured commercial tyres & recommendations
         </p>
       </div>
 
       {/* Main Movable Card Container with Responsive Desktop Sizing */}
       <div
-        className="w-full max-w-[310px] sm:max-w-[340px] md:max-w-[540px] lg:max-w-[640px] xl:max-w-[720px] mx-auto px-1 select-none"
+        className="w-full max-w-[310px] sm:max-w-[340px] md:max-w-[620px] lg:max-w-[880px] xl:max-w-[980px] 2xl:max-w-[1060px] mx-auto px-1 select-none"
         onMouseEnter={() => setIsAutoPlaying(false)}
         onMouseLeave={() => setIsAutoPlaying(true)}
       >
         {/* Full Card Sliding Track */}
         <div 
-          className="w-full overflow-hidden rounded-[28px] sm:rounded-[32px] md:rounded-[36px] lg:rounded-[40px] border border-slate-200/90 shadow-[0_8px_30px_rgba(0,0,0,0.07)] bg-white"
+          className="w-full overflow-hidden rounded-[28px] sm:rounded-[32px] md:rounded-[38px] lg:rounded-[44px] border border-slate-200/90 shadow-[0_8px_30px_rgba(0,0,0,0.07)] bg-white"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -195,7 +195,7 @@ export const ForYourKnowledgeSection: React.FC<ForYourKnowledgeSectionProps> = (
                   className="w-full min-w-full shrink-0 flex flex-col bg-white"
                 >
                   {/* Card Top Image */}
-                  <div className="relative w-full h-56 sm:h-64 md:h-96 lg:h-[440px] xl:h-[480px] bg-slate-100 overflow-hidden shrink-0">
+                  <div className="relative w-full h-56 sm:h-64 md:h-[440px] lg:h-[560px] xl:h-[620px] 2xl:h-[660px] bg-slate-100 overflow-hidden shrink-0">
                     <img 
                       src={item.image} 
                       alt={item.title} 
@@ -206,31 +206,31 @@ export const ForYourKnowledgeSection: React.FC<ForYourKnowledgeSectionProps> = (
                   </div>
 
                   {/* Card Body */}
-                  <div className="p-4 sm:p-5 md:p-6 lg:p-7 flex flex-col flex-1 min-h-[175px] sm:min-h-[185px] md:min-h-[220px] lg:min-h-[240px]">
+                  <div className="p-4 sm:p-5 md:p-7 lg:p-8 xl:p-9 flex flex-col flex-1 min-h-[175px] sm:min-h-[185px] md:min-h-[235px] lg:min-h-[260px] xl:min-h-[280px]">
                     {/* Header Details */}
-                    <div className="space-y-1 sm:space-y-1.5 md:space-y-2 flex-1">
+                    <div className="space-y-1 sm:space-y-1.5 md:space-y-2.5 lg:space-y-3 flex-1">
                       {/* Category or Date */}
-                      <div className="text-xs sm:text-sm md:text-base font-bold text-slate-700 tracking-tight truncate">
+                      <div className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-slate-700 tracking-tight truncate">
                         {item.dateOrCategory}
                       </div>
 
                       {/* Title */}
-                      <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-extrabold font-display text-slate-900 tracking-tight leading-snug truncate">
+                      <h3 className="text-base sm:text-lg md:text-2xl lg:text-2xl xl:text-3xl font-extrabold font-display text-slate-900 tracking-tight leading-snug truncate">
                         {item.title}
                       </h3>
 
                       {/* Subtitle / Spec */}
-                      <p className="text-xs md:text-sm lg:text-base text-slate-600 line-clamp-2 leading-relaxed h-[36px] md:h-[44px] lg:h-[50px]">
+                      <p className="text-xs md:text-base lg:text-base xl:text-lg text-slate-600 line-clamp-2 leading-relaxed h-[36px] md:h-[48px] lg:h-[54px] xl:h-[60px]">
                         {item.subtitle || ''}
                       </p>
                     </div>
 
                     {/* Know More Button - Pin strictly to the same bottom position */}
-                    <div className="mt-auto pt-2 md:pt-4">
+                    <div className="mt-auto pt-2 md:pt-4 lg:pt-6">
                       <button
                         type="button"
                         onClick={() => handleKnowMore(item)}
-                        className="w-full h-10 md:h-12 lg:h-13 py-2 md:py-3 px-4 md:px-6 rounded-xl sm:rounded-2xl md:rounded-3xl bg-white hover:bg-sky-50/60 active:bg-sky-100/80 border-2 border-[#0972D3] text-[#0972D3] active:scale-[0.98] transition-all font-extrabold text-xs sm:text-sm md:text-base tracking-wide shadow-2xs flex items-center justify-center space-x-1.5 cursor-pointer select-none"
+                        className="w-full h-10 md:h-13 lg:h-14 xl:h-15 py-2 md:py-3 lg:py-3.5 px-4 md:px-6 lg:px-8 rounded-xl sm:rounded-2xl md:rounded-3xl lg:rounded-3xl bg-white hover:bg-sky-50/60 active:bg-sky-100/80 border-2 border-[#0972D3] text-[#0972D3] active:scale-[0.98] transition-all font-extrabold text-xs sm:text-sm md:text-base lg:text-lg tracking-wide shadow-2xs flex items-center justify-center space-x-1.5 cursor-pointer select-none"
                       >
                         <span>Know More</span>
                       </button>
@@ -254,8 +254,8 @@ export const ForYourKnowledgeSection: React.FC<ForYourKnowledgeSectionProps> = (
                 aria-label={`Go to slide ${idx + 1}: ${item.title}`}
                 className={`transition-all duration-300 rounded-full cursor-pointer ${
                   isActive
-                    ? 'w-7 md:w-10 h-2.5 md:h-3 bg-[#0972D3]'
-                    : 'w-2.5 md:w-3 h-2.5 md:h-3 bg-slate-300 hover:bg-slate-400'
+                    ? 'w-7 md:w-12 h-2.5 md:h-3.5 bg-[#0972D3]'
+                    : 'w-2.5 md:w-3.5 h-2.5 md:h-3.5 bg-slate-300 hover:bg-slate-400'
                 }`}
               />
             );

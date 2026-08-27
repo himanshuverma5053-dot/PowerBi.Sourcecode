@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TyreProduct, CustomerAccount } from '../types';
 import { Eye, Minus, Plus, Zap } from 'lucide-react';
 import { ProductImagePlaceholder } from './ProductImagePlaceholder';
+import { ApolloLogo } from './ApolloLogo';
 
 interface VerticalProductCardProps {
   product: TyreProduct;
@@ -78,10 +79,7 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
           {/* Brand Logo / Monogram */}
           <div className="flex items-center text-right shrink-0">
             {brandName.toLowerCase().includes('apollo') ? (
-              <div className="flex items-center">
-                <span className="font-extrabold text-[#0972D3] text-base tracking-tighter">apollo</span>
-                <span className="text-[7px] font-black text-[#0972D3] uppercase ml-0.5 mt-2">TYRES</span>
-              </div>
+              <ApolloLogo size="sm" className="opacity-95 hover:opacity-100 transition-opacity" />
             ) : (
               <span className="font-black text-xs text-slate-800 tracking-wider uppercase px-2 py-0.5 rounded-md bg-slate-100">
                 {brandName}

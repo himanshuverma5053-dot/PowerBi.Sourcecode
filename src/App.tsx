@@ -6,6 +6,7 @@ import { PaymentProgressBar } from './components/PaymentProgressBar';
 import { HomeBannerSection } from './components/HomeBannerSection';
 import { NexusTelemetrySection } from './components/NexusTelemetrySection';
 import { ForYourKnowledgeSection } from './components/ForYourKnowledgeSection';
+import { OurPartnersSection } from './components/OurPartnersSection';
 import { HomePartnerSection } from './components/HomePartnerSection';
 import { Hero } from './components/Hero';
 import { ProductCard } from './components/ProductCard';
@@ -589,6 +590,9 @@ export default function App() {
 
             {/* Featured Showcase Banner Carousel with Zero Horizontal Space */}
             <HomeBannerSection />
+
+            {/* Our Partner's Section */}
+            <OurPartnersSection />
 
             {/* Section 3: For Popular Choices & Knowledge */}
             <ForYourKnowledgeSection

@@ -1,0 +1,91 @@
+{
+  "Description": "Amazon DynamoDB Table Configurations for Magadh Tyres",
+  "Tables": [
+    {
+      "TableName": "magadh_tyres_products",
+      "BillingMode": "PAY_PER_REQUEST",
+      "KeySchema": [
+        { "AttributeName": "id", "KeyType": "HASH" }
+      ],
+      "AttributeDefinitions": [
+        { "AttributeName": "id", "AttributeType": "S" },
+        { "AttributeName": "category", "AttributeType": "S" },
+        { "AttributeName": "sku", "AttributeType": "S" }
+      ],
+      "GlobalSecondaryIndexes": [
+        {
+          "IndexName": "CategoryIndex",
+          "KeySchema": [
+            { "AttributeName": "category", "KeyType": "HASH" }
+          ],
+          "Projection": { "ProjectionType": "ALL" }
+        },
+        {
+          "IndexName": "SkuIndex",
+          "KeySchema": [
+            { "AttributeName": "sku", "KeyType": "HASH" }
+          ],
+          "Projection": { "ProjectionType": "ALL" }
+        }
+      ]
+    },
+    {
+      "TableName": "magadh_tyres_orders",
+      "BillingMode": "PAY_PER_REQUEST",
+      "KeySchema": [
+        { "AttributeName": "id", "KeyType": "HASH" }
+      ],
+      "AttributeDefinitions": [
+        { "AttributeName": "id", "AttributeType": "S" },
+        { "AttributeName": "customerPhone", "AttributeType": "S" },
+        { "AttributeName": "orderNumber", "AttributeType": "S" }
+      ],
+      "GlobalSecondaryIndexes": [
+        {
+          "IndexName": "CustomerPhoneIndex",
+          "KeySchema": [
+            { "AttributeName": "customerPhone", "KeyType": "HASH" }
+          ],
+          "Projection": { "ProjectionType": "ALL" }
+        },
+        {
+          "IndexName": "OrderNumberIndex",
+          "KeySchema": [
+            { "AttributeName": "orderNumber", "KeyType": "HASH" }
+          ],
+          "Projection": { "ProjectionType": "ALL" }
+        }
+      ]
+    },
+    {
+      "TableName": "magadh_tyres_payments",
+      "BillingMode": "PAY_PER_REQUEST",
+      "KeySchema": [
+        { "AttributeName": "id", "KeyType": "HASH" }
+      ],
+      "AttributeDefinitions": [
+        { "AttributeName": "id", "AttributeType": "S" },
+        { "AttributeName": "orderId", "AttributeType": "S" }
+      ],
+      "GlobalSecondaryIndexes": [
+        {
+          "IndexName": "OrderIdIndex",
+          "KeySchema": [
+            { "AttributeName": "orderId", "KeyType": "HASH" }
+          ],
+          "Projection": { "ProjectionType": "ALL" }
+        }
+      ]
+    },
+    {
+      "TableName": "magadh_tyres_coupons",
+      "BillingMode": "PAY_PER_REQUEST",
+      "KeySchema": [
+        { "AttributeName": "code", "KeyType": "HASH" }
+      ],
+      "AttributeDefinitions": [
+        { "AttributeName": "code", "AttributeType": "S" }
+      ]
+    }
+  ]
+}

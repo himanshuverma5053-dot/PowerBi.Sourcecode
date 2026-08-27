@@ -399,7 +399,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                     <div className="text-base font-black text-slate-900">Total Payable</div>
                     <div className="text-[10px] text-slate-400 font-semibold">(Incl. 18% GST)</div>
                   </div>
-                  <div className="text-2xl font-black text-[#8a14d4]">
+                  <div className="text-2xl font-black text-[#0972D3]">
                     ₹{totalPayable.toLocaleString('en-IN')}
                   </div>
                 </div>
@@ -416,10 +416,10 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                     }
                   }}
                   disabled={isProcessing}
-                  className="w-full py-4 px-4 sm:px-6 rounded-2xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-bold text-sm sm:text-base transition-all flex items-center justify-center space-x-1.5 border border-slate-200 cursor-pointer disabled:opacity-50"
+                  className="w-full py-4 px-4 sm:px-6 rounded-2xl bg-white hover:bg-blue-50/50 active:bg-blue-100/50 text-[#0972D3] font-bold text-sm sm:text-base transition-all flex items-center justify-center space-x-1.5 border-2 border-[#0972D3] hover:border-[#0862b5] shadow-xs cursor-pointer disabled:opacity-50"
                 >
-                  <ArrowLeft className="w-4 h-4 text-slate-500 shrink-0" />
-                  <span className="truncate">Back to Order</span>
+                  <ArrowLeft className="w-4 h-4 text-[#0972D3] shrink-0" />
+                  <span className="truncate text-[#0972D3]">Back to Order</span>
                 </button>
 
                 <button
@@ -427,7 +427,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                   id="btn-confirm-payment"
                   onClick={() => handleExecuteSettlement([activeOrder])}
                   disabled={isProcessing}
-                  className="w-full py-4 px-4 sm:px-6 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center space-x-2 transition-all duration-200 shadow-md cursor-pointer active:scale-[0.98] bg-[#9800ff] hover:bg-[#8500df] active:bg-[#7200be] text-white disabled:opacity-50"
+                  className="w-full py-4 px-4 sm:px-6 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center space-x-2 transition-all duration-200 shadow-md shadow-[#0972D3]/20 cursor-pointer active:scale-[0.98] bg-[#0972D3] hover:bg-[#0862b5] active:bg-[#07539a] text-white disabled:opacity-50"
                 >
                   {isProcessing ? (
                     <span className="inline-flex items-center space-x-2">
@@ -437,7 +437,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                   ) : (
                     <>
                       <Zap className="w-5 h-5 fill-white text-white shrink-0" />
-                      <span className="truncate">Pay ₹{totalPayable.toLocaleString('en-IN')}</span>
+                      <span className="truncate">Proceed</span>
                     </>
                   )}
                 </button>

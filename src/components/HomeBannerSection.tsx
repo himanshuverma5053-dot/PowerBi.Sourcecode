@@ -55,7 +55,7 @@ export const HomeBannerSection: React.FC = () => {
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* Banner Slides Carousel */}
-      <div className="relative w-full aspect-[4/5] sm:aspect-[1/1] md:aspect-[16/10] lg:aspect-[16/9] min-h-[420px] sm:min-h-[540px] md:min-h-[640px] lg:min-h-[720px] overflow-hidden flex items-center justify-center bg-slate-950 shadow-md">
+      <div className="relative w-full aspect-[4/5] sm:aspect-[1/1] md:aspect-[4/5] lg:aspect-[16/9] min-h-[420px] sm:min-h-[500px] md:min-h-[880px] lg:min-h-[640px] overflow-hidden flex items-center justify-center bg-slate-950 shadow-md">
         {BANNER_SLIDES.map((slide, index) => {
           const isActive = index === currentSlide;
           return (

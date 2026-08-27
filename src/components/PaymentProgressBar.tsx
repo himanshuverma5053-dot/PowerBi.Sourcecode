@@ -11,6 +11,7 @@ interface PaymentProgressBarProps {
   currentUserEmail?: string;
   isAdmin?: boolean;
   onPayNow?: () => void;
+  onRefresh?: () => void;
 }
 
 export const PaymentProgressBar: React.FC<PaymentProgressBarProps> = ({
@@ -20,7 +21,8 @@ export const PaymentProgressBar: React.FC<PaymentProgressBarProps> = ({
   currentUser = '',
   currentUserEmail = '',
   isAdmin = false,
-  onPayNow
+  onPayNow,
+  onRefresh
 }) => {
   // Filter relevant orders for current customer
   const userOrders = useMemo(() => {
@@ -143,6 +145,20 @@ export const PaymentProgressBar: React.FC<PaymentProgressBarProps> = ({
   // SVG Wave Paths state
   const [wave1Path, setWave1Path] = useState('');
   const [wave2Path, setWave2Path] = useState('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = () => {
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+    // Trigger temporary micro-bump in wave to show active recalculation
+    ratioRef.current = Math.max(0, targetElapsedRatio - 0.05);
+    if (onRefresh) {
+      onRefresh();
+    }
+    setTimeout(() => {
+      setIsRefreshing(false);
+    }, 700);
+  };
 
   // Smooth lerp transition when targetElapsedRatio changes
   useEffect(() => {
@@ -219,171 +235,199 @@ export const PaymentProgressBar: React.FC<PaymentProgressBarProps> = ({
   return (
     <section 
       id="payment-progress-bar-section" 
-      className="w-full max-w-[240px] sm:max-w-[260px] mx-auto px-2 pt-4 sm:pt-5 pb-1 font-sans select-none"
+      className="w-full max-w-[285px] sm:max-w-[320px] md:max-w-[430px] lg:max-w-[330px] xl:max-w-[360px] mx-auto px-2 pt-1 pb-10 sm:pb-11 md:pb-12 font-sans select-none"
       aria-label="Payment Credit Progress Bar"
     >
       <div 
         id="payment-progress-card"
-        className="w-full"
+        className="relative w-full"
       >
-        {/* Progress Bar Heading - Smart Executive Badge & Typography */}
-        <div className="w-full mb-1.5 sm:mb-2">
-          <div className="flex items-center justify-between px-1">
-            <div className="flex items-center">
-              <h2 
-                id="payment-progress-heading" 
-                className="font-extrabold text-[#0972D3] uppercase text-xs sm:text-[13px] tracking-widest font-display"
-              >
-                Progress Bar
-              </h2>
-            </div>
-            
-            {/* Smart Credit Cycle / Days remaining Pill */}
-            <span className="text-[10px] font-bold text-slate-500 bg-slate-100/90 px-2 py-0.5 rounded-full border border-slate-200/80 tracking-tight">
-              {displayDays}d of {totalCreditDays}d
-            </span>
-          </div>
-        </div>
-
-        {/* Full-Width Rounded Capsule with Thick White Elevated Frame */}
-        <div className="relative w-full p-[10px] sm:p-[14px] rounded-full bg-white border border-slate-200/80 shadow-[0_12px_32px_rgba(0,0,0,0.12),0_2px_6px_rgba(0,0,0,0.06)]">
-          <div 
-            id="payment-progress-capsule"
-            className="relative w-full h-7 sm:h-8 rounded-full overflow-hidden bg-slate-50 ring-1 ring-slate-200/90 shadow-[inset_0_2px_5px_rgba(0,0,0,0.08)]"
-          >
-            {/* SVG Renderer for Crisp Waves and Dual Gradients */}
-            <svg 
-              className="w-full h-full block" 
-              viewBox="0 0 1000 60" 
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <defs>
-                {/* Clean White Dynamic Bar Gradient for Base/Remaining Credit with Subtle Depth */}
-                <linearGradient id="dynamicBarWhiteGradient" x1="0%" x2="100%" y1="0%" y2="0%">
-                  <stop offset="0%" stopColor="#ffffff" />
-                  <stop offset="35%" stopColor="#f8fafc" />
-                  <stop offset="70%" stopColor="#f1f5f9" />
-                  <stop offset="100%" stopColor="#e2e8f0" />
-                </linearGradient>
-
-                {/* Animated Shimmer Stripe pattern for dynamic background bar */}
-                <linearGradient id="bgShimmerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#ffffff" stopOpacity="0" />
-                  <stop offset="45%" stopColor="#ffffff" stopOpacity="0" />
-                  <stop offset="50%" stopColor="#38bdf8" stopOpacity="0.08" />
-                  <stop offset="55%" stopColor="#ffffff" stopOpacity="0.25" />
-                  <stop offset="60%" stopColor="#38bdf8" stopOpacity="0.08" />
-                  <stop offset="65%" stopColor="#ffffff" stopOpacity="0" />
-                  <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-                  <animate attributeName="x1" from="-100%" to="100%" dur="3.5s" repeatCount="indefinite" />
-                  <animate attributeName="x2" from="0%" to="200%" dur="3.5s" repeatCount="indefinite" />
-                </linearGradient>
-
-                {/* Water Wave Gradient with #0972D3 */}
-                <linearGradient id="lightBlueWaveGradient" x1="0%" x2="100%" y1="0%" y2="0%">
-                  <stop offset="0%" stopColor="#38bdf8" />
-                  <stop offset="40%" stopColor="#0ea5e9" />
-                  <stop offset="75%" stopColor="#0972D3" />
-                  <stop offset="100%" stopColor="#075ea8" />
-                </linearGradient>
-
-                {/* Internal Flow Shimmer for the Blue Fluid Wave */}
-                <linearGradient id="blueFluidShimmer" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#ffffff" stopOpacity="0.3" />
-                  <stop offset="30%" stopColor="#ffffff" stopOpacity="0.0" />
-                  <stop offset="70%" stopColor="#ffffff" stopOpacity="0.15" />
-                  <stop offset="100%" stopColor="#0f172a" stopOpacity="0.12" />
-                </linearGradient>
-
-                {/* Top Surface Specular Gloss Overlay */}
-                <linearGradient id="waveHighlight" x1="0%" x2="0%" y1="0%" y2="100%">
-                  <stop offset="0%" stopColor="#ffffff" stopOpacity="0.6" />
-                  <stop offset="40%" stopColor="#ffffff" stopOpacity="0.05" />
-                  <stop offset="100%" stopColor="#0f172a" stopOpacity="0.06" />
-                </linearGradient>
-              </defs>
-
-              {/* Background Full Dynamic Bar (Remaining Credit Period) */}
-              <rect x="0" y="0" width="1000" height="60" fill="url(#dynamicBarWhiteGradient)" />
-              
-              {/* Dynamic Animated Background Shimmer Beam */}
-              <rect x="0" y="0" width="1000" height="60" fill="url(#bgShimmerGradient)" pointerEvents="none" />
-
-              {/* Secondary Translucent Wave Layer (Back wave) */}
-              {animatedElapsedRatio > 0.001 && (
-                <path 
-                  d={wave2Path} 
-                  fill="url(#lightBlueWaveGradient)" 
-                  fillOpacity="0.45"
-                />
-              )}
-
-              {/* Primary Animated Wave Layer (Front wave - Elapsed Time) */}
-              {animatedElapsedRatio > 0.001 && (
-                <>
-                  <path 
-                    d={wave1Path} 
-                    fill="url(#lightBlueWaveGradient)" 
-                    fillOpacity="0.95"
-                    stroke="#ffffff"
-                    strokeWidth="2.5"
-                    strokeLinejoin="round"
-                    className="filter drop-shadow-[0_1px_3px_rgba(0,115,187,0.25)]"
-                  />
-                  {/* Internal Liquid Sheen */}
-                  <path 
-                    d={wave1Path} 
-                    fill="url(#blueFluidShimmer)" 
-                    pointerEvents="none"
-                  />
-                </>
-              )}
-
-              {/* Top Surface Glass/Specular Overlay */}
-              <rect x="0" y="0" width="1000" height="60" fill="url(#waveHighlight)" pointerEvents="none" />
-
-              {/* Subtle Milestone Markers */}
-              <line x1="250" y1="10" x2="250" y2="50" stroke="rgba(148,163,184,0.3)" strokeDasharray="3,3" strokeWidth="1.5" />
-              <line x1="500" y1="8" x2="500" y2="52" stroke="rgba(148,163,184,0.4)" strokeDasharray="3,3" strokeWidth="1.5" />
-              <line x1="750" y1="10" x2="750" y2="50" stroke="rgba(148,163,184,0.3)" strokeDasharray="3,3" strokeWidth="1.5" />
-
-              {/* Thin Inner Tube Border Line (Clean Vector Outline) */}
-              <rect 
-                x="1" 
-                y="1" 
-                width="998" 
-                height="58" 
-                rx="29" 
-                ry="29" 
-                fill="none" 
-                stroke="#94a3b8" 
-                strokeWidth="2.2" 
-                strokeOpacity="0.75"
-                pointerEvents="none" 
-              />
-            </svg>
-
-            {/* Inner Tube Subtle Glass Bevel & Highlight */}
-            <div className="absolute inset-0 rounded-full border border-slate-300/80 pointer-events-none shadow-[inset_0_1.5px_2px_rgba(0,0,0,0.1)]">
-              <div className="w-full h-[45%] rounded-t-full bg-gradient-to-b from-white/35 to-transparent pointer-events-none" />
-            </div>
-
-            {/* Movable Dynamic Days Text with Dot aligned smoothly to the tip as the blue wave shrinks */}
+        {/* Single Unified Container with Continuous White Background extending to Refresh Tab */}
+        <div className="relative w-full filter drop-shadow-[0_10px_28px_rgba(0,0,0,0.10)] drop-shadow-[0_2px_5px_rgba(0,0,0,0.05)]">
+          
+          {/* Top Capsule Frame */}
+          <div className="relative w-full p-[10px] sm:p-[12px] md:p-3.5 rounded-full bg-white border border-slate-200/90 z-10">
             <div 
-              className="absolute inset-y-0 flex items-center pointer-events-none transition-transform duration-75 z-10"
-              style={{ 
-                left: `${Math.max(2, Math.min(97, animatedElapsedRatio * 100))}%`, 
-                transform: animatedElapsedRatio >= 0.22 
-                  ? 'translateX(-100%)' 
-                  : `translateX(-${Math.max(0, (animatedElapsedRatio - 0.04) / 0.18 * 100)}%)`
-              }}
+              id="payment-progress-capsule"
+              className="relative z-10 w-full h-8 sm:h-9 md:h-11 rounded-full overflow-hidden bg-slate-50 ring-1 ring-slate-200/90 shadow-[inset_0_2px_5px_rgba(0,0,0,0.08)]"
             >
-              <div className="flex items-center space-x-1 pr-1 text-slate-800 text-[9px] sm:text-[10px] font-black tracking-wider uppercase drop-shadow-xs whitespace-nowrap select-none">
-                <span>{displayDays} {displayDays === 1 ? 'Day' : 'Days'}</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#0972D3] animate-pulse shrink-0 ring-1 ring-white/60"></span>
+              {/* SVG Renderer for Crisp Waves and Dual Gradients */}
+              <svg 
+                className="w-full h-full block" 
+                viewBox="0 0 1000 60" 
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <defs>
+                  {/* Clean White Dynamic Bar Gradient for Base/Remaining Credit with Subtle Depth */}
+                  <linearGradient id="dynamicBarWhiteGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+                    <stop offset="0%" stopColor="#ffffff" />
+                    <stop offset="35%" stopColor="#f8fafc" />
+                    <stop offset="70%" stopColor="#f1f5f9" />
+                    <stop offset="100%" stopColor="#e2e8f0" />
+                  </linearGradient>
+
+                  {/* Animated Shimmer Stripe pattern for dynamic background bar */}
+                  <linearGradient id="bgShimmerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0" />
+                    <stop offset="45%" stopColor="#ffffff" stopOpacity="0" />
+                    <stop offset="50%" stopColor="#38bdf8" stopOpacity="0.08" />
+                    <stop offset="55%" stopColor="#ffffff" stopOpacity="0.25" />
+                    <stop offset="60%" stopColor="#38bdf8" stopOpacity="0.08" />
+                    <stop offset="65%" stopColor="#ffffff" stopOpacity="0" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+                    <animate attributeName="x1" from="-100%" to="100%" dur="3.5s" repeatCount="indefinite" />
+                    <animate attributeName="x2" from="0%" to="200%" dur="3.5s" repeatCount="indefinite" />
+                  </linearGradient>
+
+                  {/* Water Wave Gradient with #0972D3 */}
+                  <linearGradient id="lightBlueWaveGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+                    <stop offset="0%" stopColor="#38bdf8" />
+                    <stop offset="40%" stopColor="#0ea5e9" />
+                    <stop offset="75%" stopColor="#0972D3" />
+                    <stop offset="100%" stopColor="#075ea8" />
+                  </linearGradient>
+
+                  {/* Internal Flow Shimmer for the Blue Fluid Wave */}
+                  <linearGradient id="blueFluidShimmer" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.3" />
+                    <stop offset="30%" stopColor="#ffffff" stopOpacity="0.0" />
+                    <stop offset="70%" stopColor="#ffffff" stopOpacity="0.15" />
+                    <stop offset="100%" stopColor="#0f172a" stopOpacity="0.12" />
+                  </linearGradient>
+
+                  {/* Top Surface Specular Gloss Overlay */}
+                  <linearGradient id="waveHighlight" x1="0%" x2="0%" y1="0%" y2="100%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.6" />
+                    <stop offset="40%" stopColor="#ffffff" stopOpacity="0.05" />
+                    <stop offset="100%" stopColor="#0f172a" stopOpacity="0.06" />
+                  </linearGradient>
+                </defs>
+
+                {/* Background Full Dynamic Bar (Remaining Credit Period) */}
+                <rect x="0" y="0" width="1000" height="60" fill="url(#dynamicBarWhiteGradient)" />
+                
+                {/* Dynamic Animated Background Shimmer Beam */}
+                <rect x="0" y="0" width="1000" height="60" fill="url(#bgShimmerGradient)" pointerEvents="none" />
+
+                {/* Secondary Translucent Wave Layer (Back wave) */}
+                {animatedElapsedRatio > 0.001 && (
+                  <path 
+                    d={wave2Path} 
+                    fill="url(#lightBlueWaveGradient)" 
+                    fillOpacity="0.45"
+                  />
+                )}
+
+                {/* Primary Animated Wave Layer (Front wave - Elapsed Time) */}
+                {animatedElapsedRatio > 0.001 && (
+                  <>
+                    <path 
+                      d={wave1Path} 
+                      fill="url(#lightBlueWaveGradient)" 
+                      fillOpacity="0.95"
+                      stroke="#ffffff"
+                      strokeWidth="2.5"
+                      strokeLinejoin="round"
+                      className="filter drop-shadow-[0_1px_3px_rgba(0,115,187,0.25)]"
+                    />
+                    {/* Internal Liquid Sheen */}
+                    <path 
+                      d={wave1Path} 
+                      fill="url(#blueFluidShimmer)" 
+                      pointerEvents="none"
+                    />
+                  </>
+                )}
+
+                {/* Top Surface Glass/Specular Overlay */}
+                <rect x="0" y="0" width="1000" height="60" fill="url(#waveHighlight)" pointerEvents="none" />
+
+                {/* Subtle Milestone Markers (Black Dotted Lines) */}
+                <line x1="250" y1="10" x2="250" y2="50" stroke="#000000" strokeDasharray="3,3" strokeWidth="2" strokeOpacity="0.9" />
+                <line x1="500" y1="8" x2="500" y2="52" stroke="#000000" strokeDasharray="3,3" strokeWidth="2" strokeOpacity="0.95" />
+                <line x1="750" y1="10" x2="750" y2="50" stroke="#000000" strokeDasharray="3,3" strokeWidth="2" strokeOpacity="0.9" />
+
+                {/* Thin Inner Tube Border Line (Clean Vector Outline) */}
+                <rect 
+                  x="1" 
+                  y="1" 
+                  width="998" 
+                  height="58" 
+                  rx="29" 
+                  ry="29" 
+                  fill="none" 
+                  stroke="#94a3b8" 
+                  strokeWidth="2.2" 
+                  strokeOpacity="0.75"
+                  pointerEvents="none" 
+                />
+              </svg>
+
+              {/* Inner Tube Subtle Glass Bevel & Highlight */}
+              <div className="absolute inset-0 rounded-full border border-slate-300/80 pointer-events-none shadow-[inset_0_1.5px_2px_rgba(0,0,0,0.1)]">
+                <div className="w-full h-[45%] rounded-t-full bg-gradient-to-b from-white/35 to-transparent pointer-events-none" />
+              </div>
+
+              {/* Movable Dynamic Days Text with Dot aligned smoothly to the tip as the blue wave shrinks */}
+              <div 
+                className="absolute inset-y-0 flex items-center pointer-events-none transition-transform duration-75 z-30"
+                style={{ 
+                  left: `${Math.max(2, Math.min(97, animatedElapsedRatio * 100))}%`, 
+                  transform: animatedElapsedRatio >= 0.22 
+                    ? 'translateX(-100%)' 
+                    : `translateX(-${Math.max(0, (animatedElapsedRatio - 0.04) / 0.18 * 100)}%)`
+                }}
+              >
+                <div className="flex items-center space-x-1.5 pr-1.5 text-slate-800 text-[10px] sm:text-[11px] md:text-[13px] font-black tracking-wider uppercase drop-shadow-xs whitespace-nowrap select-none">
+                  <span>{displayDays} {displayDays === 1 ? 'Day' : 'Days'}</span>
+                  <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-[#0972D3] animate-pulse shrink-0 ring-1 ring-white/60"></span>
+                </div>
               </div>
             </div>
+          </div>
+
+          {/* Continuous Downward White Tab located directly beneath the progress bar capsule */}
+          <div className="absolute right-3 sm:right-4 md:right-5 top-full -mt-2 w-9 h-11 sm:w-10 sm:h-12 md:w-11 md:h-13 bg-white rounded-b-full border-b border-x border-slate-200/90 flex flex-col justify-end items-center pb-1 sm:pb-1.5 z-10 pointer-events-auto">
+            {/* Smooth Concave Fillet Curve on the Left of Tab */}
+            <svg 
+              className="absolute -left-3.5 top-0 w-3.5 h-5 pointer-events-none overflow-visible z-10" 
+              viewBox="0 0 14 20"
+            >
+              <path d="M0,0 Q14,0 14,20 L14,0 Z" fill="#ffffff" />
+              <path d="M0,0 Q14,0 14,20" fill="none" stroke="#e2e8f0" strokeWidth="1.2" strokeLinecap="round" />
+            </svg>
+
+            {/* Refresh Button seated comfortably inside the tab under the progress bar */}
+            <button
+              id="progress-bar-refresh-button"
+              type="button"
+              onClick={handleRefresh}
+              title="Refresh Progress"
+              aria-label="Refresh Payment Progress Bar"
+              className="group relative z-20 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full hover:bg-slate-50 active:scale-90 transition-all text-[#0972D3] focus:outline-none"
+            >
+              <svg 
+                className={`w-5 h-5 sm:w-5.5 sm:h-5.5 md:w-6 md:h-6 text-[#0972D3] transition-transform duration-500 ${isRefreshing ? 'animate-spin' : 'group-hover:rotate-180'}`} 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path 
+                  d="M4 12C4 7.58172 7.58172 4 12 4C15.0537 4 17.6974 5.71359 19.0357 8.23238M20 12C20 16.4183 16.4183 20 12 20C8.94627 20 6.30263 18.2864 4.96426 15.7676" 
+                  stroke="#0972D3" 
+                  strokeWidth="2.6" 
+                  strokeLinecap="round" 
+                />
+                <path 
+                  d="M15 8.5H19.5V4M9 15.5H4.5V20" 
+                  stroke="#0972D3" 
+                  strokeWidth="2.6" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                />
+              </svg>
+            </button>
           </div>
         </div>
       </div>

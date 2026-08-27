@@ -86,14 +86,14 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
   const creditScoreStyle = getNumberStyle(creditScoreVal);
 
   return (
-    <section id="home-static-overview-section" className="w-full max-w-[285px] sm:max-w-[310px] mx-auto px-2 py-1 font-sans space-y-1.5">
+    <section id="home-static-overview-section" className="w-full max-w-[285px] sm:max-w-[310px] md:max-w-[460px] lg:max-w-[310px] mx-auto px-2 py-1 font-sans space-y-1.5 md:space-y-2.5">
       {/* Top Header */}
       <div className="flex items-center justify-between gap-1.5 px-1 pb-1">
-        <h1 id="static-overview-heading" className="text-lg sm:text-xl font-black text-slate-950 tracking-tight flex items-center gap-1.5 min-w-0">
-          <span className="text-slate-900 font-black text-lg sm:text-xl tracking-tight truncate">Static Overview</span>
+        <h1 id="static-overview-heading" className="text-lg sm:text-xl md:text-2xl font-black text-slate-950 tracking-tight flex items-center gap-1.5 min-w-0">
+          <span className="text-slate-900 font-black text-lg sm:text-xl md:text-2xl tracking-tight truncate">Static Overview</span>
           {financials.isCreditSuspended && (
-            <span className="text-[9px] uppercase tracking-wider font-extrabold bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shrink-0">
-              <ShieldAlert className="w-3 h-3" />
+            <span className="text-[9px] md:text-[10px] uppercase tracking-wider font-extrabold bg-rose-100 text-rose-700 px-1.5 md:px-2 py-0.5 rounded-full flex items-center gap-0.5 shrink-0">
+              <ShieldAlert className="w-3 h-3 md:w-3.5 md:h-3.5" />
               Suspended
             </span>
           )}
@@ -105,33 +105,33 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
           id="static-overview-refresh-bar"
           onClick={handleRefresh}
           aria-label="Refresh overview metrics"
-          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#0972D3]/10 hover:bg-[#0972D3]/20 active:scale-95 transition-all text-[#0972D3] cursor-pointer select-none border border-[#0972D3]/30 shadow-2xs shrink-0 -translate-x-1 sm:-translate-x-1.5"
+          className="inline-flex items-center gap-1 px-2.5 md:px-3.5 py-1 md:py-1.5 rounded-full bg-[#0972D3]/10 hover:bg-[#0972D3]/20 active:scale-95 transition-all text-[#0972D3] cursor-pointer select-none border border-[#0972D3]/30 shadow-2xs shrink-0 -translate-x-1 sm:-translate-x-1.5"
         >
           <RefreshCw 
-            className={`w-3.5 h-3.5 text-[#0972D3] transition-transform duration-700 ${isRefreshing ? 'animate-spin' : ''}`} 
+            className={`w-3.5 h-3.5 md:w-4 md:h-4 text-[#0972D3] transition-transform duration-700 ${isRefreshing ? 'animate-spin' : ''}`} 
             strokeWidth={2.5}
           />
-          <span className="text-xs sm:text-sm font-semibold text-[#0972D3] tracking-tight">Refresh</span>
+          <span className="text-xs sm:text-sm md:text-base font-semibold text-[#0972D3] tracking-tight">Refresh</span>
         </button>
       </div>
 
       {/* 2x2 Quadrant Card */}
       <div 
         id="static-overview-card-container" 
-        className="w-full bg-white rounded-[24px] sm:rounded-[26px] border border-gray-200/90 shadow-[0_2px_12px_rgba(0,0,0,0.04)] grid grid-cols-2 grid-rows-2 overflow-hidden transition-all duration-200"
+        className="w-full bg-white rounded-[24px] sm:rounded-[26px] md:rounded-[32px] border border-gray-200/90 shadow-[0_2px_12px_rgba(0,0,0,0.04)] grid grid-cols-2 grid-rows-2 overflow-hidden transition-all duration-200"
       >
         {/* Quadrant 1 (Top-Left): Upcoming Due */}
         <div 
           id="available-limit-card"
           onClick={() => setActiveTab('quick-payments')}
-          className="border-r border-b border-gray-200/90 p-2.5 sm:p-3 flex flex-col justify-between min-h-[72px] sm:min-h-[78px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0"
+          className="border-r border-b border-gray-200/90 p-2.5 sm:p-3 md:p-4 flex flex-col justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0"
         >
-          <span className="text-[11px] sm:text-[12px] font-normal text-[#555d6e] leading-tight text-center w-full truncate">
+          <span className="text-[11px] sm:text-[12px] md:text-sm font-normal text-[#555d6e] leading-tight text-center w-full truncate">
             Upcoming Due
           </span>
 
           <div className={`w-full mt-1 flex items-center min-w-0 ${upcomingDueStyle.containerClass}`}>
-            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full ${upcomingDueStyle.textClass}`}>
+            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full md:text-2xl ${upcomingDueStyle.textClass}`}>
               {upcomingDueVal}
             </p>
           </div>
@@ -141,14 +141,14 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="hold-cca-card"
           onClick={() => setActiveTab('account')}
-          className="border-b border-gray-200/90 p-2.5 sm:p-3 flex flex-col justify-between min-h-[72px] sm:min-h-[78px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0"
+          className="border-b border-gray-200/90 p-2.5 sm:p-3 md:p-4 flex flex-col justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0"
         >
-          <span className="text-[11px] sm:text-[12px] font-normal text-[#555d6e] leading-tight text-center w-full truncate">
+          <span className="text-[11px] sm:text-[12px] md:text-sm font-normal text-[#555d6e] leading-tight text-center w-full truncate">
             Available Limit
           </span>
 
           <div className={`w-full mt-1 flex items-center min-w-0 ${availableLimitStyle.containerClass}`}>
-            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full ${availableLimitStyle.textClass}`}>
+            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full md:text-2xl ${availableLimitStyle.textClass}`}>
               {availableLimitVal}
             </p>
           </div>
@@ -158,14 +158,14 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="total-cca-card"
           onClick={() => setActiveTab('quick-payments')}
-          className="border-r border-gray-200/90 p-2.5 sm:p-3 flex flex-col justify-between min-h-[72px] sm:min-h-[78px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0"
+          className="border-r border-gray-200/90 p-2.5 sm:p-3 md:p-4 flex flex-col justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0"
         >
-          <span className="text-[11px] sm:text-[12px] font-normal text-[#555d6e] leading-tight text-center w-full truncate">
+          <span className="text-[11px] sm:text-[12px] md:text-sm font-normal text-[#555d6e] leading-tight text-center w-full truncate">
             Invoice Amount Due
           </span>
 
           <div className={`w-full mt-1 flex items-center min-w-0 ${invoiceAmountDueStyle.containerClass}`}>
-            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full ${invoiceAmountDueStyle.textClass}`}>
+            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full md:text-2xl ${invoiceAmountDueStyle.textClass}`}>
               {invoiceAmountDueVal}
             </p>
           </div>
@@ -175,14 +175,14 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="invoice-amount-due-card"
           onClick={() => setActiveTab('account')}
-          className="p-2.5 sm:p-3 flex flex-col justify-between min-h-[72px] sm:min-h-[78px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0"
+          className="p-2.5 sm:p-3 md:p-4 flex flex-col justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0"
         >
-          <span className="text-[11px] sm:text-[12px] font-normal text-[#555d6e] leading-tight text-center w-full truncate">
+          <span className="text-[11px] sm:text-[12px] md:text-sm font-normal text-[#555d6e] leading-tight text-center w-full truncate">
             Credit Score
           </span>
 
           <div className={`w-full mt-1 flex items-center min-w-0 ${creditScoreStyle.containerClass}`}>
-            <p className={`text-[#0972D3] tracking-tight leading-tight truncate max-w-full ${creditScoreStyle.textClass}`}>
+            <p className={`text-[#0972D3] tracking-tight leading-tight truncate max-w-full md:text-2xl ${creditScoreStyle.textClass}`}>
               {creditScoreVal}
             </p>
           </div>

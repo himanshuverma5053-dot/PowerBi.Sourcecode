@@ -1,0 +1,22 @@
+[
+  {
+    "AllowedHeaders": [
+      "*"
+    ],
+    "AllowedMethods": [
+      "GET",
+      "PUT",
+      "POST",
+      "HEAD",
+      "DELETE"
+    ],
+    "AllowedOrigins": [
+      "*"
+    ],
+    "ExposeHeaders": [
+      "ETag",
+      "x-amz-server-side-encryption"
+    ],
+    "MaxAgeSeconds": 3000
+  }
+]
