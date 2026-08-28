@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 200" width="100%" height="100%">
+  <g transform="translate(45, 20)">
+    <!-- JK Chevron Logo Mark with Red Core and Triple Diagonal Streaks -->
+    <!-- Outer Black Chevron Body -->
+    <path d="M 50,75 L 85,25 L 115,25 L 80,75 L 115,125 L 85,125 Z" fill="#000000" />
+    <path d="M 10,75 L 45,25 L 68,25 L 33,75 L 68,125 L 45,125 Z" fill="#000000" />
+    
+    <!-- Red Inner Core Slash -->
+    <path d="M 32,75 L 56,38 L 42,38 L 18,75 L 42,112 L 56,112 Z" fill="#E51A24" />
+    
+    <!-- Third Parallel Slash -->
+    <path d="M 88,25 L 98,25 L 63,75 L 98,125 L 88,125 L 53,75 Z" fill="#000000" />
+
+    <!-- JK TYRE Logotype (Bold Italic Geometric Black) -->
+    <g fill="#000000" transform="skewX(-16) translate(145, 0)">
+      <!-- J -->
+      <path d="M 15,25 L 38,25 L 38,90 C 38,110 24,125 5,125 L -10,125 L -10,105 L 2,105 C 12,105 16,99 16,90 Z" />
+      
+      <!-- K -->
+      <path d="M 45,25 L 68,25 L 68,62 L 95,25 L 126,25 L 88,72 L 128,125 L 96,125 L 68,85 L 68,125 L 45,125 Z" />
+      
+      <!-- T -->
+      <path d="M 130,25 L 180,25 L 180,45 L 167,45 L 167,125 L 143,125 L 143,45 L 130,45 Z" />
+      
+      <!-- Y -->
+      <path d="M 182,25 L 206,25 L 221,68 L 236,25 L 260,25 L 233,85 L 233,125 L 210,125 L 210,85 Z" />
+      
+      <!-- R -->
+      <path d="M 262,25 L 305,25 C 322,25 334,35 334,55 C 334,70 324,80 310,84 L 336,125 L 308,125 L 286,87 L 286,125 L 262,125 Z M 286,45 L 286,68 L 302,68 C 308,68 312,64 312,56 C 312,49 308,45 302,45 Z" />
+      
+      <!-- E -->
+      <path d="M 338,25 L 384,25 L 384,45 L 362,45 L 362,64 L 380,64 L 380,84 L 362,84 L 362,105 L 385,105 L 385,125 L 338,125 Z" />
+    </g>
+
+    <!-- Subtitle: TOTAL CONTROL -->
+    <text x="350" y="152" font-family="'Arial Black', 'Helvetica Neue', sans-serif" font-weight="900" font-size="24" letter-spacing="11" fill="#000000" text-anchor="middle">
+      TOTAL CONTROL
+    </text>
+  </g>
+</svg>

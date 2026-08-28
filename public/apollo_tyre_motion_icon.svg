@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <!-- Radial metallic rim gradient -->
+    <radialGradient id="rimGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="45%" stop-color="#e2e8f0" />
+      <stop offset="85%" stop-color="#94a3b8" />
+      <stop offset="100%" stop-color="#475569" />
+    </radialGradient>
+    <!-- Apollo Purple Accent Gradient -->
+    <linearGradient id="purpleRing" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6B21A8" />
+      <stop offset="100%" stop-color="#43006A" />
+    </linearGradient>
+    <filter id="badgeShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.18" />
+    </filter>
+  </defs>
+
+  <!-- Outer Tyre Rubber Tread Ring -->
+  <circle cx="60" cy="60" r="54" fill="#1e293b" filter="url(#badgeShadow)" />
+  <circle cx="60" cy="60" r="50" fill="#0f172a" />
+
+  <!-- Tyre Tread Grooves -->
+  <g stroke="#334155" stroke-width="2.5" stroke-linecap="round">
+    <line x1="60" y1="7" x2="60" y2="14" />
+    <line x1="60" y1="106" x2="60" y2="113" />
+    <line x1="7" y1="60" x2="14" y2="60" />
+    <line x1="106" y1="60" x2="113" y2="60" />
+    <line x1="22" y1="22" x2="28" y2="28" />
+    <line x1="92" y1="92" x2="98" y2="98" />
+    <line x1="22" y1="98" x2="28" y2="92" />
+    <line x1="92" y1="28" x2="98" y2="22" />
+    <!-- Intermediate treads -->
+    <line x1="38" y1="12" x2="42" y2="18" />
+    <line x1="82" y1="12" x2="78" y2="18" />
+    <line x1="38" y1="108" x2="42" y2="102" />
+    <line x1="82" y1="108" x2="78" y2="102" />
+    <line x1="12" y1="38" x2="18" y2="42" />
+    <line x1="12" y1="82" x2="18" y2="78" />
+    <line x1="108" y1="38" x2="102" y2="42" />
+    <line x1="108" y1="82" x2="102" y2="78" />
+  </g>
+
+  <!-- Apollo Brand Inner Purple Accent Ring -->
+  <circle cx="60" cy="60" r="41" fill="none" stroke="url(#purpleRing)" stroke-width="3" />
+
+  <!-- Metallic Alloy Rim Center -->
+  <circle cx="60" cy="60" r="35" fill="url(#rimGrad)" />
+
+  <!-- Wheel Spokes -->
+  <g fill="#334155">
+    <!-- Center Hub -->
+    <circle cx="60" cy="60" r="14" fill="#43006A" stroke="#8869A8" stroke-width="1.5" />
+    <circle cx="60" cy="60" r="7" fill="#ffffff" />
+    <circle cx="60" cy="60" r="3.5" fill="#43006A" />
+
+    <!-- 5 Radial Double Spokes -->
+    <path d="M 57,26 L 63,26 L 62,47 L 58,47 Z" fill="#64748b" />
+    <path d="M 57,26 L 63,26 L 62,47 L 58,47 Z" transform="rotate(72 60 60)" fill="#64748b" />
+    <path d="M 57,26 L 63,26 L 62,47 L 58,47 Z" transform="rotate(144 60 60)" fill="#64748b" />
+    <path d="M 57,26 L 63,26 L 62,47 L 58,47 Z" transform="rotate(216 60 60)" fill="#64748b" />
+    <path d="M 57,26 L 63,26 L 62,47 L 58,47 Z" transform="rotate(288 60 60)" fill="#64748b" />
+  </g>
+</svg>

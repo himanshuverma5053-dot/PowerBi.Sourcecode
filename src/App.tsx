@@ -520,6 +520,19 @@ export default function App() {
     return 0;
   });
 
+  // Handle global user logout
+  const handleLogout = () => {
+    const prevUser = currentUser;
+    setCurrentUser('');
+    setCurrentUserEmail('');
+    localStorage.removeItem('user_profile');
+    if (prevUser) {
+      localStorage.removeItem(`user_profile_${prevUser.toLowerCase()}`);
+    }
+    setActiveTab('home');
+    showToast('Logged out successfully');
+  };
+
   return (
     <div className="min-h-screen bg-[#F7F7F7] text-slate-900 font-sans flex flex-col selection:bg-slate-900 selection:text-white overflow-x-hidden w-full max-w-full">
       
@@ -543,6 +556,7 @@ export default function App() {
         allProducts={visibleProducts}
         onSelectProduct={(product) => setSelectedProductForModal(product)}
         onSelectCategory={(category) => setSelectedCategory(category)}
+        onLogout={handleLogout}
       />
 
       {/* Main Dynamic View Content */}
