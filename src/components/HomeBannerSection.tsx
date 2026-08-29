@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import apolloBannerImg1 from '../assets/images/regenerated_image_1787297022512.jpg';
-import apolloBannerImg2 from '../assets/images/regenerated_image_1787297019496.jpg';
-import apolloBannerImg3 from '../assets/images/regenerated_image_1787298186833.webp';
+import apolloBannerImg1 from 'https://static-image-for-website-054012425448-us-east-1-an.s3.us-east-1.amazonaws.com/331739577_597087395222131_3860332774088546432_n.webp';
+import apolloBannerImg2 from 'https://static-image-for-website-054012425448-us-east-1-an.s3.us-east-1.amazonaws.com/Screenshot_20260821_123559_Instagram.jpg';
+import apolloBannerImg3 from 'https://static-image-for-website-054012425448-us-east-1-an.s3.us-east-1.amazonaws.com/Screenshot_20260821_123754_Instagram.jpg';
 
 interface BannerSlide {
   id: string;
