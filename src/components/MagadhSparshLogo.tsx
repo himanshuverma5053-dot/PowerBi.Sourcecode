@@ -1,73 +1,64 @@
-import React, { useState, useEffect } from 'react';
-import { getOfficialLogoSettings, LogoDisplaySettings, DEFAULT_LOGO_SETTINGS } from '../utils/logoStorage';
+import React from 'react';
 
 interface MagadhSparshLogoProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  src?: string;
+  alt?: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
+  showSubtitle?: boolean;
+  isDark?: boolean;
   onClick?: () => void;
 }
 
 export const MagadhSparshLogo: React.FC<MagadhSparshLogoProps> = ({
-  size = 'md',
+  src = '/magadh_sparsh_logo.svg',
+  alt = 'Magadh Sparsh',
+  size = 'sm',
   className = '',
+  isDark = false,
   onClick,
 }) => {
-  const [settings, setSettings] = useState<LogoDisplaySettings>(() => getOfficialLogoSettings());
-
-  useEffect(() => {
-    const updateLogo = (e?: Event) => {
-      if (e && (e as CustomEvent).detail) {
-        setSettings((e as CustomEvent).detail);
-      } else {
-        setSettings(getOfficialLogoSettings());
-      }
-    };
-
-    window.addEventListener('officialLogoUpdated', updateLogo as EventListener);
-    window.addEventListener('storage', updateLogo as EventListener);
-    return () => {
-      window.removeEventListener('officialLogoUpdated', updateLogo as EventListener);
-      window.removeEventListener('storage', updateLogo as EventListener);
-    };
-  }, []);
-
-  // Compute base height multiplier based on size prop
-  const sizeMultiplier = {
-    sm: 0.75,
-    md: 1.0,
-    lg: 1.33,
-    xl: 1.66,
-  }[size];
-
-  const calculatedMaxHeight = Math.round((settings.maxHeight || 36) * sizeMultiplier);
-
-  const containerStyle: React.CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: settings.alignment === 'left' ? 'flex-start' : settings.alignment === 'right' ? 'flex-end' : 'center',
-  };
-
-  const imgStyle: React.CSSProperties = {
-    maxHeight: `${calculatedMaxHeight}px`,
-    width: 'auto',
-    objectFit: settings.objectFit || 'contain',
-    transform: `scale(${settings.scale || 1.0}) translate(${settings.offsetX || 0}px, ${settings.offsetY || 0}px)`,
-    transformOrigin: 'center center',
-    transition: 'transform 0.15s ease-out, max-height 0.15s ease-out',
-  };
+  // Balanced height classes for the logo image with increased sizing
+  const heightClasses = {
+    xs: 'h-7 sm:h-8',
+    sm: 'h-10 sm:h-12 md:h-14',
+    md: 'h-13 sm:h-15 md:h-16 lg:h-18',
+    lg: 'h-16 sm:h-20 md:h-22',
+    xl: 'h-20 sm:h-24 md:h-28',
+  }[size] || 'h-12 sm:h-14 md:h-16';
 
   return (
     <div
+      id="magadh-sparsh-brand-logo-container"
       onClick={onClick}
-      style={containerStyle}
-      className={`cursor-pointer select-none group/logo relative overflow-visible ${className}`}
+      className={`inline-flex items-center justify-center cursor-pointer select-none group/logo relative overflow-visible transition-transform active:scale-95 bg-transparent ${className}`}
+      title="Magadh Sparsh - Return home"
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          onClick?.();
+        }
+      }}
     >
       <img
-        src={settings.url && settings.url.trim() !== '' ? settings.url : DEFAULT_LOGO_SETTINGS.url}
-        alt="Website Logo"
-        style={imgStyle}
-        className="transition-opacity duration-200 group-hover/logo:opacity-95"
+        id="magadh-sparsh-logo-img"
+        src={src || '/magadh_sparsh_logo.svg'}
+        alt={alt || 'Magadh Sparsh'}
+        className={`${heightClasses} w-auto max-w-[280px] sm:max-w-[340px] md:max-w-[420px] object-contain transition-all duration-200 group-hover/logo:opacity-90 select-none bg-transparent`}
+        referrerPolicy="no-referrer"
+        loading="eager"
+        onError={(e) => {
+          // Fallback if custom source fails
+          const target = e.target as HTMLImageElement;
+          if (target.src !== `${window.location.origin}/magadh_sparsh_logo.svg` && target.src !== '/magadh_sparsh_logo.svg') {
+            target.src = '/magadh_sparsh_logo.svg';
+          }
+        }}
       />
     </div>
   );
 };
+
+export default MagadhSparshLogo;
+

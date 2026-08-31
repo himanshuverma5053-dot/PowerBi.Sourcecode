@@ -224,3 +224,55 @@ export interface CustomerAccount {
   updatedAt?: string;
 }
 
+export type RequestType =
+  | 'Complaint Request'
+  | 'Warranty Claim'
+  | 'Damaged / Quality Issue'
+  | 'Missing Item / Dispatch Issue'
+  | 'Billing / GST Issue'
+  | 'General Inquiries';
+
+export type RequestStatus =
+  | 'Pending Review'
+  | 'In Progress'
+  | 'Technician Assigned'
+  | 'Approved'
+  | 'Resolved'
+  | 'Rejected';
+
+export interface RequestTimelineEvent {
+  id: string;
+  timestamp: string;
+  author: string;
+  role: 'Customer' | 'Support Executive' | 'Warehouse Manager' | 'Quality Engineer' | 'System';
+  message: string;
+  statusChange?: RequestStatus;
+}
+
+export interface ComplaintRequest {
+  id: string;
+  requestNumber: string;
+  type: RequestType;
+  title: string;
+  description: string;
+  category: string;
+  orderNumber?: string;
+  invoiceNumber?: string;
+  productName?: string;
+  tyreBrand?: string;
+  tyreSize?: string;
+  quantity?: number;
+  priority: 'Low' | 'Medium' | 'High' | 'Urgent';
+  status: RequestStatus;
+  createdAt: string;
+  updatedAt: string;
+  customerName: string;
+  customerPhone?: string;
+  customerEmail?: string;
+  companyName?: string;
+  assignedTo?: string;
+  resolutionSummary?: string;
+  timeline: RequestTimelineEvent[];
+}
+
+

@@ -47,30 +47,14 @@ export function getCustomerEffectivePrice(
   }
 
   let finalPrice = basePrice;
-
-  // 3. Apply product-specific discount if any
-  if (override?.discountPercent && override.discountPercent > 0) {
-    finalPrice = finalPrice * (1 - override.discountPercent / 100);
-  }
-  if (override?.discountFlat && override.discountFlat > 0) {
-    finalPrice = Math.max(0, finalPrice - override.discountFlat);
-  }
-
-  // 4. Apply customer-level overall discount %
-  const overallDisc = customer.overallDiscountPercent || 0;
-  if (overallDisc > 0) {
-    finalPrice = finalPrice * (1 - overallDisc / 100);
-  }
-
   const roundedEffectivePrice = Math.round(finalPrice);
-  const totalDiscountPercent = override?.discountPercent || overallDisc || 0;
 
   return {
     effectivePrice: roundedEffectivePrice,
     basePrice,
     pricingLabel,
     hasCustomOverride,
-    appliedDiscountPercent: totalDiscountPercent
+    appliedDiscountPercent: 0
   };
 }
 

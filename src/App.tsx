@@ -17,12 +17,15 @@ import { ProductDetailModal } from './components/ProductDetailModal';
 import { MyOrderPage } from './components/MyOrderPage';
 import { PaymentPage } from './components/PaymentPage';
 import { ProfilePage } from './components/ProfilePage';
+import { MyRequestsPage } from './components/MyRequestsPage';
+import { TrackConsignmentsPage } from './components/TrackConsignmentsPage';
 import { InvoiceModal } from './components/InvoiceModal';
 import { OrderDetailsPage } from './components/OrderDetailsPage';
 import { AdminPanel } from './components/AdminPanel';
 import { TyreLogo } from './components/TyreLogo';
 import { TyreLoader } from './components/TyreLoader';
 import { Footer } from './components/Footer';
+import { CustomSearchIcon } from './components/SearchIcon';
 import { checkIsAdmin, ADMIN_CONFIG } from './utils/admin';
 import { getCustomerEffectivePrice, isProductVisibleToCustomer } from './utils/customerPricing';
 import { fetchOrdersFromBackend, saveOrderToBackend, updateOrderStatusInBackend } from './services/orderService';
@@ -42,6 +45,52 @@ import {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('home');
+
+  const getModeFromUrl = (): 'customer' | 'admin' => {
+    try {
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const modeParam = params.get('mode') || params.get('interface') || params.get('view');
+        if (modeParam === 'admin' || params.get('admin') === 'true') {
+          return 'admin';
+        }
+        if (modeParam === 'customer') {
+          return 'customer';
+        }
+        const pathname = window.location.pathname.toLowerCase();
+        if (pathname.includes('/admin')) {
+          return 'admin';
+        }
+        const hash = window.location.hash.toLowerCase();
+        if (hash.includes('admin')) {
+          return 'admin';
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    return safeGetLocalStorage<'customer' | 'admin'>('magadh_interface_mode', 'customer');
+  };
+
+  const [interfaceMode, setInterfaceMode] = useState<'customer' | 'admin'>(getModeFromUrl);
+
+  useEffect(() => {
+    const handleUrlChange = () => {
+      const detected = getModeFromUrl();
+      setInterfaceMode(detected);
+    };
+
+    window.addEventListener('popstate', handleUrlChange);
+    window.addEventListener('hashchange', handleUrlChange);
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+      window.removeEventListener('hashchange', handleUrlChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    safeSetLocalStorage('magadh_interface_mode', interfaceMode);
+  }, [interfaceMode]);
 
   // Helper to ensure mock tyres always have the high resolution product and tread images
   const initializeProducts = (rawList: TyreProduct[]): TyreProduct[] => {
@@ -173,21 +222,12 @@ export default function App() {
       const dbProducts = await fetchProductsFromBackend();
       if (dbProducts && Array.isArray(dbProducts) && dbProducts.length > 0) {
         setProducts(dbProducts);
-        if (showNotification) {
-          showToast(`Loaded ${dbProducts.length} live products from catalogue`);
-        }
       } else {
         setProducts(MOCK_TYRES);
-        if (showNotification) {
-          showToast('Loaded standard product catalogue');
-        }
       }
     } catch (err) {
       console.error('Database product fetch error:', err);
       setProducts(MOCK_TYRES);
-      if (showNotification) {
-        showToast('Connected to product catalogue');
-      }
     } finally {
       setIsProductsLoading(false);
     }
@@ -227,7 +267,7 @@ export default function App() {
 
   // Filters State for Catalogue
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('RADIAL');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedBrand, setSelectedBrand] = useState<string>('All');
   const [selectedRimSize, setSelectedRimSize] = useState<string>('All');
   const [selectedTerrain, setSelectedTerrain] = useState<string>('All');
@@ -237,9 +277,9 @@ export default function App() {
   // Track Toast Notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3500);
+  const showToast = (_msg: string) => {
+    // Disabled toast messages on button clicks as requested
+    setToastMessage(null);
   };
 
   // Open Order Details Page on Buy Now Click
@@ -536,31 +576,44 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#F7F7F7] text-slate-900 font-sans flex flex-col selection:bg-slate-900 selection:text-white overflow-x-hidden w-full max-w-full">
       
-      {/* Toast Popup Notification */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl border border-slate-700 text-xs font-bold flex items-center space-x-2 animate-bounce-short">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-          <span>{toastMessage}</span>
-        </div>
-      )}
-
-      {/* Navigation Bar */}
-      <Navbar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        isAdmin={isAdmin}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        isLoggedIn={isLoggedIn}
-        currentUser={currentUser}
-        allProducts={visibleProducts}
-        onSelectProduct={(product) => setSelectedProductForModal(product)}
-        onSelectCategory={(category) => setSelectedCategory(category)}
-        onLogout={handleLogout}
-      />
-
       {/* Main Dynamic View Content */}
-      <main className="flex-1 w-full max-w-full overflow-x-hidden">
+      {interfaceMode === 'admin' ? (
+        <AdminPanel
+          products={products}
+          isProductsLoading={isProductsLoading}
+          orders={orders}
+          payments={payments}
+          coupons={coupons}
+          customerAccounts={customerAccounts}
+          onUpdateCustomerAccounts={setCustomerAccounts}
+          onAddOrUpdateProduct={handleAddOrUpdateProduct}
+          onDeleteProduct={handleDeleteProduct}
+          onArchiveProduct={handleArchiveProduct}
+          onUpdateOrderStatus={handleUpdateOrderStatus}
+          onViewInvoice={(order) => setSelectedOrderForInvoice(order)}
+          showToast={showToast}
+        />
+      ) : (
+        <>
+          {/* Navigation Bar */}
+          <Navbar
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            isAdmin={isAdmin}
+            interfaceMode={interfaceMode}
+            onSwitchMode={(mode) => setInterfaceMode(mode)}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            isLoggedIn={isLoggedIn}
+            currentUser={currentUser}
+            allProducts={visibleProducts}
+            onSelectProduct={(product) => setSelectedProductForModal(product)}
+            onSelectCategory={(category) => setSelectedCategory(category)}
+            onLogout={handleLogout}
+          />
+
+          {/* Main Dynamic View Content */}
+          <main className="flex-1 w-full max-w-full overflow-x-hidden">
         {/* TAB 1: HOMEPAGE */}
         {activeTab === 'home' && (
           <div className="animate-fade-in py-4 space-y-2 sm:space-y-3">
@@ -605,9 +658,6 @@ export default function App() {
             {/* Featured Showcase Banner Carousel with Zero Horizontal Space */}
             <HomeBannerSection />
 
-            {/* Our Partner's Section */}
-            <OurPartnersSection />
-
             {/* Section 3: For Popular Choices & Knowledge */}
             <ForYourKnowledgeSection
               products={visibleProducts}
@@ -628,20 +678,34 @@ export default function App() {
 
         {/* TAB 2: PRODUCTS PAGE (Vertical Style as requested) */}
         {activeTab === 'catalogue' && (() => {
-          const displayProducts = visibleProducts;
+          const isTruckFilter = selectedCategory.toLowerCase() === 'truck';
+          const truckProducts = visibleProducts.filter(p => 
+            p.category?.toLowerCase() === 'truck' || 
+            p.compatibleVehicles?.some(v => /truck|commercial|tipper|multi-axle/i.test(v))
+          );
+          
+          let displayProducts = visibleProducts;
+          if (isTruckFilter) {
+            displayProducts = truckProducts.length > 0 ? truckProducts : visibleProducts;
+          }
+
           const searchedProducts = displayProducts.filter(p => matchesSearchQuery(p, searchQuery));
 
           return (
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
               {/* Products Header Card */}
-              <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/90 shadow-2xs">
+              <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/90 shadow-2xs space-y-5">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div>
-                    <h1 className="text-2xl sm:text-3xl font-black font-display text-slate-900 tracking-tight">
-                      Products
-                    </h1>
+                    <div className="flex items-center space-x-2.5">
+                      <h1 className="text-2xl sm:text-3xl font-black font-display text-slate-900 tracking-tight">
+                        Products
+                      </h1>
+                    </div>
                     <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                      {searchedProducts.length > 0
+                      {isTruckFilter
+                        ? `Showing Commercial & Heavy Duty Truck Tyres (${searchedProducts.length} Available)`
+                        : searchedProducts.length > 0
                         ? `Explore Our Complete Tyre Range (${searchedProducts.length} Available)`
                         : 'No products available currently'}
                     </p>
@@ -649,13 +713,13 @@ export default function App() {
 
                   {/* Search Bar Input */}
                   <div className="w-full md:w-96 relative flex items-center">
-                    <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <CustomSearchIcon className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                     <input
                       type="text"
-                      placeholder="Search tyre name, size e.g. 140/70-17, brand..."
+                      placeholder="Search tyre name, size e.g. 295/90R20, brand..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-slate-100/80 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0972D3] transition-all shadow-2xs"
+                      className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-slate-100/80 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0066c0] transition-all shadow-2xs"
                     />
                     {searchQuery && (
                       <button
@@ -716,10 +780,10 @@ export default function App() {
         })()}
 
         {/* TAB: ORDER DETAILS & VERIFICATION PAGE */}
-        {activeTab === 'order-details' && checkoutOrderProduct && (
+        {activeTab === 'order-details' && (
           <OrderDetailsPage
-            product={checkoutOrderProduct.product}
-            initialQuantity={checkoutOrderProduct.quantity}
+            product={checkoutOrderProduct?.product || visibleProducts[0] || MOCK_TYRES[0]}
+            initialQuantity={checkoutOrderProduct?.quantity || 1}
             currentCustomer={currentCustomerAccount}
             currentUser={currentUser}
             currentUserEmail={currentUserEmail}
@@ -813,9 +877,25 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 6: ADMIN CONSOLE */}
-        {activeTab === 'admin' && null}
+        {/* TAB 6: MY REQUESTS (COMPLAINT REQUEST) PAGE */}
+        {(activeTab === 'my-requests' || activeTab === 'complaint') && (
+          <div className="animate-fade-in min-h-[70vh]">
+            <MyRequestsPage onBackToHome={() => setActiveTab('home')} />
+          </div>
+        )}
+
+        {/* TAB 7: ORDER TRACKING PAGE */}
+        {(activeTab === 'track-consignments' || activeTab === 'track') && (
+          <div className="animate-fade-in min-h-[70vh]">
+            <TrackConsignmentsPage
+              orders={orders}
+              onViewInvoice={(order) => setSelectedOrderForInvoice(order)}
+            />
+          </div>
+        )}
       </main>
+    </>
+  )}
 
       {/* Modals & Overlays */}
       <ProductDetailModal

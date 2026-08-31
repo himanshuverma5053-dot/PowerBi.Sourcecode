@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Loader2, X, Tag, Lightbulb, Disc, AlertCircle, ExternalLink, ArrowRight, ChevronRight } from 'lucide-react';
+import { Loader2, X, Tag, Lightbulb, Disc, AlertCircle, ExternalLink, ArrowRight, ChevronRight } from 'lucide-react';
+import { CustomSearchIcon } from './SearchIcon';
 import { TyreProduct } from '../types';
 import { searchProductsInBackend } from '../services/productService';
 import { MOCK_TYRES } from '../data/mockData';
@@ -263,34 +264,34 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
               }
             }}
             placeholder={placeholder}
-            className={`w-full pl-10 pr-16 rounded-xl sm:rounded-2xl text-xs sm:text-sm bg-slate-100/90 border border-slate-200/90 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white focus:border-transparent transition-all text-slate-950 placeholder-slate-400 font-medium ${
-              isMobile ? 'py-2.5' : 'py-2.5'
+            className={`w-full pl-14 sm:pl-15 pr-14 rounded-2xl text-sm sm:text-[14.5px] bg-slate-100/95 border border-slate-200 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:bg-white focus:border-slate-400 transition-all text-slate-950 placeholder-slate-400 font-medium ${
+              isMobile ? 'py-3.5' : 'py-3 sm:py-3.5'
             }`}
           />
 
           {/* Search Icon / Spinner on Left */}
           <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center text-slate-700 pointer-events-none">
             {isLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin text-slate-900" />
+              <Loader2 className="w-6.5 h-6.5 animate-spin text-slate-900" />
             ) : (
-              <Search className="w-4 h-4 text-slate-800 stroke-[2.2]" />
+              <CustomSearchIcon className="w-7.5 h-7.5 sm:w-8 sm:h-8 text-slate-800" />
             )}
           </div>
 
           {/* Right Action Icons (Clear X & Lightbulb / Hint) */}
-          <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center space-x-1">
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-1.5">
             {inputValue && (
               <button
                 type="button"
                 onClick={handleClear}
-                className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-slate-200/70 transition-colors cursor-pointer"
+                className="text-slate-500 hover:text-slate-900 p-1.5 rounded-full hover:bg-slate-200/70 transition-colors cursor-pointer"
                 title="Clear search"
               >
                 <X className="w-4 h-4 stroke-[2.2]" />
               </button>
             )}
             <div className="p-1 text-amber-500 hover:text-amber-600 transition-transform hover:scale-110 cursor-pointer flex items-center justify-center">
-              <Lightbulb className="w-4 h-4 text-amber-500 fill-amber-400" />
+              <Lightbulb className="w-4.5 h-4.5 text-amber-500 fill-amber-400" />
             </div>
           </div>
         </div>

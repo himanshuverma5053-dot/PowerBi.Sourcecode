@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Order } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import {
-  Truck, Search, CheckCircle2, Clock, MapPin,
+  Truck, CheckCircle2, Clock, MapPin,
   FileText, ShieldCheck, AlertCircle, PackageCheck, Download
 } from 'lucide-react';
+import { CustomSearchIcon } from './SearchIcon';
 
 interface OrderTrackerProps {
   orders: Order[];
@@ -62,7 +63,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 font-bold text-sm shadow-inner focus:outline-none focus:border-slate-400"
             />
-            <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
+            <CustomSearchIcon className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
           </div>
 
           <button

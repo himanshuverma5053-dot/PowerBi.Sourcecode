@@ -1,39 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 150" width="100%" height="100%" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 130" width="100%" height="100%">
   <defs>
-    <linearGradient id="sparshGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#4F6BFF" />
-      <stop offset="22%" stop-color="#6B5CFA" />
-      <stop offset="48%" stop-color="#934EEB" />
-      <stop offset="72%" stop-color="#C73ECB" />
-      <stop offset="88%" stop-color="#E837B5" />
-      <stop offset="100%" stop-color="#FA439C" />
-    </linearGradient>
-
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&amp;family=Montserrat:ital,wght@1,800;1,900&amp;display=swap');
-      
-      .brand-magadh {
-        font-family: 'Playfair Display', 'Bodoni MT', 'Didot', 'Georgia', 'Times New Roman', serif;
+      @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,900;1,900&amp;family=Poppins:ital,wght@1,800;1,900&amp;display=swap');
+      .brand-title {
+        font-family: 'Playfair Display', 'Bodoni Moda', 'Didot', 'Georgia', 'Times New Roman', serif;
         font-size: 82px;
         font-weight: 900;
         fill: #000000;
-        letter-spacing: -2px;
+        letter-spacing: -1.5px;
       }
-      
-      .brand-sparsh {
-        font-family: 'Montserrat', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        font-size: 64px;
+      .brand-subtitle {
+        font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Montserrat', sans-serif;
+        font-size: 58px;
         font-weight: 900;
         font-style: italic;
-        fill: url(#sparshGrad);
+        fill: url(#sparshGradSvg);
         letter-spacing: -0.5px;
       }
     </style>
+    <!-- Smooth Multi-Stop Gradient for "Sparsh" text -->
+    <linearGradient id="sparshGradSvg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4F6DFE" />
+      <stop offset="25%" stop-color="#6F60FA" />
+      <stop offset="50%" stop-color="#9C4EF2" />
+      <stop offset="75%" stop-color="#CA44CF" />
+      <stop offset="100%" stop-color="#F94CAB" />
+    </linearGradient>
   </defs>
 
-  <!-- Magadh main text -->
-  <text class="brand-magadh" x="6" y="78">magadh</text>
-  
-  <!-- Sparsh gradient italic subtext -->
-  <text class="brand-sparsh" x="186" y="136">Sparsh</text>
+  <!-- "magadh" main title in serif lettering (No Background) -->
+  <text x="8" y="70" class="brand-title">magadh</text>
+
+  <!-- "Sparsh" italic sub-brand aligned under the 'adh' section (No Background) -->
+  <text x="180" y="120" class="brand-subtitle">Sparsh</text>
 </svg>

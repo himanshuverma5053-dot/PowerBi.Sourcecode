@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <g transform="translate(36, 36) rotate(-45)">
+    <!-- Main Magnifying Glass Lens Rim (Full Ring) -->
+    <circle cx="0" cy="0" r="24.5" stroke="#262626" stroke-width="7" fill="none"/>
+    <!-- Top-Left Dark Accent Quadrant on Lens Outer Ring -->
+    <path d="M -24.5 0 A 24.5 24.5 0 0 1 0 -24.5" stroke="#111111" stroke-width="7" fill="none" stroke-linecap="butt"/>
+    <!-- Neck Connector -->
+    <rect x="-2.5" y="24.5" width="2.5" height="7.5" fill="#444444"/>
+    <rect x="0" y="24.5" width="2.5" height="7.5" fill="#222222"/>
+    <!-- Handle -->
+    <rect x="-4.8" y="32" width="4.8" height="43" fill="#2a2a2a"/>
+    <rect x="0" y="32" width="4.8" height="43" fill="#141414"/>
+  </g>
+</svg>

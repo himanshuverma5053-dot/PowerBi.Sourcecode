@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Search, Car, Sliders, CheckCircle2, Sparkles, Disc3 } from 'lucide-react';
+import { Car, Sliders, CheckCircle2, Sparkles, Disc3 } from 'lucide-react';
+import { CustomSearchIcon } from './SearchIcon';
 import { VehicleCategory } from '../types';
 
 interface TyreFinderWidgetProps {
@@ -103,7 +104,7 @@ export const TyreFinderWidget: React.FC<TyreFinderWidgetProps> = ({ onSearch, se
             type="submit"
             className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white font-black text-sm shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer"
           >
-            <Search className="w-4 h-4 text-white" />
+            <CustomSearchIcon className="w-4 h-4 text-white" />
             <span>Search Tyres Catalog</span>
           </button>
         </div>

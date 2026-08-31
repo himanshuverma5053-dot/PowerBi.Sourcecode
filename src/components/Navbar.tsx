@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Search, ShieldCheck, X, PhoneCall,
-  ChevronDown, Disc3, Power, Car, Truck, Bike,
-  CreditCard, FileText, HelpCircle, UserCircle2,
-  PackageCheck, Sparkles, SlidersHorizontal, ArrowRight,
-  Headphones, Tag, Award
+  ChevronDown, Power,
+  ArrowRight,
+  Headphones, Tag, Award, AlertCircle, Phone, Mail, MapPin, Clock, MessageSquare, X
 } from 'lucide-react';
+import { CustomSearchIcon } from './SearchIcon';
+import { QuickContactIcon } from './QuickContactIcon';
+import { CustomMenuIcon } from './MenuIcon';
 import { MagadhSparshLogo } from './MagadhSparshLogo';
 import { TyreProduct } from '../types';
 import { HeaderSearchBar } from './HeaderSearchBar';
@@ -17,6 +18,8 @@ interface NavbarProps {
   setActiveTab: (tab: string) => void;
   isAdmin: boolean;
   setIsAdmin?: (admin: boolean) => void;
+  interfaceMode?: 'customer' | 'admin';
+  onSwitchMode?: (mode: 'customer' | 'admin') => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   isLoggedIn?: boolean;
@@ -33,6 +36,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   setActiveTab,
   isAdmin,
   setIsAdmin,
+  interfaceMode = 'customer',
+  onSwitchMode,
   searchQuery,
   setSearchQuery,
   isLoggedIn = false,
@@ -44,9 +49,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLogout,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [quickContactOpen, setQuickContactOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileSearchExpanded, setIsMobileSearchExpanded] = useState(false);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(72);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,6 +63,21 @@ export const Navbar: React.FC<NavbarProps> = ({
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      if (headerRef.current) {
+        setHeaderHeight(headerRef.current.offsetHeight);
+      }
+    };
+    updateHeaderHeight();
+    const timer = setTimeout(updateHeaderHeight, 50);
+    window.addEventListener('resize', updateHeaderHeight);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', updateHeaderHeight);
+    };
+  }, [isMobileSearchExpanded]);
 
   // Close drawer on ESC key
   useEffect(() => {
@@ -70,17 +93,27 @@ export const Navbar: React.FC<NavbarProps> = ({
   }, [menuOpen]);
 
   const handleNavClick = (tabId: string) => {
-    setActiveTab(tabId);
+    if (tabId === 'admin') {
+      if (onSwitchMode) {
+        onSwitchMode('admin');
+      } else {
+        setActiveTab('admin');
+      }
+    } else if (tabId === 'complaint') {
+      setActiveTab('my-requests');
+    } else if (tabId === 'support' || tabId === 'dealership-apply') {
+      setQuickContactOpen(true);
+    } else if (tabId === 'dealership-benefits') {
+      setActiveTab('home');
+      setTimeout(() => {
+        const el = document.getElementById('partner-section') || document.getElementById('our-partners-section');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      setActiveTab(tabId);
+    }
     setMenuOpen(false);
     setIsMobileSearchExpanded(false);
-  };
-
-  const handleCategoryClick = (catId: string) => {
-    if (onSelectCategory) {
-      onSelectCategory(catId);
-    }
-    setActiveTab('catalogue');
-    setMenuOpen(false);
   };
 
   const toggleSection = (id: string) => {
@@ -95,95 +128,43 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className={`sticky top-0 z-[100010] backdrop-blur-xl bg-white/95 transition-all duration-200 w-full max-w-full overflow-x-clip ${
-      isScrolled
-        ? 'border-b border-slate-200/90 shadow-sm'
-        : 'border-b border-slate-100/80 shadow-2xs'
-    }`}>
-      {/* Top Announcement Bar */}
-      <div className="bg-slate-100 text-slate-700 border-b border-slate-200 text-[11px] sm:text-xs py-1.5 sm:py-1 px-3 sm:px-4 w-full overflow-hidden">
-        <div className="max-w-7xl mx-auto flex justify-between items-center gap-2 min-w-0">
-          <div className="flex items-center space-x-1.5 sm:space-x-3 min-w-0 flex-1 overflow-hidden">
-            <span className="flex items-center text-slate-800 font-semibold truncate text-[11px] sm:text-xs">
-              <ShieldCheck className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5 mr-1 text-emerald-600 flex-shrink-0" />
-              <span className="truncate">100% Authorised Dealer Warranty | GST-Ready Partner</span>
-            </span>
-            <span className="hidden md:inline text-slate-300">|</span>
-            <span className="hidden md:inline text-slate-500 font-medium truncate">
-              Certified quality wholesale supply
-            </span>
-          </div>
-          <div className="flex items-center text-[11px] sm:text-xs shrink-0 whitespace-nowrap">
-            <a href="tel:6371231522" className="text-slate-700 hover:text-slate-950 font-bold flex items-center transition-colors">
-              <PhoneCall className="w-3 h-3 sm:w-3 sm:h-3 mr-1 text-slate-600 flex-shrink-0" />
-              <span>Support: 6371-23-1522</span>
-            </a>
-          </div>
-        </div>
-      </div>
-
+    <>
+      <header
+        ref={headerRef}
+        className={`fixed top-0 left-0 right-0 z-[100010] bg-white transition-all duration-200 w-full max-w-full overflow-x-clip ${
+          isScrolled
+            ? 'border-b border-slate-200/90 shadow-sm'
+            : 'border-b border-slate-200/80 shadow-2xs'
+        }`}
+      >
       {/* Main Navbar */}
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 relative">
-        <div className="flex items-center justify-between h-[72px] sm:h-16 md:h-18 relative">
-          {/* LEFT SECTION: Apollo-inspired Hamburger / Close Toggle Button */}
-          <div className={`flex items-center space-x-2 sm:space-x-3.5 transition-all duration-300 ${
+        <div className="flex items-center justify-between h-[76px] sm:h-20 md:h-22 relative">
+          
+          {/* LEFT SECTION: Hamburger Menu Button */}
+          <div className={`flex items-center transition-all duration-300 ${
             isMobileSearchExpanded ? 'blur-[1.5px] opacity-60' : ''
           }`}>
-            {/* Hamburger / Close Icon Toggle Button */}
             <button
               id="hamburger-menu-toggle-btn"
               onClick={() => setMenuOpen(!menuOpen)}
-              className={`group relative flex items-center justify-center p-3 sm:px-3 sm:py-2.5 rounded-2xl transition-all duration-200 border cursor-pointer select-none active:scale-95 z-10 ${
-                menuOpen
-                  ? 'bg-slate-950 text-white border-slate-900 shadow-md ring-2 ring-amber-400/50'
-                  : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-200 hover:border-slate-300 shadow-2xs hover:shadow-xs'
-              }`}
+              className="p-0 border-0 bg-transparent outline-none focus:outline-none focus:ring-0 focus-visible:outline-none transition-transform duration-150 cursor-pointer select-none active:scale-95 flex items-center justify-center"
               aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={menuOpen}
               title={menuOpen ? "Close navigation menu (Esc)" : "Open navigation menu"}
             >
-              {/* Animated 3-Bar Hamburger to X Morphing Icon */}
-              <div
-                id="hamburger-icon-wrapper"
-                className="relative w-5.5 h-4.5 sm:w-5 sm:h-4 flex flex-col justify-between items-center py-0.5"
-                aria-hidden="true"
-              >
-                <span
-                  className={`block h-0.5 w-5.5 sm:w-5 rounded-full transition-all duration-300 origin-center ${
-                    menuOpen
-                      ? 'bg-amber-400 rotate-45 translate-y-[6px] sm:translate-y-[5.5px]'
-                      : 'bg-slate-800 group-hover:bg-slate-950'
-                  }`}
-                />
-                <span
-                  className={`block h-0.5 rounded-full transition-all duration-200 ${
-                    menuOpen
-                      ? 'w-0 opacity-0 translate-x-2'
-                      : 'w-4.5 sm:w-4 self-start bg-slate-800 group-hover:bg-slate-950 group-hover:w-5.5 sm:group-hover:w-5'
-                  }`}
-                />
-                <span
-                  className={`block h-0.5 w-5.5 sm:w-5 rounded-full transition-all duration-300 origin-center ${
-                    menuOpen
-                      ? 'bg-amber-400 -rotate-45 -translate-y-[6px] sm:translate-y-[-5.5px]'
-                      : 'bg-slate-800 group-hover:bg-slate-950'
-                  }`}
-                />
-              </div>
-
-              <span className={`hidden sm:inline font-bold text-xs uppercase tracking-wider ml-2 transition-colors ${
-                menuOpen ? 'text-white' : 'text-slate-700 group-hover:text-slate-900'
-              }`}>
-                {menuOpen ? 'Close' : 'Menu'}
-              </span>
+              <CustomMenuIcon
+                isOpen={menuOpen}
+                className="w-11 h-11 sm:w-12 sm:h-12 md:w-13 md:h-13 block"
+              />
             </button>
           </div>
 
-          {/* MIDDLE SECTION: Brand Logo Centered */}
-          <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-auto z-20 py-1">
+          {/* MIDDLE SECTION: Centered Brand Logo shifted slightly left */}
+          <div className="absolute left-1/2 -translate-x-[calc(50%+18px)] sm:-translate-x-[calc(50%+26px)] md:-translate-x-[calc(50%+32px)] flex flex-col items-center justify-center pointer-events-auto z-20 py-1">
             <MagadhSparshLogo
-              size="lg"
-              className="transform sm:scale-95 md:scale-100"
+              size="md"
+              className="transform hover:scale-105 transition-transform"
               onClick={() => {
                 setActiveTab('home');
                 setMenuOpen(false);
@@ -191,32 +172,41 @@ export const Navbar: React.FC<NavbarProps> = ({
             />
           </div>
 
-          {/* RIGHT SECTION: Search Bar & Mobile Search Toggle */}
-          <div className="flex items-center space-x-1.5 sm:space-x-2 ml-1 sm:ml-2">
+          {/* RIGHT SECTION: Search Bar & Quick Contact */}
+          <div className="flex items-center space-x-1 sm:space-x-2.5 ml-1 sm:ml-2">
             {/* Desktop / Tablet Search Bar */}
-            <div className="hidden lg:block w-56 xl:w-72 relative z-40 mr-1">
+            <div className="hidden lg:block w-64 xl:w-80 relative z-40">
               <HeaderSearchBar
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
                 onSelectProduct={onSelectProduct}
                 allProducts={allProducts}
                 setActiveTab={setActiveTab}
-                placeholder="Search tyres..."
+                placeholder="Search tyres, sizes..."
               />
             </div>
 
             {/* Mobile / Tablet Search Toggle */}
             <button
+              id="header-mobile-search-btn"
               onClick={() => setIsMobileSearchExpanded(!isMobileSearchExpanded)}
-              className={`lg:hidden p-2.5 sm:p-2 rounded-2xl sm:rounded-xl border transition-all flex items-center justify-center ${
-                isMobileSearchExpanded
-                  ? 'bg-slate-900 text-white border-slate-950 shadow-sm'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border-slate-200 shadow-2xs'
-              }`}
+              className="lg:hidden p-2 sm:p-2.5 text-[#016DE0] hover:text-[#005299] transition-colors flex items-center justify-center bg-transparent border-0 shadow-none cursor-pointer"
               aria-label="Search Tyres"
               title="Search tyres"
             >
-              <Search className="w-5 h-5 sm:w-4 sm:h-4" />
+              <CustomSearchIcon className="w-9 h-9 sm:w-10 sm:h-10 text-[#016DE0]" />
+            </button>
+
+            {/* Quick Contact Icon Button placed after search icon */}
+            <button
+              id="header-quick-contact-btn"
+              type="button"
+              onClick={() => setQuickContactOpen(true)}
+              className="p-1.5 sm:p-2 text-[#016DE0] hover:text-[#005299] hover:bg-blue-50/60 active:scale-95 rounded-2xl transition-all flex items-center justify-center bg-transparent border-0 cursor-pointer select-none group flex-shrink-0"
+              aria-label="Quick Contact & Support"
+              title="Quick Contact & Customer Service"
+            >
+              <QuickContactIcon className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 text-[#016DE0] group-hover:text-[#005299] transition-colors" />
             </button>
           </div>
         </div>
@@ -243,12 +233,12 @@ export const Navbar: React.FC<NavbarProps> = ({
         />
       </div>
 
-      {/* REDESIGNED NAVIGATION MENU DRAWER (MATCHING USER'S SCREENSHOT STYLE) */}
+      {/* NAVIGATION MENU DRAWER */}
       {typeof document !== 'undefined' && createPortal(
         <AnimatePresence>
           {menuOpen && (
             <>
-              {/* Dark Overlay Backdrop */}
+              {/* Dark Overlay Backdrop starting below the header */}
               <motion.div
                 key="menu-backdrop"
                 initial={{ opacity: 0 }}
@@ -256,255 +246,174 @@ export const Navbar: React.FC<NavbarProps> = ({
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.22 }}
                 onClick={() => setMenuOpen(false)}
-                className="fixed inset-0 z-[99990] bg-slate-950/60 backdrop-blur-xs"
+                style={{ top: `${headerHeight}px` }}
+                className="fixed left-0 right-0 bottom-0 z-[99990] bg-slate-950/60 backdrop-blur-xs"
               />
 
-              {/* Sliding Navigation Drawer with Exact Screenshot Layout */}
+              {/* Sliding Navigation Drawer positioned directly after the heading section */}
               <motion.div
                 key="menu-drawer"
                 initial={{ x: '-100%' }}
                 animate={{ x: 0 }}
                 exit={{ x: '-100%' }}
                 transition={{ type: 'spring', damping: 28, stiffness: 280 }}
-                className="fixed top-0 left-0 bottom-0 w-[88%] max-w-[350px] sm:max-w-[380px] z-[100000] bg-white text-slate-950 flex flex-col shadow-2xl overflow-hidden"
+                style={{
+                  top: `${headerHeight}px`,
+                  height: `calc(100dvh - ${headerHeight}px)`
+                }}
+                className="fixed left-0 z-[99995] w-[86vw] max-w-[340px] sm:max-w-[380px] bg-white shadow-2xl flex flex-col overflow-hidden border-r border-slate-200 font-sans"
               >
-                {/* Clean Drawer Header / Top Close Area */}
-                <div className="flex items-center justify-between px-6 pt-5 pb-2 bg-white flex-shrink-0">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs font-black tracking-widest text-slate-400 uppercase">
-                      Menu
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setMenuOpen(false)}
-                    className="p-2 -mr-2 rounded-full hover:bg-slate-100 text-slate-700 hover:text-slate-950 transition-all cursor-pointer"
-                    aria-label="Close menu"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-
-                {/* Drawer Scrollable Body */}
-                <div className="flex-1 overflow-y-auto px-6 py-2 flex flex-col justify-between select-none">
+                {/* Scrollable Drawer Body */}
+                <div className="flex-1 overflow-y-auto px-6 sm:px-8 py-5 sm:py-6 flex flex-col justify-between">
                   
-                  <div className="space-y-5">
-                    {/* TOP 2X2 PURPLE QUICK ACTION LINKS (EXACT MATCH TO SCREENSHOT) */}
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-4 pt-1 pb-3">
-                      {/* Quick Order */}
-                      <button
-                        type="button"
-                        onClick={() => handleNavClick('quick-order')}
-                        className="text-left font-extrabold text-[17px] sm:text-[18px] text-[#7e22ce] hover:text-[#581c87] underline underline-offset-4 decoration-[#7e22ce]/60 hover:decoration-[#581c87] transition-colors cursor-pointer"
-                      >
-                        Quick Order
-                      </button>
+                  {/* TOP / MAIN NAVIGATION MENU ITEMS */}
+                  <div className="space-y-4">
+                    {/* User Greeting Section if logged in */}
+                    {isLoggedIn && (
+                      <div className="pb-3 mb-2 border-b border-slate-100">
+                        <div className="flex items-center space-x-2.5">
+                          <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs">
+                            {currentUser.charAt(0).toUpperCase() || 'U'}
+                          </div>
+                          <div className="overflow-hidden">
+                            <p className="text-xs font-black text-slate-900 truncate">
+                              {currentUser || 'Valued Partner'}
+                            </p>
+                            <p className="text-[10px] text-slate-500 font-medium truncate">
+                              {currentUserEmail || 'Verified Fleet Account'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
-                      {/* Quick Payments */}
-                      <button
-                        type="button"
-                        onClick={() => handleNavClick('quick-payments')}
-                        className="text-left font-extrabold text-[17px] sm:text-[18px] text-[#7e22ce] hover:text-[#581c87] underline underline-offset-4 decoration-[#7e22ce]/60 hover:decoration-[#581c87] transition-colors cursor-pointer leading-tight"
-                      >
-                        Quick<br />Payments
-                      </button>
-
-                      {/* Price List */}
-                      <button
-                        type="button"
-                        onClick={() => handleNavClick('catalogue')}
-                        className="text-left font-extrabold text-[17px] sm:text-[18px] text-[#7e22ce] hover:text-[#581c87] underline underline-offset-4 decoration-[#7e22ce]/60 hover:decoration-[#581c87] transition-colors cursor-pointer"
-                      >
-                        Price List
-                      </button>
-
-                      {/* Help & Support */}
-                      <a
-                        href="tel:6371231522"
-                        onClick={() => setMenuOpen(false)}
-                        className="text-left font-extrabold text-[17px] sm:text-[18px] text-[#7e22ce] hover:text-[#581c87] underline underline-offset-4 decoration-[#7e22ce]/60 hover:decoration-[#581c87] transition-colors cursor-pointer"
-                      >
-                        Help & Support
-                      </a>
-                    </div>
-
-                    {/* MAIN NAVIGATION LIST (BOLD BLACK HEADINGS WITH DOWNWARD CHEVRONS) */}
-                    <div className="space-y-3.5 sm:space-y-4 pt-2">
+                    {/* Navigation Menu List */}
+                    <div className="space-y-2 sm:space-y-3">
                       
-                      {/* 1. Products */}
+                      {/* 1. Home / Home Page */}
                       <div className="border-b border-transparent">
                         <button
                           type="button"
-                          onClick={() => toggleSection('products')}
-                          className="w-full flex items-center justify-between py-1.5 text-left text-slate-950 hover:text-slate-800 transition-colors cursor-pointer group"
+                          onClick={() => handleNavClick('home')}
+                          className="w-full flex items-center justify-between py-2 sm:py-2.5 text-left text-slate-950 hover:text-[#0066c0] transition-colors cursor-pointer group"
                         >
-                          <span className="text-[19px] sm:text-[20px] font-black tracking-tight text-slate-950">
-                            Products
+                          <span className="text-[19px] sm:text-[21px] font-black tracking-tight text-slate-950 group-hover:text-[#0066c0] group-hover:underline decoration-[#0066c0]/60 underline-offset-4 transition-colors">
+                            Home
                           </span>
-                          <ChevronDown className={`w-6 h-6 text-slate-900 transition-transform duration-200 ${
-                            expandedSection === 'products' ? 'rotate-180 text-purple-700' : ''
-                          }`} />
+                          <ChevronDown className="w-6 h-6 text-slate-900 group-hover:text-[#0066c0] transition-colors" />
+                        </button>
+                      </div>
+
+                      {/* 2. Customer Space / Catalogue */}
+                      <div className="border-b border-transparent">
+                        <button
+                          type="button"
+                          onClick={() => handleNavClick('catalogue')}
+                          className="w-full flex items-center justify-between py-2 sm:py-2.5 text-left text-slate-950 hover:text-[#0066c0] transition-colors cursor-pointer group"
+                        >
+                          <span className="text-[19px] sm:text-[21px] font-black tracking-tight text-slate-950 group-hover:text-[#0066c0] group-hover:underline decoration-[#0066c0]/60 underline-offset-4 transition-colors">
+                            Customer Space
+                          </span>
+                          <ChevronDown className="w-6 h-6 text-slate-900 group-hover:text-[#0066c0] transition-colors" />
+                        </button>
+                      </div>
+
+                      {/* 3. Dealership Section (Accordion Dropdown) */}
+                      <div className="border-b border-transparent">
+                        <button
+                          type="button"
+                          onClick={() => toggleSection('dealership')}
+                          className="w-full flex items-center justify-between py-2 sm:py-2.5 text-left text-slate-950 hover:text-[#0066c0] transition-colors cursor-pointer group"
+                        >
+                          <span className="text-[19px] sm:text-[21px] font-black tracking-tight text-slate-950 group-hover:text-[#0066c0] group-hover:underline decoration-[#0066c0]/60 underline-offset-4 transition-colors">
+                            Dealership
+                          </span>
+                          <ChevronDown
+                            className={`w-6 h-6 text-slate-900 group-hover:text-[#0066c0] transition-transform duration-200 ${
+                              expandedSection === 'dealership' ? 'rotate-180 text-[#0066c0]' : ''
+                            }`}
+                          />
                         </button>
 
-                        {/* Expandable Submenu for Products */}
-                        {expandedSection === 'products' && (
+                        {/* Accordion Sub-items */}
+                        {expandedSection === 'dealership' && (
                           <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
-                            className="pl-2 pt-2 pb-2 space-y-2 border-l-2 border-slate-200 ml-1 mt-1"
+                            className="pl-3 pr-2 py-2 space-y-2 bg-slate-50/80 rounded-2xl my-1 border border-slate-100"
                           >
                             <button
-                              onClick={() => handleNavClick('catalogue')}
-                              className="w-full text-left text-xs font-bold text-slate-800 hover:text-purple-700 py-1 flex items-center justify-between cursor-pointer"
+                              type="button"
+                              onClick={() => handleNavClick('admin')}
+                              className="w-full flex items-center justify-between py-1.5 px-2 text-xs font-bold text-slate-700 hover:text-[#0066c0] hover:bg-slate-100/80 rounded-xl transition-all cursor-pointer group/sub"
                             >
-                              <span>All Tyre Catalogue</span>
-                              <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Admin Console</span>
+                              <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover/sub:text-[#0066c0] group-hover/sub:translate-x-0.5 transition-transform" />
                             </button>
+
                             <button
-                              onClick={() => handleCategoryClick('RADIAL')}
-                              className="w-full text-left text-xs font-bold text-slate-800 hover:text-purple-700 py-1 flex items-center justify-between cursor-pointer"
+                              type="button"
+                              onClick={() => handleNavClick('dealership-apply')}
+                              className="w-full flex items-center justify-between py-1.5 px-2 text-xs font-bold text-slate-700 hover:text-[#0066c0] hover:bg-slate-100/80 rounded-xl transition-all cursor-pointer group/sub"
                             >
-                              <span>Car & SUV Tyres (Radial)</span>
-                              <Car className="w-4 h-4 text-slate-500" />
+                              <span>Apply for Dealership</span>
+                              <Tag className="w-3.5 h-3.5 text-slate-400 group-hover/sub:text-[#0066c0] transition-transform" />
                             </button>
+
                             <button
-                              onClick={() => handleCategoryClick('NON_RADIAL')}
-                              className="w-full text-left text-xs font-bold text-slate-800 hover:text-purple-700 py-1 flex items-center justify-between cursor-pointer"
+                              type="button"
+                              onClick={() => handleNavClick('dealership-benefits')}
+                              className="w-full flex items-center justify-between py-1.5 px-2 text-xs font-bold text-slate-700 hover:text-[#0066c0] hover:bg-slate-100/80 rounded-xl transition-all cursor-pointer group/sub"
                             >
-                              <span>Commercial & Truck Tyres</span>
-                              <Truck className="w-4 h-4 text-slate-500" />
-                            </button>
-                            <button
-                              onClick={() => handleCategoryClick('BIKE')}
-                              className="w-full text-left text-xs font-bold text-slate-800 hover:text-purple-700 py-1 flex items-center justify-between cursor-pointer"
-                            >
-                              <span>Two-Wheeler Tyres</span>
-                              <Bike className="w-4 h-4 text-slate-500" />
+                              <span>Partner Program Benefits</span>
+                              <Award className="w-3.5 h-3.5 text-slate-400 group-hover/sub:text-[#0066c0] transition-transform" />
                             </button>
                           </motion.div>
                         )}
                       </div>
 
-                      {/* 2. My Orders */}
+                      {/* 4. Support (Accordion Dropdown) */}
                       <div className="border-b border-transparent">
                         <button
                           type="button"
-                          onClick={() => toggleSection('orders')}
-                          className="w-full flex items-center justify-between py-1.5 text-left text-slate-950 hover:text-slate-800 transition-colors cursor-pointer group"
+                          onClick={() => toggleSection('support')}
+                          className="w-full flex items-center justify-between py-2 sm:py-2.5 text-left text-slate-950 hover:text-[#0066c0] transition-colors cursor-pointer group"
                         >
-                          <span className="text-[19px] sm:text-[20px] font-black tracking-tight text-slate-950">
-                            My Orders
+                          <span className="text-[19px] sm:text-[21px] font-black tracking-tight text-slate-950 group-hover:text-[#0066c0] group-hover:underline decoration-[#0066c0]/60 underline-offset-4 transition-colors">
+                            Support
                           </span>
-                          <ChevronDown className={`w-6 h-6 text-slate-900 transition-transform duration-200 ${
-                            expandedSection === 'orders' ? 'rotate-180 text-purple-700' : ''
-                          }`} />
+                          <ChevronDown
+                            className={`w-6 h-6 text-slate-900 group-hover:text-[#0066c0] transition-transform duration-200 ${
+                              expandedSection === 'support' ? 'rotate-180 text-[#0066c0]' : ''
+                            }`}
+                          />
                         </button>
 
-                        {/* Expandable Submenu for My Orders */}
-                        {expandedSection === 'orders' && (
+                        {/* Support Sub-items */}
+                        {expandedSection === 'support' && (
                           <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
-                            className="pl-2 pt-2 pb-2 space-y-2 border-l-2 border-slate-200 ml-1 mt-1"
+                            className="pl-3 pr-2 py-2 space-y-2 bg-slate-50/80 rounded-2xl my-1 border border-slate-100"
                           >
                             <button
-                              onClick={() => handleNavClick('quick-order')}
-                              className="w-full text-left text-xs font-bold text-slate-800 hover:text-purple-700 py-1 flex items-center justify-between cursor-pointer"
+                              type="button"
+                              onClick={() => handleNavClick('support')}
+                              className="w-full flex items-center justify-between py-1.5 px-2 text-xs font-bold text-slate-700 hover:text-[#0066c0] hover:bg-slate-100/80 rounded-xl transition-all cursor-pointer group/sub"
                             >
-                              <span>View Order History</span>
-                              <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Customer Help Center</span>
+                              <Headphones className="w-3.5 h-3.5 text-slate-400 group-hover/sub:text-[#0066c0] transition-transform" />
                             </button>
                             <button
-                              onClick={() => handleNavClick('quick-order')}
-                              className="w-full text-left text-xs font-bold text-slate-800 hover:text-purple-700 py-1 flex items-center justify-between cursor-pointer"
+                              type="button"
+                              onClick={() => handleNavClick('complaint')}
+                              className="w-full flex items-center justify-between py-1.5 px-2 text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50/80 rounded-xl transition-all cursor-pointer group/sub"
                             >
-                              <span>Track Consignments & Dispatches</span>
-                              <Truck className="w-4 h-4 text-slate-500" />
+                              <span>Complaint Request</span>
+                              <AlertCircle className="w-4 h-4 text-[#0066c0] group-hover/sub:scale-110 transition-transform" />
                             </button>
-                          </motion.div>
-                        )}
-                      </div>
-
-                      {/* 3. My Account */}
-                      <div className="border-b border-transparent">
-                        <button
-                          type="button"
-                          onClick={() => toggleSection('account')}
-                          className="w-full flex items-center justify-between py-1.5 text-left text-slate-950 hover:text-slate-800 transition-colors cursor-pointer group"
-                        >
-                          <span className="text-[19px] sm:text-[20px] font-black tracking-tight text-slate-950">
-                            My Account
-                          </span>
-                          <ChevronDown className={`w-6 h-6 text-slate-900 transition-transform duration-200 ${
-                            expandedSection === 'account' ? 'rotate-180 text-purple-700' : ''
-                          }`} />
-                        </button>
-
-                        {/* Expandable Submenu for My Account */}
-                        {expandedSection === 'account' && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="pl-2 pt-2 pb-2 space-y-2 border-l-2 border-slate-200 ml-1 mt-1"
-                          >
-                            <button
-                              onClick={() => handleNavClick('quick-payments')}
-                              className="w-full text-left text-xs font-bold text-slate-800 hover:text-purple-700 py-1 flex items-center justify-between cursor-pointer"
-                            >
-                              <span>Outstanding Balance & Invoices</span>
-                              <CreditCard className="w-4 h-4 text-slate-500" />
-                            </button>
-                            <button
-                              onClick={() => handleNavClick('account')}
-                              className="w-full text-left text-xs font-bold text-slate-800 hover:text-purple-700 py-1 flex items-center justify-between cursor-pointer"
-                            >
-                              <span>GST & Billing Profile</span>
-                              <FileText className="w-4 h-4 text-slate-500" />
-                            </button>
-                          </motion.div>
-                        )}
-                      </div>
-
-                      {/* 4. My Requests */}
-                      <div className="border-b border-transparent">
-                        <button
-                          type="button"
-                          onClick={() => toggleSection('requests')}
-                          className="w-full flex items-center justify-between py-1.5 text-left text-slate-950 hover:text-slate-800 transition-colors cursor-pointer group"
-                        >
-                          <span className="text-[19px] sm:text-[20px] font-black tracking-tight text-slate-950">
-                            My Requests
-                          </span>
-                          <ChevronDown className={`w-6 h-6 text-slate-900 transition-transform duration-200 ${
-                            expandedSection === 'requests' ? 'rotate-180 text-purple-700' : ''
-                          }`} />
-                        </button>
-
-                        {/* Expandable Submenu for My Requests */}
-                        {expandedSection === 'requests' && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="pl-2 pt-2 pb-2 space-y-2 border-l-2 border-slate-200 ml-1 mt-1"
-                          >
-                            <button
-                              onClick={() => handleNavClick('quick-order')}
-                              className="w-full text-left text-xs font-bold text-slate-800 hover:text-purple-700 py-1 flex items-center justify-between cursor-pointer"
-                            >
-                              <span>Wholesale Indent Inquiries</span>
-                              <PackageCheck className="w-4 h-4 text-slate-500" />
-                            </button>
-                            <a
-                              href="tel:6371231522"
-                              onClick={() => setMenuOpen(false)}
-                              className="w-full text-left text-xs font-bold text-slate-800 hover:text-purple-700 py-1 flex items-center justify-between cursor-pointer"
-                            >
-                              <span>Dedicated Dealer Desk</span>
-                              <Headphones className="w-4 h-4 text-slate-500" />
-                            </a>
                           </motion.div>
                         )}
                       </div>
@@ -514,25 +423,25 @@ export const Navbar: React.FC<NavbarProps> = ({
                         <button
                           type="button"
                           onClick={() => handleNavClick('account')}
-                          className="w-full flex items-center justify-between py-1.5 text-left text-slate-950 hover:text-slate-800 transition-colors cursor-pointer group"
+                          className="w-full flex items-center justify-between py-2 sm:py-2.5 text-left text-slate-950 hover:text-[#0066c0] transition-colors cursor-pointer group"
                         >
-                          <span className="text-[19px] sm:text-[20px] font-black tracking-tight text-slate-950">
+                          <span className="text-[19px] sm:text-[21px] font-black tracking-tight text-slate-950 group-hover:text-[#0066c0] group-hover:underline decoration-[#0066c0]/60 underline-offset-4 transition-colors">
                             My Profile
                           </span>
-                          <ChevronDown className="w-6 h-6 text-slate-900 group-hover:text-purple-700" />
+                          <ChevronDown className="w-6 h-6 text-slate-900 group-hover:text-[#0066c0] transition-colors" />
                         </button>
                       </div>
 
                     </div>
                   </div>
 
-                  {/* BOTTOM SECTION: LOGOUT BUTTON PLACED BELOW NAVIGATION MENU (EXACT MATCH TO SCREENSHOT) */}
-                  <div className="pt-6 pb-6 mt-4 border-t border-slate-100">
+                  {/* BOTTOM SECTION: LOGOUT BUTTON PLACED BELOW NAVIGATION MENU */}
+                  <div className="pt-6 pb-6 sm:pb-8 border-t border-slate-100">
                     <button
                       type="button"
                       id="nav-logout-btn"
                       onClick={handleLogoutClick}
-                      className="w-full flex items-center justify-between py-2 text-left transition-all active:scale-[0.98] cursor-pointer group select-none"
+                      className="w-full flex items-center justify-between py-2.5 text-left transition-all active:scale-[0.98] cursor-pointer group select-none"
                     >
                       <span className="text-[20px] sm:text-[22px] font-black tracking-tight text-[#f43f5e] group-hover:text-red-600 transition-colors">
                         Logout
@@ -549,7 +458,153 @@ export const Navbar: React.FC<NavbarProps> = ({
         </AnimatePresence>,
         document.body
       )}
+
+      {/* QUICK CONTACT MODAL POPUP */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {quickContactOpen && (
+            <div className="fixed inset-0 z-[100050] flex items-center justify-center p-4">
+              {/* Backdrop */}
+              <motion.div
+                key="quick-contact-backdrop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => setQuickContactOpen(false)}
+                className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs"
+              />
+
+              {/* Modal Container */}
+              <motion.div
+                key="quick-contact-dialog"
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                transition={{ type: 'spring', damping: 26, stiffness: 320 }}
+                className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden z-10 font-sans"
+              >
+                {/* Modal Header */}
+                <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-6 sm:p-7 relative">
+                  <button
+                    onClick={() => setQuickContactOpen(false)}
+                    className="absolute top-5 right-5 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                    aria-label="Close"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+
+                  <div className="flex items-center space-x-3.5">
+                    <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white flex-shrink-0">
+                      <QuickContactIcon className="w-7 h-7" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-black tracking-tight">Quick Customer Support</h3>
+                      <p className="text-xs text-slate-300 font-medium mt-0.5">
+                        24/7 Dedicated assistance for fleet & dealership partners
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Modal Content */}
+                <div className="p-6 sm:p-7 space-y-4">
+                  {/* Toll-Free Hotline */}
+                  <a
+                    href="tel:18002334455"
+                    className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 hover:bg-blue-50/70 border border-slate-200 hover:border-blue-200 transition-all group cursor-pointer"
+                  >
+                    <div className="flex items-center space-x-3.5">
+                      <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                        <Phone className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">Toll-Free Hotline</div>
+                        <div className="text-base font-black text-slate-900 group-hover:text-blue-700 transition-colors">
+                          1800-233-4455 / +91 94310 11223
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-xs font-bold text-blue-700 bg-blue-100 px-3 py-1.5 rounded-xl flex-shrink-0">
+                      Call Now
+                    </span>
+                  </a>
+
+                  {/* Email Support */}
+                  <a
+                    href="mailto:support@magadhtyres.com"
+                    className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 hover:bg-purple-50/70 border border-slate-200 hover:border-purple-200 transition-all group cursor-pointer"
+                  >
+                    <div className="flex items-center space-x-3.5">
+                      <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                        <Mail className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">Email Assistance</div>
+                        <div className="text-sm font-black text-slate-900 group-hover:text-purple-700 transition-colors">
+                          support@magadhtyres.com
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-xs font-bold text-purple-700 bg-purple-100 px-3 py-1.5 rounded-xl flex-shrink-0">
+                      Email Us
+                    </span>
+                  </a>
+
+                  {/* Location & Timings */}
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-2">
+                    <div className="flex items-start space-x-2.5">
+                      <MapPin className="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" />
+                      <span className="font-medium">
+                        Central Logistics Hub: NH-30 Expressway, Patna, Bihar - 800007
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2.5">
+                      <Clock className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                      <span className="font-medium">
+                        Working Hours: Mon - Sat: 8:00 AM - 8:00 PM (Emergency Dispatch 24/7)
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setQuickContactOpen(false);
+                        handleNavClick('complaint');
+                      }}
+                      className="flex-1 py-3 px-4 rounded-2xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold text-xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
+                    >
+                      <AlertCircle className="w-4 h-4" />
+                      <span>Register Complaint Request</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setQuickContactOpen(false);
+                        handleNavClick('support');
+                      }}
+                      className="flex-1 py-3 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
+                    >
+                      <Headphones className="w-4 h-4" />
+                      <span>Open Help Center</span>
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </header>
+
+    {/* Spacer so page content begins perfectly below the fixed header */}
+    <div style={{ height: `${headerHeight}px` }} aria-hidden="true" className="w-full flex-shrink-0" />
+    </>
   );
 };
 
+export default Navbar;
