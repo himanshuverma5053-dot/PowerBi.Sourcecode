@@ -3,6 +3,12 @@ import { Order, PaymentRecord, CustomerAccount } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { calculateCustomerFinancials } from '../utils/customerFinancials';
 import { ShieldAlert, RefreshCw } from 'lucide-react';
+import { HandshakeIcon } from './HandshakeIcon';
+import { MoneyBagLimitIcon } from './MoneyBagLimitIcon';
+import { CoinStackDueIcon } from './CoinStackDueIcon';
+import { HourglassDueIcon } from './HourglassDueIcon';
+import handshakeImage from '../assets/images/regenerated_image_1788255059298.jpg';
+import availableLimitImage from '../assets/images/regenerated_image_1788255479730.png';
 
 interface HomeSummaryBarProps {
   orders: Order[];
@@ -124,14 +130,24 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="available-limit-card"
           onClick={() => setActiveTab('quick-payments')}
-          className="border-r border-b border-gray-200/90 p-2.5 sm:p-3 md:p-4 flex flex-col justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0"
+          className="border-r border-b border-gray-200/90 p-2 sm:p-2.5 md:p-3 flex flex-col items-center justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
         >
-          <span className="text-[11px] sm:text-[12px] md:text-sm font-normal text-[#555d6e] leading-tight text-center w-full truncate">
+          {/* Small image icon positioned ABOVE the text */}
+          <div className="w-full flex items-center justify-center pt-0.5">
+            <img 
+              src="/coin_stack_due_icon.svg" 
+              alt="Upcoming Due" 
+              className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 object-contain shrink-0 transition-transform duration-200 group-hover:scale-110"
+              loading="lazy"
+            />
+          </div>
+
+          <span className="text-[10px] sm:text-[11px] md:text-xs font-normal text-[#555d6e] leading-tight text-center w-full truncate">
             Upcoming Due
           </span>
 
-          <div className={`w-full mt-1 flex items-center min-w-0 ${upcomingDueStyle.containerClass}`}>
-            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full md:text-2xl ${upcomingDueStyle.textClass}`}>
+          <div className={`w-full mt-0.5 flex items-center justify-center min-w-0 ${upcomingDueStyle.containerClass}`}>
+            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${upcomingDueStyle.textClass}`}>
               {upcomingDueVal}
             </p>
           </div>
@@ -141,14 +157,24 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="hold-cca-card"
           onClick={() => setActiveTab('account')}
-          className="border-b border-gray-200/90 p-2.5 sm:p-3 md:p-4 flex flex-col justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0"
+          className="border-b border-gray-200/90 p-2 sm:p-2.5 md:p-3 flex flex-col items-center justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
         >
-          <span className="text-[11px] sm:text-[12px] md:text-sm font-normal text-[#555d6e] leading-tight text-center w-full truncate">
+          {/* Small image icon positioned ABOVE the text */}
+          <div className="w-full flex items-center justify-center pt-0.5">
+            <img 
+              src={availableLimitImage} 
+              alt="Available Limit" 
+              className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 object-contain shrink-0 transition-transform duration-200 group-hover:scale-110"
+              loading="lazy"
+            />
+          </div>
+
+          <span className="text-[10px] sm:text-[11px] md:text-xs font-normal text-[#555d6e] leading-tight text-center w-full truncate">
             Available Limit
           </span>
 
-          <div className={`w-full mt-1 flex items-center min-w-0 ${availableLimitStyle.containerClass}`}>
-            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full md:text-2xl ${availableLimitStyle.textClass}`}>
+          <div className={`w-full mt-0.5 flex items-center justify-center min-w-0 ${availableLimitStyle.containerClass}`}>
+            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${availableLimitStyle.textClass}`}>
               {availableLimitVal}
             </p>
           </div>
@@ -158,31 +184,51 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="total-cca-card"
           onClick={() => setActiveTab('quick-payments')}
-          className="border-r border-gray-200/90 p-2.5 sm:p-3 md:p-4 flex flex-col justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0"
+          className="border-r border-gray-200/90 p-2 sm:p-2.5 md:p-3 flex flex-col items-center justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
         >
-          <span className="text-[11px] sm:text-[12px] md:text-sm font-normal text-[#555d6e] leading-tight text-center w-full truncate">
+          {/* Small image icon positioned ABOVE the text */}
+          <div className="w-full flex items-center justify-center pt-0.5">
+            <img 
+              src="/hourglass_due_icon.svg" 
+              alt="Invoice Amount Due" 
+              className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 object-contain shrink-0 transition-transform duration-200 group-hover:scale-110"
+              loading="lazy"
+            />
+          </div>
+
+          <span className="text-[10px] sm:text-[11px] md:text-xs font-normal text-[#555d6e] leading-tight text-center w-full truncate">
             Invoice Amount Due
           </span>
 
-          <div className={`w-full mt-1 flex items-center min-w-0 ${invoiceAmountDueStyle.containerClass}`}>
-            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full md:text-2xl ${invoiceAmountDueStyle.textClass}`}>
+          <div className={`w-full mt-0.5 flex items-center justify-center min-w-0 ${invoiceAmountDueStyle.containerClass}`}>
+            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${invoiceAmountDueStyle.textClass}`}>
               {invoiceAmountDueVal}
             </p>
           </div>
         </div>
 
-        {/* Quadrant 4 (Bottom-Right): Credit Score */}
+        {/* Quadrant 4 (Bottom-Right): Credit Score & Partnership */}
         <div 
           id="invoice-amount-due-card"
           onClick={() => setActiveTab('account')}
-          className="p-2.5 sm:p-3 md:p-4 flex flex-col justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0"
+          className="p-2 sm:p-2.5 md:p-3 flex flex-col items-center justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
         >
-          <span className="text-[11px] sm:text-[12px] md:text-sm font-normal text-[#555d6e] leading-tight text-center w-full truncate">
+          {/* Image icon positioned ABOVE the text */}
+          <div className="w-full flex items-center justify-center pt-0.5">
+            <img 
+              src={handshakeImage} 
+              alt="Credit Score" 
+              className="w-12 h-8 sm:w-14 sm:h-9 md:w-16 md:h-10 object-contain shrink-0 transition-transform duration-200 group-hover:scale-110"
+              loading="lazy"
+            />
+          </div>
+
+          <span className="text-[10px] sm:text-[11px] md:text-xs font-normal text-[#555d6e] leading-tight text-center w-full truncate">
             Credit Score
           </span>
 
-          <div className={`w-full mt-1 flex items-center min-w-0 ${creditScoreStyle.containerClass}`}>
-            <p className={`text-[#0972D3] tracking-tight leading-tight truncate max-w-full md:text-2xl ${creditScoreStyle.textClass}`}>
+          <div className={`w-full mt-0.5 flex items-center justify-center min-w-0 ${creditScoreStyle.containerClass}`}>
+            <p className={`text-[#0972D3] tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${creditScoreStyle.textClass}`}>
               {creditScoreVal}
             </p>
           </div>

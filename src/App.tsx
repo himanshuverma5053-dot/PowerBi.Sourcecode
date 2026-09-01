@@ -19,6 +19,7 @@ import { PaymentPage } from './components/PaymentPage';
 import { ProfilePage } from './components/ProfilePage';
 import { MyRequestsPage } from './components/MyRequestsPage';
 import { TrackConsignmentsPage } from './components/TrackConsignmentsPage';
+import { MenuPage } from './components/MenuPage';
 import { InvoiceModal } from './components/InvoiceModal';
 import { OrderDetailsPage } from './components/OrderDetailsPage';
 import { AdminPanel } from './components/AdminPanel';
@@ -72,7 +73,7 @@ export default function App() {
     return safeGetLocalStorage<'customer' | 'admin'>('magadh_interface_mode', 'customer');
   };
 
-  const [interfaceMode, setInterfaceMode] = useState<'customer' | 'admin'>(getModeFromUrl);
+  const [interfaceMode, setInterfaceMode] = useState<'customer' | 'admin'>('customer');
 
   useEffect(() => {
     const handleUrlChange = () => {
@@ -890,6 +891,22 @@ export default function App() {
             <TrackConsignmentsPage
               orders={orders}
               onViewInvoice={(order) => setSelectedOrderForInvoice(order)}
+            />
+          </div>
+        )}
+
+        {/* TAB 8: DEDICATED MENU PAGE */}
+        {activeTab === 'menu' && (
+          <div className="animate-fade-in min-h-[75vh] py-4">
+            <MenuPage
+              setActiveTab={setActiveTab}
+              onLogout={handleLogout}
+              onSelectCategory={(category) => {
+                setSelectedCategory(category);
+                setActiveTab('catalogue');
+              }}
+              onSwitchMode={(mode) => setInterfaceMode(mode)}
+              isStandalonePage={true}
             />
           </div>
         )}

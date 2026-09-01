@@ -12,6 +12,7 @@ import { CustomMenuIcon } from './MenuIcon';
 import { MagadhSparshLogo } from './MagadhSparshLogo';
 import { TyreProduct } from '../types';
 import { HeaderSearchBar } from './HeaderSearchBar';
+import { MenuPage } from './MenuPage';
 
 interface NavbarProps {
   activeTab: string;
@@ -146,7 +147,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="hamburger-menu-toggle-btn"
               onClick={() => setMenuOpen(!menuOpen)}
-              className="p-0 border-0 bg-transparent outline-none focus:outline-none focus:ring-0 focus-visible:outline-none transition-transform duration-150 cursor-pointer select-none active:scale-95 flex items-center justify-center shrink-0"
+              className="ml-2 sm:ml-3 md:ml-4 p-0 border-0 bg-transparent outline-none focus:outline-none focus:ring-0 focus-visible:outline-none transition-transform duration-150 cursor-pointer select-none active:scale-95 flex items-center justify-center shrink-0"
               aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={menuOpen}
               title={menuOpen ? "Close navigation menu (Esc)" : "Open navigation menu"}
@@ -260,195 +261,40 @@ export const Navbar: React.FC<NavbarProps> = ({
                   top: `${headerHeight}px`,
                   height: `calc(100dvh - ${headerHeight}px)`
                 }}
-                className="fixed left-0 z-[99995] w-[86vw] max-w-[340px] sm:max-w-[380px] bg-white shadow-2xl flex flex-col overflow-hidden border-r border-slate-200 font-sans"
+                className="fixed left-0 z-[99995] w-[88vw] max-w-[360px] sm:max-w-[400px] bg-white shadow-2xl flex flex-col overflow-hidden border-r border-slate-200 font-sans"
               >
-                {/* Scrollable Drawer Body */}
-                <div className="flex-1 overflow-y-auto px-6 sm:px-8 py-5 sm:py-6 flex flex-col justify-between">
-                  
-                  {/* TOP / MAIN NAVIGATION MENU ITEMS */}
-                  <div className="space-y-4">
-                    {/* User Greeting Section if logged in */}
-                    {isLoggedIn && (
-                      <div className="pb-3 mb-2 border-b border-slate-100">
-                        <div className="flex items-center space-x-2.5">
-                          <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs">
-                            {currentUser.charAt(0).toUpperCase() || 'U'}
-                          </div>
-                          <div className="overflow-hidden">
-                            <p className="text-xs font-black text-slate-900 truncate">
-                              {currentUser || 'Valued Partner'}
-                            </p>
-                            <p className="text-[10px] text-slate-500 font-medium truncate">
-                              {currentUserEmail || 'Verified Fleet Account'}
-                            </p>
-                          </div>
+                {/* Scrollable Drawer Body with Full Menu Page Content */}
+                <div className="flex-1 overflow-y-auto">
+                  {/* User Greeting Section if logged in */}
+                  {isLoggedIn && (
+                    <div className="px-6 sm:px-8 pt-5 pb-3 border-b border-slate-100 bg-slate-50/50">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-9 h-9 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-sm">
+                          {currentUser.charAt(0).toUpperCase() || 'U'}
+                        </div>
+                        <div className="overflow-hidden">
+                          <p className="text-sm font-black text-slate-900 truncate">
+                            {currentUser || 'Valued Partner'}
+                          </p>
+                          <p className="text-xs text-slate-500 font-medium truncate">
+                            {currentUserEmail || 'Verified Fleet Account'}
+                          </p>
                         </div>
                       </div>
-                    )}
-
-                    {/* Navigation Menu List */}
-                    <div className="space-y-2 sm:space-y-3">
-                      
-                      {/* 1. Home / Home Page */}
-                      <div className="border-b border-transparent">
-                        <button
-                          type="button"
-                          onClick={() => handleNavClick('home')}
-                          className="w-full flex items-center justify-between py-2 sm:py-2.5 text-left text-slate-950 hover:text-[#0066c0] transition-colors cursor-pointer group"
-                        >
-                          <span className="text-[19px] sm:text-[21px] font-black tracking-tight text-slate-950 group-hover:text-[#0066c0] group-hover:underline decoration-[#0066c0]/60 underline-offset-4 transition-colors">
-                            Home
-                          </span>
-                          <ChevronDown className="w-6 h-6 text-slate-900 group-hover:text-[#0066c0] transition-colors" />
-                        </button>
-                      </div>
-
-                      {/* 2. Customer Space / Catalogue */}
-                      <div className="border-b border-transparent">
-                        <button
-                          type="button"
-                          onClick={() => handleNavClick('catalogue')}
-                          className="w-full flex items-center justify-between py-2 sm:py-2.5 text-left text-slate-950 hover:text-[#0066c0] transition-colors cursor-pointer group"
-                        >
-                          <span className="text-[19px] sm:text-[21px] font-black tracking-tight text-slate-950 group-hover:text-[#0066c0] group-hover:underline decoration-[#0066c0]/60 underline-offset-4 transition-colors">
-                            Customer Space
-                          </span>
-                          <ChevronDown className="w-6 h-6 text-slate-900 group-hover:text-[#0066c0] transition-colors" />
-                        </button>
-                      </div>
-
-                      {/* 3. Dealership Section (Accordion Dropdown) */}
-                      <div className="border-b border-transparent">
-                        <button
-                          type="button"
-                          onClick={() => toggleSection('dealership')}
-                          className="w-full flex items-center justify-between py-2 sm:py-2.5 text-left text-slate-950 hover:text-[#0066c0] transition-colors cursor-pointer group"
-                        >
-                          <span className="text-[19px] sm:text-[21px] font-black tracking-tight text-slate-950 group-hover:text-[#0066c0] group-hover:underline decoration-[#0066c0]/60 underline-offset-4 transition-colors">
-                            Dealership
-                          </span>
-                          <ChevronDown
-                            className={`w-6 h-6 text-slate-900 group-hover:text-[#0066c0] transition-transform duration-200 ${
-                              expandedSection === 'dealership' ? 'rotate-180 text-[#0066c0]' : ''
-                            }`}
-                          />
-                        </button>
-
-                        {/* Accordion Sub-items */}
-                        {expandedSection === 'dealership' && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="pl-3 pr-2 py-2 space-y-2 bg-slate-50/80 rounded-2xl my-1 border border-slate-100"
-                          >
-                            <button
-                              type="button"
-                              onClick={() => handleNavClick('admin')}
-                              className="w-full flex items-center justify-between py-1.5 px-2 text-xs font-bold text-slate-700 hover:text-[#0066c0] hover:bg-slate-100/80 rounded-xl transition-all cursor-pointer group/sub"
-                            >
-                              <span>Admin Console</span>
-                              <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover/sub:text-[#0066c0] group-hover/sub:translate-x-0.5 transition-transform" />
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => handleNavClick('dealership-apply')}
-                              className="w-full flex items-center justify-between py-1.5 px-2 text-xs font-bold text-slate-700 hover:text-[#0066c0] hover:bg-slate-100/80 rounded-xl transition-all cursor-pointer group/sub"
-                            >
-                              <span>Apply for Dealership</span>
-                              <Tag className="w-3.5 h-3.5 text-slate-400 group-hover/sub:text-[#0066c0] transition-transform" />
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => handleNavClick('dealership-benefits')}
-                              className="w-full flex items-center justify-between py-1.5 px-2 text-xs font-bold text-slate-700 hover:text-[#0066c0] hover:bg-slate-100/80 rounded-xl transition-all cursor-pointer group/sub"
-                            >
-                              <span>Partner Program Benefits</span>
-                              <Award className="w-3.5 h-3.5 text-slate-400 group-hover/sub:text-[#0066c0] transition-transform" />
-                            </button>
-                          </motion.div>
-                        )}
-                      </div>
-
-                      {/* 4. Support (Accordion Dropdown) */}
-                      <div className="border-b border-transparent">
-                        <button
-                          type="button"
-                          onClick={() => toggleSection('support')}
-                          className="w-full flex items-center justify-between py-2 sm:py-2.5 text-left text-slate-950 hover:text-[#0066c0] transition-colors cursor-pointer group"
-                        >
-                          <span className="text-[19px] sm:text-[21px] font-black tracking-tight text-slate-950 group-hover:text-[#0066c0] group-hover:underline decoration-[#0066c0]/60 underline-offset-4 transition-colors">
-                            Support
-                          </span>
-                          <ChevronDown
-                            className={`w-6 h-6 text-slate-900 group-hover:text-[#0066c0] transition-transform duration-200 ${
-                              expandedSection === 'support' ? 'rotate-180 text-[#0066c0]' : ''
-                            }`}
-                          />
-                        </button>
-
-                        {/* Support Sub-items */}
-                        {expandedSection === 'support' && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="pl-3 pr-2 py-2 space-y-2 bg-slate-50/80 rounded-2xl my-1 border border-slate-100"
-                          >
-                            <button
-                              type="button"
-                              onClick={() => handleNavClick('support')}
-                              className="w-full flex items-center justify-between py-1.5 px-2 text-xs font-bold text-slate-700 hover:text-[#0066c0] hover:bg-slate-100/80 rounded-xl transition-all cursor-pointer group/sub"
-                            >
-                              <span>Customer Help Center</span>
-                              <Headphones className="w-3.5 h-3.5 text-slate-400 group-hover/sub:text-[#0066c0] transition-transform" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleNavClick('complaint')}
-                              className="w-full flex items-center justify-between py-1.5 px-2 text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50/80 rounded-xl transition-all cursor-pointer group/sub"
-                            >
-                              <span>Complaint Request</span>
-                              <AlertCircle className="w-4 h-4 text-[#0066c0] group-hover/sub:scale-110 transition-transform" />
-                            </button>
-                          </motion.div>
-                        )}
-                      </div>
-
-                      {/* 5. My Profile */}
-                      <div className="border-b border-transparent">
-                        <button
-                          type="button"
-                          onClick={() => handleNavClick('account')}
-                          className="w-full flex items-center justify-between py-2 sm:py-2.5 text-left text-slate-950 hover:text-[#0066c0] transition-colors cursor-pointer group"
-                        >
-                          <span className="text-[19px] sm:text-[21px] font-black tracking-tight text-slate-950 group-hover:text-[#0066c0] group-hover:underline decoration-[#0066c0]/60 underline-offset-4 transition-colors">
-                            My Profile
-                          </span>
-                          <ChevronDown className="w-6 h-6 text-slate-900 group-hover:text-[#0066c0] transition-colors" />
-                        </button>
-                      </div>
-
                     </div>
-                  </div>
+                  )}
 
-                  {/* BOTTOM SECTION: LOGOUT BUTTON PLACED BELOW NAVIGATION MENU */}
-                  <div className="pt-6 pb-6 sm:pb-8 border-t border-slate-100">
-                    <button
-                      type="button"
-                      id="nav-logout-btn"
-                      onClick={handleLogoutClick}
-                      className="w-full flex items-center justify-between py-2.5 text-left transition-all active:scale-[0.98] cursor-pointer group select-none"
-                    >
-                      <span className="text-[20px] sm:text-[22px] font-black tracking-tight text-[#f43f5e] group-hover:text-red-600 transition-colors">
-                        Logout
-                      </span>
-                      <Power className="w-6 h-6 sm:w-7 sm:h-7 text-[#f43f5e] group-hover:text-red-600 transition-transform group-hover:scale-110" />
-                    </button>
-                  </div>
-
+                  <MenuPage
+                    setActiveTab={setActiveTab}
+                    onCloseMenu={() => setMenuOpen(false)}
+                    onLogout={handleLogoutClick}
+                    onOpenQuickContact={() => {
+                      setMenuOpen(false);
+                      setQuickContactOpen(true);
+                    }}
+                    onSelectCategory={onSelectCategory}
+                    onSwitchMode={onSwitchMode}
+                  />
                 </div>
 
               </motion.div>

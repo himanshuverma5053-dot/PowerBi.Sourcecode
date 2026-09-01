@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { TyreProduct, Order, PaymentRecord, CustomerAccount, Coupon } from '../types';
 import { MagadhSparshLogo } from './MagadhSparshLogo';
 import { CustomSearchIcon } from './SearchIcon';
+import { AdminSummaryBar } from './AdminSummaryBar';
 import {
   Package, ShoppingCart, Users, CreditCard, BarChart3, Plus,
   Filter, CheckCircle2, Clock, AlertTriangle, ArrowUpRight, TrendingUp,
@@ -300,6 +301,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
       {/* Main Admin Content Body */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+        {/* Prominent Admin Static Overview Heading Section with White Icons & Black Background */}
+        <div className="w-full flex justify-center py-1">
+          <AdminSummaryBar
+            orders={orders}
+            payments={payments}
+            customerAccounts={customerAccounts}
+            onSelectTab={(tab) => setAdminTab(tab)}
+            onRefreshData={() => showToast('Admin financial overview metrics refreshed')}
+          />
+        </div>
 
         {/* 1. OVERVIEW & ANALYTICS TAB */}
         {adminTab === 'overview' && (
