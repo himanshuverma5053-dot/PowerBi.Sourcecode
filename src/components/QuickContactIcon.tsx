@@ -5,6 +5,10 @@ interface QuickContactIconProps extends React.SVGProps<SVGSVGElement> {
   size?: number | string;
 }
 
+/**
+ * Customer Support Headset Agent Icon
+ * Exact vector reproduction matching uploaded 43901_black.png
+ */
 export const QuickContactIcon: React.FC<QuickContactIconProps> = ({
   className = 'w-9 h-9 sm:w-10 sm:h-10',
   size,
@@ -12,7 +16,7 @@ export const QuickContactIcon: React.FC<QuickContactIconProps> = ({
 }) => {
   return (
     <svg
-      viewBox="0 0 512 512"
+      viewBox="0 0 500 500"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={`shrink-0 select-none ${className}`}
@@ -21,85 +25,73 @@ export const QuickContactIcon: React.FC<QuickContactIconProps> = ({
       aria-hidden="true"
       {...props}
     >
-      {/* Headset Top Curved Arch */}
+      {/* Outer Headband Arch */}
       <path
-        d="M 160 205 C 160 102 203 54 256 54 C 309 54 352 102 352 205"
+        d="M 85 240 C 85 105 155 38 250 38 C 345 38 415 105 415 240"
         stroke="currentColor"
-        strokeWidth="20"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      {/* Left Headphone Earcup */}
-      <rect
-        x="142"
-        y="168"
-        width="36"
-        height="74"
-        rx="18"
-        fill="currentColor"
-      />
-
-      {/* Right Headphone Earcup */}
-      <rect
-        x="334"
-        y="168"
-        width="36"
-        height="74"
-        rx="18"
-        fill="currentColor"
-      />
-
-      {/* Microphone Boom Arm */}
-      <path
-        d="M 346 228 C 346 270 316 288 274 288 L 260 288"
-        stroke="currentColor"
-        strokeWidth="13"
+        strokeWidth="32"
         strokeLinecap="round"
         fill="none"
       />
 
-      {/* Microphone Pill Capsule */}
+      {/* Left Earmuff / Cushion */}
       <rect
-        x="244"
-        y="276"
-        width="30"
-        height="24"
-        rx="12"
+        x="42"
+        y="210"
+        width="76"
+        height="136"
+        rx="38"
         fill="currentColor"
       />
 
-      {/* Hair / Head Silhouette */}
-      <path
-        d="M 180 226 C 180 142 206 82 256 82 C 306 82 332 142 332 226 C 327 172 314 130 286 130 C 264 130 248 144 228 144 C 204 144 188 178 180 226 Z"
+      {/* Right Earmuff / Cushion */}
+      <rect
+        x="382"
+        y="210"
+        width="76"
+        height="136"
+        rx="38"
         fill="currentColor"
       />
 
-      {/* Neck Shadow / Crescent under Chin */}
+      {/* Hair Silhouette Mass */}
       <path
-        d="M 210 284 C 236 338 276 338 302 284 C 278 314 234 314 210 284 Z"
+        d="M 115 235 C 115 140 170 78 250 78 C 330 78 385 140 385 235 C 385 285 365 330 365 330 C 365 330 354 265 352 230 C 350 200 335 172 295 172 C 275 172 260 184 250 184 C 240 184 225 172 205 172 C 165 172 150 200 148 230 C 146 265 135 330 135 330 C 135 330 115 285 115 235 Z"
         fill="currentColor"
       />
 
-      {/* Suit Jacket & Shoulders Silhouette with V-Opening for Shirt */}
+      {/* Jawline & Chin Outline */}
       <path
-        d="M 84 416 C 92 368 132 334 206 304 L 236 348 L 243 436 L 256 448 L 269 436 L 276 348 L 306 304 C 380 334 420 368 428 416 C 430 436 388 460 256 460 C 124 460 82 436 84 416 Z"
-        fill="currentColor"
+        d="M 148 310 C 148 405 195 465 250 465 C 305 465 352 405 352 310"
+        stroke="currentColor"
+        strokeWidth="28"
+        strokeLinecap="round"
+        fill="none"
       />
 
-      {/* Center Necktie Knot */}
+      {/* Microphone Boom Arm from Right Earmuff */}
       <path
-        d="M 239 342 L 273 342 L 267 368 L 245 368 Z"
-        fill="currentColor"
+        d="M 390 355 C 390 415 340 435 280 405 L 265 400"
+        stroke="currentColor"
+        strokeWidth="24"
+        strokeLinecap="round"
+        fill="none"
       />
 
-      {/* Center Necktie Body */}
-      <path
-        d="M 245 368 L 267 368 L 272 432 L 256 446 L 240 432 Z"
-        fill="currentColor"
+      {/* Microphone Capsule with clear interior */}
+      <rect
+        x="220"
+        y="378"
+        width="66"
+        height="40"
+        rx="20"
+        fill="white"
+        stroke="currentColor"
+        strokeWidth="14"
       />
     </svg>
   );
 };
 
 export default QuickContactIcon;
+

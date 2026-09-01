@@ -18,14 +18,14 @@ export const MagadhSparshLogo: React.FC<MagadhSparshLogoProps> = ({
   isDark = false,
   onClick,
 }) => {
-  // Balanced height classes for the logo image with increased sizing
+  // Balanced height classes for the logo image for a slick, premium header
   const heightClasses = {
-    xs: 'h-7 sm:h-8',
-    sm: 'h-10 sm:h-12 md:h-14',
-    md: 'h-13 sm:h-15 md:h-16 lg:h-18',
-    lg: 'h-16 sm:h-20 md:h-22',
-    xl: 'h-20 sm:h-24 md:h-28',
-  }[size] || 'h-12 sm:h-14 md:h-16';
+    xs: 'h-6 sm:h-7',
+    sm: 'h-8 sm:h-9 md:h-10',
+    md: 'h-9 sm:h-10 md:h-11',
+    lg: 'h-12 sm:h-14 md:h-16',
+    xl: 'h-16 sm:h-20 md:h-24',
+  }[size] || 'h-9 sm:h-10 md:h-11';
 
   return (
     <div
@@ -45,7 +45,7 @@ export const MagadhSparshLogo: React.FC<MagadhSparshLogoProps> = ({
         id="magadh-sparsh-logo-img"
         src={src || '/magadh_sparsh_logo.svg'}
         alt={alt || 'Magadh Sparsh'}
-        className={`${heightClasses} w-auto max-w-[280px] sm:max-w-[340px] md:max-w-[420px] object-contain transition-all duration-200 group-hover/logo:opacity-90 select-none bg-transparent`}
+        className={`${heightClasses} w-auto max-w-[220px] sm:max-w-[280px] md:max-w-[340px] object-contain transition-all duration-200 group-hover/logo:opacity-90 select-none bg-transparent`}
         referrerPolicy="no-referrer"
         loading="eager"
         onError={(e) => {

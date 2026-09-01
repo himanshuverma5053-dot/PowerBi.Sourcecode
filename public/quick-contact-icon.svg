@@ -1,50 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
-  <!-- Headset Top Band -->
-  <path
-    d="M 166 185 C 166 100 205 60 256 60 C 307 60 346 100 346 185"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="18"
-    stroke-linecap="round"
-  />
-
-  <!-- Left Earcup -->
-  <rect x="146" y="165" width="34" height="68" rx="17" fill="currentColor" />
-
-  <!-- Right Earcup -->
-  <rect x="332" y="165" width="34" height="68" rx="17" fill="currentColor" />
-
-  <!-- Microphone Boom & Mic Capsule -->
-  <path
-    d="M 345 220 C 345 258 318 278 274 278 L 262 278"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="12"
-    stroke-linecap="round"
-  />
-  <rect x="246" y="267" width="28" height="22" rx="10" fill="currentColor" />
-
-  <!-- Hair Silhouette -->
-  <path
-    d="M 183 220 C 183 145 208 88 256 88 C 304 88 329 145 329 220 C 324 175 312 136 288 136 C 267 136 252 148 232 148 C 206 148 191 180 183 220 Z"
-    fill="currentColor"
-  />
-
-  <!-- Neck Shadow / Crescent Accent -->
-  <path
-    d="M 212 276 C 238 328 274 328 300 276 C 278 306 234 306 212 276 Z"
-    fill="currentColor"
-  />
-
-  <!-- Suit Body Silhouette -->
-  <path
-    d="M 88 400 C 95 358 130 330 204 298 L 236 345 L 243 430 L 256 442 L 269 430 L 276 345 L 308 298 C 382 330 417 358 424 400 C 427 416 385 450 256 450 C 127 450 85 416 88 400 Z"
-    fill="currentColor"
-  />
-
-  <!-- Necktie -->
-  <!-- Knot -->
-  <polygon points="241,336 271,336 265,360 247,360" fill="currentColor" />
-  <!-- Tie Body -->
-  <polygon points="247,360 265,360 270,422 256,436 242,422" fill="currentColor" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" fill="none">
+  <!-- Outer Headband Arch -->
+  <path d="M 85 240 C 85 105 155 38 250 38 C 345 38 415 105 415 240" stroke="#000000" stroke-width="32" stroke-linecap="round" fill="none" />
+  <!-- Left Earmuff / Cushion -->
+  <rect x="42" y="210" width="76" height="136" rx="38" fill="#000000" />
+  <!-- Right Earmuff / Cushion -->
+  <rect x="382" y="210" width="76" height="136" rx="38" fill="#000000" />
+  <!-- Hair Silhouette Mass -->
+  <path d="M 115 235 C 115 140 170 78 250 78 C 330 78 385 140 385 235 C 385 285 365 330 365 330 C 365 330 354 265 352 230 C 350 200 335 172 295 172 C 275 172 260 184 250 184 C 240 184 225 172 205 172 C 165 172 150 200 148 230 C 146 265 135 330 135 330 C 135 330 115 285 115 235 Z" fill="#000000" />
+  <!-- Jawline & Chin Outline -->
+  <path d="M 148 310 C 148 405 195 465 250 465 C 305 465 352 405 352 310" stroke="#000000" stroke-width="28" stroke-linecap="round" fill="none" />
+  <!-- Microphone Boom Arm from Right Earmuff -->
+  <path d="M 390 355 C 390 415 340 435 280 405 L 265 400" stroke="#000000" stroke-width="24" stroke-linecap="round" fill="none" />
+  <!-- Microphone Capsule with clear interior -->
+  <rect x="220" y="378" width="66" height="40" rx="20" fill="#FFFFFF" stroke="#000000" stroke-width="14" />
 </svg>

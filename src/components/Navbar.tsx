@@ -131,40 +131,44 @@ export const Navbar: React.FC<NavbarProps> = ({
     <>
       <header
         ref={headerRef}
-        className={`fixed top-0 left-0 right-0 z-[100010] bg-white transition-all duration-200 w-full max-w-full overflow-x-clip ${
+        className={`fixed top-0 left-0 right-0 z-[100010] bg-white transition-all duration-200 w-full max-w-full overflow-x-clip border-t-[2px] sm:border-t-[2px] border-black border-b border-[#9CA3AF] ${
           isScrolled
-            ? 'border-b border-slate-200/90 shadow-sm'
-            : 'border-b border-slate-200/80 shadow-2xs'
+            ? 'shadow-sm'
+            : 'shadow-2xs'
         }`}
       >
       {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 relative">
-        <div className="flex items-center justify-between h-[76px] sm:h-20 md:h-22 relative">
+      <div className="max-w-5xl mx-auto px-3 sm:px-5 lg:px-6 relative">
+        <div className="flex items-center justify-between h-14 sm:h-15 md:h-16 relative">
           
-          {/* LEFT SECTION: Hamburger Menu Button */}
-          <div className={`flex items-center transition-all duration-300 ${
-            isMobileSearchExpanded ? 'blur-[1.5px] opacity-60' : ''
-          }`}>
+          {/* LEFT SECTION: Hamburger Menu + Separator 1 */}
+          <div className="flex items-center">
             <button
               id="hamburger-menu-toggle-btn"
               onClick={() => setMenuOpen(!menuOpen)}
-              className="p-0 border-0 bg-transparent outline-none focus:outline-none focus:ring-0 focus-visible:outline-none transition-transform duration-150 cursor-pointer select-none active:scale-95 flex items-center justify-center"
+              className="p-0 border-0 bg-transparent outline-none focus:outline-none focus:ring-0 focus-visible:outline-none transition-transform duration-150 cursor-pointer select-none active:scale-95 flex items-center justify-center shrink-0"
               aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={menuOpen}
               title={menuOpen ? "Close navigation menu (Esc)" : "Open navigation menu"}
             >
               <CustomMenuIcon
                 isOpen={menuOpen}
-                className="w-11 h-11 sm:w-12 sm:h-12 md:w-13 md:h-13 block"
+                className="w-10 h-10 sm:w-11 sm:h-11 block"
               />
             </button>
+
+            {/* Separator 1: After Hamburger Menu with ample space pushing the separator line to the right */}
+            <div
+              className="ml-8 sm:ml-12 md:ml-16 mr-3 sm:mr-4 md:mr-5 w-[2.5px] sm:w-[3px] h-6 sm:h-7 bg-[#52525B] rounded-full shrink-0 select-none"
+              aria-hidden="true"
+            />
           </div>
 
-          {/* MIDDLE SECTION: Centered Brand Logo shifted slightly left */}
-          <div className="absolute left-1/2 -translate-x-[calc(50%+18px)] sm:-translate-x-[calc(50%+26px)] md:-translate-x-[calc(50%+32px)] flex flex-col items-center justify-center pointer-events-auto z-20 py-1">
+          {/* MIDDLE SECTION: Centralized Magadh Sparsh Brand Logo */}
+          <div className="flex items-center justify-center py-0.5">
             <MagadhSparshLogo
               size="md"
-              className="transform hover:scale-105 transition-transform"
+              className="transform hover:scale-105 transition-transform cursor-pointer"
               onClick={() => {
                 setActiveTab('home');
                 setMenuOpen(false);
@@ -172,65 +176,60 @@ export const Navbar: React.FC<NavbarProps> = ({
             />
           </div>
 
-          {/* RIGHT SECTION: Search Bar & Quick Contact */}
-          <div className="flex items-center space-x-1 sm:space-x-2.5 ml-1 sm:ml-2">
-            {/* Desktop / Tablet Search Bar */}
-            <div className="hidden lg:block w-64 xl:w-80 relative z-40">
-              <HeaderSearchBar
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                onSelectProduct={onSelectProduct}
-                allProducts={allProducts}
-                setActiveTab={setActiveTab}
-                placeholder="Search tyres, sizes..."
-              />
-            </div>
-
-            {/* Mobile / Tablet Search Toggle */}
+          {/* RIGHT SECTION: Search Icon + Separator + Quick Contact */}
+          <div className="flex items-center">
+            {/* Search Icon Button */}
             <button
-              id="header-mobile-search-btn"
+              id="header-search-toggle-btn"
               onClick={() => setIsMobileSearchExpanded(!isMobileSearchExpanded)}
-              className="lg:hidden p-2 sm:p-2.5 text-[#016DE0] hover:text-[#005299] transition-colors flex items-center justify-center bg-transparent border-0 shadow-none cursor-pointer"
+              className="p-1 sm:p-1.5 text-black hover:text-slate-700 transition-colors flex items-center justify-center bg-transparent border-0 shadow-none cursor-pointer active:scale-95 shrink-0"
               aria-label="Search Tyres"
               title="Search tyres"
             >
-              <CustomSearchIcon className="w-9 h-9 sm:w-10 sm:h-10 text-[#016DE0]" />
+              <CustomSearchIcon className="w-8 h-8 sm:w-9 sm:h-9 text-black" />
             </button>
 
-            {/* Quick Contact Icon Button placed after search icon */}
+            {/* Separator 2: Between Search and Quick Contact */}
+            <div
+              className="mx-2.5 sm:mx-3.5 md:mx-4 w-[2.5px] sm:w-[3px] h-6 sm:h-7 bg-[#52525B] rounded-full shrink-0 select-none"
+              aria-hidden="true"
+            />
+
+            {/* Quick Contact Customer Support Icon Button */}
             <button
               id="header-quick-contact-btn"
               type="button"
               onClick={() => setQuickContactOpen(true)}
-              className="p-1.5 sm:p-2 text-[#016DE0] hover:text-[#005299] hover:bg-blue-50/60 active:scale-95 rounded-2xl transition-all flex items-center justify-center bg-transparent border-0 cursor-pointer select-none group flex-shrink-0"
+              className="p-1 sm:p-1.5 text-black hover:text-slate-700 active:scale-95 rounded-2xl transition-all flex items-center justify-center bg-transparent border-0 cursor-pointer select-none group shrink-0"
               aria-label="Quick Contact & Support"
               title="Quick Contact & Customer Service"
             >
-              <QuickContactIcon className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 text-[#016DE0] group-hover:text-[#005299] transition-colors" />
+              <QuickContactIcon className="w-8 h-8 sm:w-9 sm:h-9 text-black group-hover:text-slate-700 transition-colors" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Header Expansion for Search Input Bar */}
+      {/* Header Search Expansion Bar */}
       <div
-        className={`md:hidden transition-all duration-300 ease-in-out border-t ${
+        className={`transition-all duration-300 ease-in-out border-t ${
           isMobileSearchExpanded
-            ? 'opacity-100 py-2 px-3 sm:py-3 sm:px-4 border-slate-200 bg-white/95 backdrop-blur-md overflow-visible relative z-50'
+            ? 'opacity-100 py-2.5 px-3 sm:py-3 sm:px-6 border-slate-200 bg-white/98 backdrop-blur-md shadow-md overflow-visible relative z-50'
             : 'max-h-0 opacity-0 overflow-hidden py-0 px-4 border-transparent bg-transparent pointer-events-none'
         }`}
       >
-        <HeaderSearchBar
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          onSelectProduct={onSelectProduct}
-          allProducts={allProducts}
-          setActiveTab={setActiveTab}
-          placeholder="Search tyre name, size e.g. 295/90 R20, brand..."
-          isMobile
-          autoFocus={isMobileSearchExpanded}
-          onCloseMobileSearch={() => setIsMobileSearchExpanded(false)}
-        />
+        <div className="max-w-3xl mx-auto">
+          <HeaderSearchBar
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            onSelectProduct={onSelectProduct}
+            allProducts={allProducts}
+            setActiveTab={setActiveTab}
+            placeholder="Search tyre name, size e.g. 295/90 R20, brand..."
+            autoFocus={isMobileSearchExpanded}
+            onCloseMobileSearch={() => setIsMobileSearchExpanded(false)}
+          />
+        </div>
       </div>
 
       {/* NAVIGATION MENU DRAWER */}
