@@ -132,7 +132,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     <>
       <header
         ref={headerRef}
-        className={`fixed top-0 left-0 right-0 z-[100010] bg-white transition-all duration-200 w-full max-w-full overflow-x-clip border-t-[2px] sm:border-t-[2px] border-black border-b border-[#9CA3AF] ${
+        className={`fixed top-0 left-0 right-0 z-[100010] bg-white transition-all duration-200 w-full max-w-full overflow-x-clip ${
           isScrolled
             ? 'shadow-sm'
             : 'shadow-2xs'
@@ -143,11 +143,11 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-14 sm:h-15 md:h-16 relative">
           
           {/* LEFT SECTION: Hamburger Menu + Separator 1 */}
-          <div className="flex items-center">
+          <div className="flex items-center space-x-3 sm:space-x-4 pl-3 sm:pl-5 md:pl-6">
             <button
               id="hamburger-menu-toggle-btn"
               onClick={() => setMenuOpen(!menuOpen)}
-              className="ml-2 sm:ml-3 md:ml-4 p-0 border-0 bg-transparent outline-none focus:outline-none focus:ring-0 focus-visible:outline-none transition-transform duration-150 cursor-pointer select-none active:scale-95 flex items-center justify-center shrink-0"
+              className="p-0 border-0 bg-transparent outline-none focus:outline-none focus:ring-0 focus-visible:outline-none transition-transform duration-150 cursor-pointer select-none active:scale-95 flex items-center justify-center shrink-0"
               aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={menuOpen}
               title={menuOpen ? "Close navigation menu (Esc)" : "Open navigation menu"}
@@ -158,15 +158,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               />
             </button>
 
-            {/* Separator 1: After Hamburger Menu with ample space pushing the separator line to the right */}
+            {/* Separator 1: After Hamburger Menu */}
             <div
-              className="ml-8 sm:ml-12 md:ml-16 mr-3 sm:mr-4 md:mr-5 w-[2.5px] sm:w-[3px] h-6 sm:h-7 bg-[#52525B] rounded-full shrink-0 select-none"
+              className="w-[2.5px] sm:w-[3px] h-6 sm:h-7 bg-[#52525B] rounded-full shrink-0 select-none"
               aria-hidden="true"
             />
           </div>
 
-          {/* MIDDLE SECTION: Centralized Magadh Sparsh Brand Logo */}
-          <div className="flex items-center justify-center py-0.5">
+          {/* MIDDLE SECTION: Magadh Sparsh Brand Logo (shifted a little left) */}
+          <div className="flex items-center justify-center py-0.5 -translate-x-3 sm:-translate-x-5 md:-translate-x-6">
             <MagadhSparshLogo
               size="md"
               className="transform hover:scale-105 transition-transform cursor-pointer"
@@ -177,7 +177,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             />
           </div>
 
-          {/* RIGHT SECTION: Search Icon + Separator + Quick Contact */}
+          {/* RIGHT SECTION: Search Icon + Separator 2 + Quick Contact */}
           <div className="flex items-center">
             {/* Search Icon Button */}
             <button

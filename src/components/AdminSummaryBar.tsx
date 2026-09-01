@@ -117,20 +117,20 @@ export const AdminSummaryBar: React.FC<AdminSummaryBarProps> = ({
         <div 
           id="admin-upcoming-due-card"
           onClick={() => onSelectTab && onSelectTab('payments')}
-          className="border-r border-b border-neutral-800 p-2 sm:p-2.5 md:p-3 flex flex-col items-center justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-neutral-900/70 transition-colors select-none min-w-0 group"
+          className="border-r border-b border-neutral-800 py-5 sm:py-6 md:py-8 px-2 sm:px-2.5 md:px-3 flex flex-col items-center justify-between min-h-[120px] sm:min-h-[135px] md:min-h-[165px] cursor-pointer hover:bg-neutral-900/70 transition-colors select-none min-w-0 group"
         >
           {/* White icon positioned ABOVE the text */}
-          <div className="w-full flex items-center justify-center pt-0.5">
+          <div className="w-full flex items-center justify-center pt-1.5">
             <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110">
               <WhiteCoinStackIcon className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
             </div>
           </div>
 
-          <span className="text-[10px] sm:text-[11px] md:text-xs font-medium text-neutral-400 leading-tight text-center w-full truncate">
+          <span className="text-[10px] sm:text-[11px] md:text-xs font-medium text-neutral-400 leading-tight text-center w-full truncate my-1.5">
             Upcoming Due
           </span>
 
-          <div className={`w-full mt-0.5 flex items-center justify-center min-w-0 ${upcomingDueStyle.containerClass}`}>
+          <div className={`w-full pb-1 flex items-center justify-center min-w-0 ${upcomingDueStyle.containerClass}`}>
             <p className={`text-white tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${upcomingDueStyle.textClass}`}>
               {upcomingDueVal}
             </p>
@@ -141,20 +141,20 @@ export const AdminSummaryBar: React.FC<AdminSummaryBarProps> = ({
         <div 
           id="admin-available-limit-card"
           onClick={() => onSelectTab && onSelectTab('customers')}
-          className="border-b border-neutral-800 p-2 sm:p-2.5 md:p-3 flex flex-col items-center justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-neutral-900/70 transition-colors select-none min-w-0 group"
+          className="border-b border-neutral-800 py-5 sm:py-6 md:py-8 px-2 sm:px-2.5 md:px-3 flex flex-col items-center justify-between min-h-[120px] sm:min-h-[135px] md:min-h-[165px] cursor-pointer hover:bg-neutral-900/70 transition-colors select-none min-w-0 group"
         >
           {/* White icon positioned ABOVE the text */}
-          <div className="w-full flex items-center justify-center pt-0.5">
+          <div className="w-full flex items-center justify-center pt-1.5">
             <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110">
               <WhiteMoneyBagIcon className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
             </div>
           </div>
 
-          <span className="text-[10px] sm:text-[11px] md:text-xs font-medium text-neutral-400 leading-tight text-center w-full truncate">
+          <span className="text-[10px] sm:text-[11px] md:text-xs font-medium text-neutral-400 leading-tight text-center w-full truncate my-1.5">
             Available Limit
           </span>
 
-          <div className={`w-full mt-0.5 flex items-center justify-center min-w-0 ${availableLimitStyle.containerClass}`}>
+          <div className={`w-full pb-1 flex items-center justify-center min-w-0 ${availableLimitStyle.containerClass}`}>
             <p className={`text-white tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${availableLimitStyle.textClass}`}>
               {availableLimitVal}
             </p>
@@ -165,20 +165,20 @@ export const AdminSummaryBar: React.FC<AdminSummaryBarProps> = ({
         <div 
           id="admin-invoice-amount-due-card"
           onClick={() => onSelectTab && onSelectTab('orders')}
-          className="border-r border-neutral-800 p-2 sm:p-2.5 md:p-3 flex flex-col items-center justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-neutral-900/70 transition-colors select-none min-w-0 group"
+          className="border-r border-neutral-800 py-5 sm:py-6 md:py-8 px-2 sm:px-2.5 md:px-3 flex flex-col items-center justify-between min-h-[120px] sm:min-h-[135px] md:min-h-[165px] cursor-pointer hover:bg-neutral-900/70 transition-colors select-none min-w-0 group"
         >
           {/* White icon positioned ABOVE the text */}
-          <div className="w-full flex items-center justify-center pt-0.5">
+          <div className="w-full flex items-center justify-center pt-1.5">
             <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110">
               <WhiteHourglassIcon className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
             </div>
           </div>
 
-          <span className="text-[10px] sm:text-[11px] md:text-xs font-medium text-neutral-400 leading-tight text-center w-full truncate">
+          <span className="text-[10px] sm:text-[11px] md:text-xs font-medium text-neutral-400 leading-tight text-center w-full truncate my-1.5">
             Invoice Amount Due
           </span>
 
-          <div className={`w-full mt-0.5 flex items-center justify-center min-w-0 ${invoiceAmountDueStyle.containerClass}`}>
+          <div className={`w-full pb-1 flex items-center justify-center min-w-0 ${invoiceAmountDueStyle.containerClass}`}>
             <p className={`text-white tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${invoiceAmountDueStyle.textClass}`}>
               {invoiceAmountDueVal}
             </p>
@@ -189,20 +189,20 @@ export const AdminSummaryBar: React.FC<AdminSummaryBarProps> = ({
         <div 
           id="admin-credit-score-card"
           onClick={() => onSelectTab && onSelectTab('customers')}
-          className="p-2 sm:p-2.5 md:p-3 flex flex-col items-center justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-neutral-900/70 transition-colors select-none min-w-0 group"
+          className="py-5 sm:py-6 md:py-8 px-2 sm:px-2.5 md:px-3 flex flex-col items-center justify-between min-h-[120px] sm:min-h-[135px] md:min-h-[165px] cursor-pointer hover:bg-neutral-900/70 transition-colors select-none min-w-0 group"
         >
           {/* White image/icon positioned ABOVE the text */}
-          <div className="w-full flex items-center justify-center pt-0.5">
+          <div className="w-full flex items-center justify-center pt-1.5">
             <div className="w-10 h-7 sm:w-12 sm:h-8 md:w-14 md:h-9 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110">
               <WhiteHandshakeIcon className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
             </div>
           </div>
 
-          <span className="text-[10px] sm:text-[11px] md:text-xs font-medium text-neutral-400 leading-tight text-center w-full truncate">
+          <span className="text-[10px] sm:text-[11px] md:text-xs font-medium text-neutral-400 leading-tight text-center w-full truncate my-1.5">
             Credit Score
           </span>
 
-          <div className={`w-full mt-0.5 flex items-center justify-center min-w-0 ${creditScoreStyle.containerClass}`}>
+          <div className={`w-full pb-1 flex items-center justify-center min-w-0 ${creditScoreStyle.containerClass}`}>
             <p className={`text-purple-400 tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${creditScoreStyle.textClass}`}>
               {creditScoreVal}
             </p>

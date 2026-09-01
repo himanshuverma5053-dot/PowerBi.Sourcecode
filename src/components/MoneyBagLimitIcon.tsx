@@ -22,17 +22,19 @@ export const MoneyBagLimitIcon: React.FC<MoneyBagLimitIconProps> = ({
       {...props}
     >
       <defs>
-        <linearGradient id="moneyBagGrad" x1="15%" y1="5%" x2="85%" y2="95%">
-          <stop offset="0%" stopColor="#566BFF" />
-          <stop offset="45%" stopColor="#2E85FF" />
-          <stop offset="100%" stopColor="#00BAFF" />
+        <linearGradient id="moneyBagSparshGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#4F6DFE" />
+          <stop offset="25%" stopColor="#6F60FA" />
+          <stop offset="50%" stopColor="#9C4EF2" />
+          <stop offset="75%" stopColor="#CA44CF" />
+          <stop offset="100%" stopColor="#F94CAB" />
         </linearGradient>
       </defs>
 
       {/* TOP RUFFLE / KNOT OF MONEY SACK */}
       <path
         d="M 270 90 C 265 85 260 55 270 25 C 285 5 330 0 355 20 C 375 5 415 10 425 25 C 435 55 430 85 425 90 Z"
-        fill="url(#moneyBagGrad)"
+        fill="url(#moneyBagSparshGrad)"
       />
 
       {/* TIE BAND AT NECK */}
@@ -42,13 +44,13 @@ export const MoneyBagLimitIcon: React.FC<MoneyBagLimitIconProps> = ({
         width="115"
         height="18"
         rx="9"
-        fill="#2563EB"
+        fill="#6F60FA"
       />
 
       {/* MAIN MONEY POUCH / SACK */}
       <path
         d="M 348 95 C 235 95 160 185 160 295 C 160 380 215 450 348 450 C 445 450 495 380 495 295 C 495 185 445 95 348 95 Z"
-        fill="url(#moneyBagGrad)"
+        fill="url(#moneyBagSparshGrad)"
       />
 
       {/* SACK DOLLAR SIGN ($) - Crisp White */}
@@ -65,7 +67,7 @@ export const MoneyBagLimitIcon: React.FC<MoneyBagLimitIconProps> = ({
 
       {/* COIN STACK (Left Side) */}
       {/* Top Face Coin */}
-      <circle cx="105" cy="215" r="75" fill="url(#moneyBagGrad)" stroke="#FFFFFF" strokeWidth="8" />
+      <circle cx="105" cy="215" r="75" fill="url(#moneyBagSparshGrad)" stroke="#FFFFFF" strokeWidth="8" />
       {/* Coin 1 Dollar Sign ($) */}
       <rect x="100" y="155" width="10" height="120" rx="5" fill="#FFFFFF" />
       <path
@@ -77,12 +79,12 @@ export const MoneyBagLimitIcon: React.FC<MoneyBagLimitIconProps> = ({
       />
 
       {/* Stacked Coin Edge Pills */}
-      <rect x="25" y="300" width="145" height="32" rx="16" fill="url(#moneyBagGrad)" stroke="#FFFFFF" strokeWidth="4" />
-      <rect x="25" y="348" width="145" height="32" rx="16" fill="url(#moneyBagGrad)" stroke="#FFFFFF" strokeWidth="4" />
-      <rect x="25" y="396" width="145" height="32" rx="16" fill="url(#moneyBagGrad)" stroke="#FFFFFF" strokeWidth="4" />
+      <rect x="25" y="300" width="145" height="32" rx="16" fill="url(#moneyBagSparshGrad)" stroke="#FFFFFF" strokeWidth="4" />
+      <rect x="25" y="348" width="145" height="32" rx="16" fill="url(#moneyBagSparshGrad)" stroke="#FFFFFF" strokeWidth="4" />
+      <rect x="25" y="396" width="145" height="32" rx="16" fill="url(#moneyBagSparshGrad)" stroke="#FFFFFF" strokeWidth="4" />
 
       {/* VERIFIED CHECKMARK BADGE (Bottom-Left / Foreground) */}
-      <circle cx="215" cy="425" r="82" fill="url(#moneyBagGrad)" stroke="#FFFFFF" strokeWidth="12" />
+      <circle cx="215" cy="425" r="82" fill="url(#moneyBagSparshGrad)" stroke="#FFFFFF" strokeWidth="12" />
       {/* White Bold Checkmark (✓) */}
       <path
         d="M 165 422 L 202 460 L 265 395"

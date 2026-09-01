@@ -130,23 +130,20 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="available-limit-card"
           onClick={() => setActiveTab('quick-payments')}
-          className="border-r border-b border-gray-200/90 p-2 sm:p-2.5 md:p-3 flex flex-col items-center justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
+          className="border-r border-b border-gray-200/90 py-5 sm:py-6 md:py-8 px-2 sm:px-2.5 md:px-3 flex flex-col items-center justify-between min-h-[120px] sm:min-h-[135px] md:min-h-[165px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
         >
           {/* Small image icon positioned ABOVE the text */}
-          <div className="w-full flex items-center justify-center pt-0.5">
-            <img 
-              src="/coin_stack_due_icon.svg" 
-              alt="Upcoming Due" 
-              className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 object-contain shrink-0 transition-transform duration-200 group-hover:scale-110"
-              loading="lazy"
+          <div className="w-full flex items-center justify-center pt-1.5">
+            <CoinStackDueIcon 
+              className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 shrink-0 transition-transform duration-200 group-hover:scale-110"
             />
           </div>
 
-          <span className="text-[10px] sm:text-[11px] md:text-xs font-normal text-[#555d6e] leading-tight text-center w-full truncate">
+          <span className="text-[10px] sm:text-[11px] md:text-xs font-normal text-[#555d6e] leading-tight text-center w-full truncate my-1.5">
             Upcoming Due
           </span>
 
-          <div className={`w-full mt-0.5 flex items-center justify-center min-w-0 ${upcomingDueStyle.containerClass}`}>
+          <div className={`w-full pb-1 flex items-center justify-center min-w-0 ${upcomingDueStyle.containerClass}`}>
             <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${upcomingDueStyle.textClass}`}>
               {upcomingDueVal}
             </p>
@@ -157,23 +154,20 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="hold-cca-card"
           onClick={() => setActiveTab('account')}
-          className="border-b border-gray-200/90 p-2 sm:p-2.5 md:p-3 flex flex-col items-center justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
+          className="border-b border-gray-200/90 py-5 sm:py-6 md:py-8 px-2 sm:px-2.5 md:px-3 flex flex-col items-center justify-between min-h-[120px] sm:min-h-[135px] md:min-h-[165px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
         >
           {/* Small image icon positioned ABOVE the text */}
-          <div className="w-full flex items-center justify-center pt-0.5">
-            <img 
-              src={availableLimitImage} 
-              alt="Available Limit" 
-              className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 object-contain shrink-0 transition-transform duration-200 group-hover:scale-110"
-              loading="lazy"
+          <div className="w-full flex items-center justify-center pt-1.5">
+            <MoneyBagLimitIcon 
+              className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 shrink-0 transition-transform duration-200 group-hover:scale-110"
             />
           </div>
 
-          <span className="text-[10px] sm:text-[11px] md:text-xs font-normal text-[#555d6e] leading-tight text-center w-full truncate">
+          <span className="text-[10px] sm:text-[11px] md:text-xs font-normal text-[#555d6e] leading-tight text-center w-full truncate my-1.5">
             Available Limit
           </span>
 
-          <div className={`w-full mt-0.5 flex items-center justify-center min-w-0 ${availableLimitStyle.containerClass}`}>
+          <div className={`w-full pb-1 flex items-center justify-center min-w-0 ${availableLimitStyle.containerClass}`}>
             <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${availableLimitStyle.textClass}`}>
               {availableLimitVal}
             </p>
@@ -184,23 +178,20 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="total-cca-card"
           onClick={() => setActiveTab('quick-payments')}
-          className="border-r border-gray-200/90 p-2 sm:p-2.5 md:p-3 flex flex-col items-center justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
+          className="border-r border-gray-200/90 py-5 sm:py-6 md:py-8 px-2 sm:px-2.5 md:px-3 flex flex-col items-center justify-between min-h-[120px] sm:min-h-[135px] md:min-h-[165px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
         >
           {/* Small image icon positioned ABOVE the text */}
-          <div className="w-full flex items-center justify-center pt-0.5">
-            <img 
-              src="/hourglass_due_icon.svg" 
-              alt="Invoice Amount Due" 
-              className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 object-contain shrink-0 transition-transform duration-200 group-hover:scale-110"
-              loading="lazy"
+          <div className="w-full flex items-center justify-center pt-1.5">
+            <HourglassDueIcon 
+              className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 shrink-0 transition-transform duration-200 group-hover:scale-110"
             />
           </div>
 
-          <span className="text-[10px] sm:text-[11px] md:text-xs font-normal text-[#555d6e] leading-tight text-center w-full truncate">
+          <span className="text-[10px] sm:text-[11px] md:text-xs font-normal text-[#555d6e] leading-tight text-center w-full truncate my-1.5">
             Invoice Amount Due
           </span>
 
-          <div className={`w-full mt-0.5 flex items-center justify-center min-w-0 ${invoiceAmountDueStyle.containerClass}`}>
+          <div className={`w-full pb-1 flex items-center justify-center min-w-0 ${invoiceAmountDueStyle.containerClass}`}>
             <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${invoiceAmountDueStyle.textClass}`}>
               {invoiceAmountDueVal}
             </p>
@@ -211,23 +202,20 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="invoice-amount-due-card"
           onClick={() => setActiveTab('account')}
-          className="p-2 sm:p-2.5 md:p-3 flex flex-col items-center justify-between min-h-[72px] sm:min-h-[78px] md:min-h-[102px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
+          className="py-5 sm:py-6 md:py-8 px-2 sm:px-2.5 md:px-3 flex flex-col items-center justify-between min-h-[120px] sm:min-h-[135px] md:min-h-[165px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
         >
           {/* Image icon positioned ABOVE the text */}
-          <div className="w-full flex items-center justify-center pt-0.5">
-            <img 
-              src={handshakeImage} 
-              alt="Credit Score" 
-              className="w-12 h-8 sm:w-14 sm:h-9 md:w-16 md:h-10 object-contain shrink-0 transition-transform duration-200 group-hover:scale-110"
-              loading="lazy"
+          <div className="w-full flex items-center justify-center pt-1.5">
+            <HandshakeIcon 
+              className="w-10 h-7 sm:w-12 sm:h-8 md:w-14 md:h-9 shrink-0 transition-transform duration-200 group-hover:scale-110"
             />
           </div>
 
-          <span className="text-[10px] sm:text-[11px] md:text-xs font-normal text-[#555d6e] leading-tight text-center w-full truncate">
+          <span className="text-[10px] sm:text-[11px] md:text-xs font-normal text-[#555d6e] leading-tight text-center w-full truncate my-1.5">
             Credit Score
           </span>
 
-          <div className={`w-full mt-0.5 flex items-center justify-center min-w-0 ${creditScoreStyle.containerClass}`}>
+          <div className={`w-full pb-1 flex items-center justify-center min-w-0 ${creditScoreStyle.containerClass}`}>
             <p className={`text-[#0972D3] tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${creditScoreStyle.textClass}`}>
               {creditScoreVal}
             </p>
