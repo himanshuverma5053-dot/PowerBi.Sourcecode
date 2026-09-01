@@ -10,7 +10,6 @@ interface ProductCarouselProps {
   currentCustomer?: CustomerAccount | null;
   isAdmin?: boolean;
   onInstantBuy?: (product: TyreProduct) => void;
-  onViewDetails: (product: TyreProduct) => void;
   emptyMessage?: string;
   badgeText?: string;
 }
@@ -22,7 +21,6 @@ export const ProductCarousel: React.FC<ProductCarouselProps> = ({
   currentCustomer,
   isAdmin,
   onInstantBuy,
-  onViewDetails,
   emptyMessage = "No products found matching your criteria.",
   badgeText
 }) => {
@@ -149,7 +147,6 @@ export const ProductCarousel: React.FC<ProductCarouselProps> = ({
                   currentCustomer={currentCustomer}
                   isAdmin={isAdmin}
                   onInstantBuy={onInstantBuy}
-                  onViewDetails={onViewDetails}
                   compact
                 />
               </div>

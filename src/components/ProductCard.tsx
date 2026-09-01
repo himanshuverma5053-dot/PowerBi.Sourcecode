@@ -7,8 +7,6 @@ import { ProductImagePlaceholder } from './ProductImagePlaceholder';
 
 interface ProductCardProps {
   product: TyreProduct;
-  onQuickView?: (product: TyreProduct) => void;
-  onViewDetails?: (product: TyreProduct) => void;
   onInstantBuy?: (product: TyreProduct, quantity?: number) => void;
   currentCustomer?: CustomerAccount | null;
   isAdmin?: boolean;
@@ -17,8 +15,6 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({
   product,
-  onQuickView,
-  onViewDetails,
   onInstantBuy,
   currentCustomer,
   compact = false,
@@ -27,14 +23,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const pricingInfo = getCustomerEffectivePrice(product, currentCustomer);
   const displayPrice = pricingInfo.effectivePrice;
   const isCustomRate = pricingInfo.hasCustomOverride || pricingInfo.appliedDiscountPercent > 0;
-
-  const handleView = () => {
-    if (onViewDetails) {
-      onViewDetails(product);
-    } else if (onQuickView) {
-      onQuickView(product);
-    }
-  };
 
   const handleIncrement = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -50,8 +38,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     e.stopPropagation();
     if (onInstantBuy) {
       onInstantBuy(product, quantity);
-    } else if (onViewDetails) {
-      onViewDetails(product);
     }
   };
 
@@ -91,16 +77,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </div>
       </div>
 
-      {/* Image Container with Hover Zoom */}
+      {/* Image Container */}
       <div
-        className="relative h-32 sm:h-36 w-full flex items-center justify-center p-3 cursor-pointer overflow-hidden bg-slate-50/70 mt-1"
-        onClick={handleView}
+        className="relative h-32 sm:h-36 w-full flex items-center justify-center p-3 overflow-hidden bg-slate-50/70 mt-1 select-none"
       >
         {product.image || product.images?.[0] ? (
           <img
             src={product.image || product.images?.[0]}
             alt={product.name}
-            className="max-h-28 sm:max-h-32 max-w-full object-contain group-hover:scale-108 transition-transform duration-300 ease-out"
+            className="max-h-28 sm:max-h-32 max-w-full object-contain"
             referrerPolicy="no-referrer"
           />
         ) : (
@@ -117,8 +102,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
 
           <h3
-            onClick={handleView}
-            className="text-xs sm:text-sm font-extrabold text-slate-900 hover:text-slate-700 cursor-pointer line-clamp-1 transition-colors font-display"
+            className="text-xs sm:text-sm font-extrabold text-slate-900 line-clamp-1 font-display"
           >
             {product.name}
           </h3>
@@ -194,15 +178,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             >
               <Zap className="w-3 h-3 fill-white text-white" />
               <span>Buy Now</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={handleView}
-              className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
-              title="View Specs"
-            >
-              <Eye className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>

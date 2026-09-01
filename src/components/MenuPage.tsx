@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, Power, ArrowRight, Tag, Award, Headphones, AlertCircle, ShieldCheck, FileText, Truck, Percent, User, MapPin } from 'lucide-react';
+import { ChevronDown, Power, ArrowRight, AlertCircle, ShieldCheck, FileText, Truck, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface MenuPageProps {
@@ -136,31 +136,7 @@ export const MenuPage: React.FC<MenuPageProps> = ({
                   onClick={() => handleItemClick('catalogue')}
                   className="w-full flex items-center justify-between py-2 px-3 text-xs sm:text-sm font-bold text-slate-700 hover:text-[#0066c0] hover:bg-white rounded-xl transition-all cursor-pointer"
                 >
-                  <span>All Tyre Range & Catalog</span>
-                  <ArrowRight className="w-4 h-4 text-slate-400" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleItemClick('catalogue', 'Truck')}
-                  className="w-full flex items-center justify-between py-2 px-3 text-xs sm:text-sm font-bold text-slate-700 hover:text-[#0066c0] hover:bg-white rounded-xl transition-all cursor-pointer"
-                >
-                  <span>Commercial & Heavy Duty Tyres</span>
-                  <Truck className="w-4 h-4 text-slate-400" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleItemClick('catalogue', 'RADIAL')}
-                  className="w-full flex items-center justify-between py-2 px-3 text-xs sm:text-sm font-bold text-slate-700 hover:text-[#0066c0] hover:bg-white rounded-xl transition-all cursor-pointer"
-                >
-                  <span>Radial Tyres Collection</span>
-                  <ArrowRight className="w-4 h-4 text-slate-400" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleItemClick('catalogue', 'NON RADIAL')}
-                  className="w-full flex items-center justify-between py-2 px-3 text-xs sm:text-sm font-bold text-slate-700 hover:text-[#0066c0] hover:bg-white rounded-xl transition-all cursor-pointer"
-                >
-                  <span>Non-Radial / Bias Tyres</span>
+                  <span>Products</span>
                   <ArrowRight className="w-4 h-4 text-slate-400" />
                 </button>
               </motion.div>
@@ -198,7 +174,7 @@ export const MenuPage: React.FC<MenuPageProps> = ({
                   onClick={() => handleItemClick('quick-order')}
                   className="w-full flex items-center justify-between py-2 px-3 text-xs sm:text-sm font-bold text-slate-700 hover:text-[#0066c0] hover:bg-white rounded-xl transition-all cursor-pointer"
                 >
-                  <span>Active & Completed Orders</span>
+                  <span>Order History</span>
                   <FileText className="w-4 h-4 text-slate-400" />
                 </button>
                 <button
@@ -206,7 +182,7 @@ export const MenuPage: React.FC<MenuPageProps> = ({
                   onClick={() => handleItemClick('track-consignments')}
                   className="w-full flex items-center justify-between py-2 px-3 text-xs sm:text-sm font-bold text-slate-700 hover:text-[#0066c0] hover:bg-white rounded-xl transition-all cursor-pointer"
                 >
-                  <span>Track Consignments & Dispatches</span>
+                  <span>Orders Tracking</span>
                   <Truck className="w-4 h-4 text-slate-400" />
                 </button>
               </motion.div>
@@ -214,25 +190,25 @@ export const MenuPage: React.FC<MenuPageProps> = ({
           </AnimatePresence>
         </div>
 
-        {/* 3. My Account */}
+        {/* 3. My Payments */}
         <div className="border-b border-slate-50 pb-1">
           <button
             type="button"
-            onClick={() => toggleSection('account')}
+            onClick={() => toggleSection('payments')}
             className="w-full flex items-center justify-between py-2 text-left text-black hover:text-[#0066c0] transition-colors cursor-pointer group select-none"
           >
             <span className="text-[21px] sm:text-[23px] md:text-[24px] font-black tracking-tight text-slate-950 group-hover:text-[#0066c0] transition-colors">
-              My Account
+              My Payments
             </span>
             <ChevronDown
               className={`w-6 h-6 sm:w-7 sm:h-7 stroke-[2.5] text-slate-950 group-hover:text-[#0066c0] transition-transform duration-200 ${
-                expandedSection === 'account' ? 'rotate-180 text-[#0066c0]' : ''
+                expandedSection === 'payments' ? 'rotate-180 text-[#0066c0]' : ''
               }`}
             />
           </button>
 
           <AnimatePresence>
-            {expandedSection === 'account' && (
+            {expandedSection === 'payments' && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
@@ -241,18 +217,10 @@ export const MenuPage: React.FC<MenuPageProps> = ({
               >
                 <button
                   type="button"
-                  onClick={() => handleItemClick('account')}
-                  className="w-full flex items-center justify-between py-2 px-3 text-xs sm:text-sm font-bold text-slate-700 hover:text-[#0066c0] hover:bg-white rounded-xl transition-all cursor-pointer"
-                >
-                  <span>Account Ledger & Financials</span>
-                  <ArrowRight className="w-4 h-4 text-slate-400" />
-                </button>
-                <button
-                  type="button"
                   onClick={() => handleItemClick('quick-payments')}
                   className="w-full flex items-center justify-between py-2 px-3 text-xs sm:text-sm font-bold text-slate-700 hover:text-[#0066c0] hover:bg-white rounded-xl transition-all cursor-pointer"
                 >
-                  <span>Make Instant Payment</span>
+                  <span>Billing & Payments</span>
                   <ArrowRight className="w-4 h-4 text-slate-400" />
                 </button>
               </motion.div>
@@ -306,94 +274,7 @@ export const MenuPage: React.FC<MenuPageProps> = ({
           </AnimatePresence>
         </div>
 
-        {/* 5. My Offers */}
-        <div className="border-b border-slate-50 pb-1">
-          <button
-            type="button"
-            onClick={() => toggleSection('offers')}
-            className="w-full flex items-center justify-between py-2 text-left text-black hover:text-[#0066c0] transition-colors cursor-pointer group select-none"
-          >
-            <span className="text-[21px] sm:text-[23px] md:text-[24px] font-black tracking-tight text-slate-950 group-hover:text-[#0066c0] transition-colors">
-              My Offers
-            </span>
-            <ChevronDown
-              className={`w-6 h-6 sm:w-7 sm:h-7 stroke-[2.5] text-slate-950 group-hover:text-[#0066c0] transition-transform duration-200 ${
-                expandedSection === 'offers' ? 'rotate-180 text-[#0066c0]' : ''
-              }`}
-            />
-          </button>
-
-          <AnimatePresence>
-            {expandedSection === 'offers' && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="pl-3 pr-2 py-2 space-y-1.5 bg-slate-50/90 rounded-2xl my-2 border border-slate-200/70"
-              >
-                <div className="py-2 px-3 text-xs sm:text-sm font-medium text-slate-600 bg-white rounded-xl border border-slate-100">
-                  <div className="flex items-center space-x-2 text-purple-700 font-bold text-xs mb-1">
-                    <Percent className="w-3.5 h-3.5" />
-                    <span>Active Dealer Partner Schemes</span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 leading-relaxed">
-                    Volume rebate of ₹200/tyre applied on orders exceeding 50 units this billing cycle.
-                  </p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* 6. More */}
-        <div className="border-b border-slate-50 pb-1">
-          <button
-            type="button"
-            onClick={() => toggleSection('more')}
-            className="w-full flex items-center justify-between py-2 text-left text-black hover:text-[#0066c0] transition-colors cursor-pointer group select-none"
-          >
-            <span className="text-[21px] sm:text-[23px] md:text-[24px] font-black tracking-tight text-slate-950 group-hover:text-[#0066c0] transition-colors">
-              More
-            </span>
-            <ChevronDown
-              className={`w-6 h-6 sm:w-7 sm:h-7 stroke-[2.5] text-slate-950 group-hover:text-[#0066c0] transition-transform duration-200 ${
-                expandedSection === 'more' ? 'rotate-180 text-[#0066c0]' : ''
-              }`}
-            />
-          </button>
-
-          <AnimatePresence>
-            {expandedSection === 'more' && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="pl-3 pr-2 py-2 space-y-1.5 bg-slate-50/90 rounded-2xl my-2 border border-slate-200/70"
-              >
-                <button
-                  type="button"
-                  onClick={() => handleItemClick('admin')}
-                  className="w-full flex items-center justify-between py-2 px-3 text-xs sm:text-sm font-bold text-slate-700 hover:text-[#0066c0] hover:bg-white rounded-xl transition-all cursor-pointer"
-                >
-                  <span>Admin Management Console</span>
-                  <Tag className="w-4 h-4 text-slate-400" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onOpenQuickContact) onOpenQuickContact();
-                  }}
-                  className="w-full flex items-center justify-between py-2 px-3 text-xs sm:text-sm font-bold text-slate-700 hover:text-[#0066c0] hover:bg-white rounded-xl transition-all cursor-pointer"
-                >
-                  <span>Apply for Dealership / Expansion</span>
-                  <Award className="w-4 h-4 text-slate-400" />
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* 7. My Profile */}
+        {/* 5. My Profile */}
         <div className="border-b border-slate-50 pb-1">
           <button
             type="button"

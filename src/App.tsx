@@ -13,7 +13,6 @@ import { ProductCard } from './components/ProductCard';
 import { VerticalProductCard } from './components/VerticalProductCard';
 import { ProductCarousel } from './components/ProductCarousel';
 import { ContinuousProductBar } from './components/ContinuousProductBar';
-import { ProductDetailModal } from './components/ProductDetailModal';
 import { MyOrderPage } from './components/MyOrderPage';
 import { PaymentPage } from './components/PaymentPage';
 import { ProfilePage } from './components/ProfilePage';
@@ -261,7 +260,6 @@ export default function App() {
   const isAdmin = checkIsAdmin(currentUser, currentUserEmail);
   const isLoggedIn = Boolean(currentUser || currentUserEmail);
 
-  const [selectedProductForModal, setSelectedProductForModal] = useState<TyreProduct | null>(null);
   const [selectedOrderForInvoice, setSelectedOrderForInvoice] = useState<Order | null>(null);
   const [checkoutOrderProduct, setCheckoutOrderProduct] = useState<{ product: TyreProduct; quantity: number } | null>(null);
   const [orderToPay, setOrderToPay] = useState<Order | null>(null);
@@ -291,7 +289,6 @@ export default function App() {
     }
 
     setCheckoutOrderProduct({ product, quantity });
-    setSelectedProductForModal(null);
     setActiveTab('order-details');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -482,9 +479,6 @@ export default function App() {
       safeSetLocalStorage('magadh_products', updated);
       return updated;
     });
-    if (selectedProductForModal && selectedProductForModal.id === productId) {
-      setSelectedProductForModal(prev => prev ? { ...prev, image: imageUrl, images: [imageUrl, ...(prev.images || [])] } : null);
-    }
     showToast('Product photo updated successfully!');
   };
 
@@ -608,7 +602,10 @@ export default function App() {
             isLoggedIn={isLoggedIn}
             currentUser={currentUser}
             allProducts={visibleProducts}
-            onSelectProduct={(product) => setSelectedProductForModal(product)}
+            onSelectProduct={(product) => {
+              setSearchQuery(product.name);
+              setActiveTab('catalogue');
+            }}
             onSelectCategory={(category) => setSelectedCategory(category)}
             onLogout={handleLogout}
           />
@@ -665,7 +662,6 @@ export default function App() {
               currentCustomerAccount={currentCustomerAccount}
               isAdmin={isAdmin}
               onInstantBuy={handleInstantBuy}
-              onViewDetails={(product) => setSelectedProductForModal(product)}
               onExploreCatalogue={(category) => {
                 if (category) setSelectedCategory(category);
                 setActiveTab('catalogue');
@@ -745,7 +741,6 @@ export default function App() {
                       currentCustomer={currentCustomerAccount}
                       isAdmin={isAdmin}
                       onInstantBuy={handleInstantBuy}
-                      onViewDetails={(prod) => setSelectedProductForModal(prod)}
                       onUpdateImage={handleUpdateProductImage}
                     />
                   ))}
@@ -810,7 +805,7 @@ export default function App() {
         )}
 
         {/* TAB 4: PAYMENT PAGE */}
-        {activeTab === 'quick-payments' && (
+        {(activeTab === 'quick-payments' || activeTab === 'payments' || activeTab === 'billing-payments') && (
           <PaymentPage
             payments={payments}
             orders={orders}
@@ -915,16 +910,6 @@ export default function App() {
   )}
 
       {/* Modals & Overlays */}
-      <ProductDetailModal
-        product={selectedProductForModal}
-        products={products}
-        currentCustomer={currentCustomerAccount}
-        isAdmin={isAdmin}
-        onClose={() => setSelectedProductForModal(null)}
-        onInstantBuy={handleInstantBuy}
-        onUpdateImage={handleUpdateProductImage}
-      />
-
       <InvoiceModal
         order={selectedOrderForInvoice}
         onClose={() => {

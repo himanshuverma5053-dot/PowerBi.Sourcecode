@@ -11,7 +11,6 @@ interface ForYourKnowledgeSectionProps {
   currentCustomerAccount?: CustomerAccount | null;
   isAdmin?: boolean;
   onInstantBuy?: (product: TyreProduct) => void;
-  onViewDetails?: (product: TyreProduct) => void;
   onExploreCatalogue?: (category?: string) => void;
 }
 
@@ -104,7 +103,6 @@ const BLOG_GUIDE = {
 
 export const ForYourKnowledgeSection: React.FC<ForYourKnowledgeSectionProps> = ({
   products = [],
-  onViewDetails,
   onExploreCatalogue,
 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -151,10 +149,9 @@ export const ForYourKnowledgeSection: React.FC<ForYourKnowledgeSectionProps> = (
     setIsAutoPlaying(true);
   };
 
-  const handleKnowMore = (item: ShowcaseProductItem) => {
-    const fullProduct = products.find(p => p.id === item.id) || (item.productData as TyreProduct);
-    if (onViewDetails && fullProduct) {
-      onViewDetails(fullProduct as TyreProduct);
+  const handleKnowMore = (_item: ShowcaseProductItem) => {
+    if (onExploreCatalogue) {
+      onExploreCatalogue('Truck');
     }
   };
 

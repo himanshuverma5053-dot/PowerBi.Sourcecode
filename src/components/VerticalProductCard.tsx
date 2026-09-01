@@ -9,7 +9,6 @@ interface VerticalProductCardProps {
   currentCustomer?: CustomerAccount | null;
   isAdmin?: boolean;
   onInstantBuy?: (product: TyreProduct, quantity?: number) => void;
-  onViewDetails?: (product: TyreProduct) => void;
   onUpdateImage?: (productId: string, imageUrl: string) => void;
 }
 
@@ -18,7 +17,6 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
   currentCustomer,
   isAdmin,
   onInstantBuy,
-  onViewDetails,
   onUpdateImage,
 }) => {
   const [quantity, setQuantity] = useState(1);
@@ -57,8 +55,6 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
   const handleBuyNow = () => {
     if (onInstantBuy) {
       onInstantBuy(product, quantity);
-    } else if (onViewDetails) {
-      onViewDetails(product);
     }
   };
 
@@ -101,8 +97,7 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
 
       {/* Product Image Center View */}
       <div 
-        className="my-5 sm:my-7 flex items-center justify-center relative cursor-pointer group/img"
-        onClick={() => onViewDetails?.(product)}
+        className="my-5 sm:my-7 flex items-center justify-center relative select-none"
       >
         <div className="relative w-40 h-40 sm:w-52 sm:h-52 flex items-center justify-center p-2 rounded-2xl bg-gradient-to-b from-slate-50/60 to-transparent transition-colors duration-200">
           {!product.image || imgError ? (
@@ -119,25 +114,12 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
               src={product.image}
               alt={product.name}
               onError={() => setImgError(true)}
-              className="w-full h-full max-h-48 object-contain filter drop-shadow-xl group-hover/img:scale-105 transition-transform duration-300 select-none"
+              className="w-full h-full max-h-48 object-contain filter drop-shadow-xl select-none"
               referrerPolicy="no-referrer"
               loading="lazy"
             />
           )}
         </div>
-
-        {/* Subtle quick view trigger on hover */}
-        <button
-          id={`btn-view-spec-${product.id}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            onViewDetails?.(product);
-          }}
-          className="absolute right-1 bottom-1 p-2 bg-white/90 hover:bg-white text-slate-700 hover:text-slate-900 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-md border border-slate-200"
-          title="View Specifications"
-        >
-          <Eye className="w-3.5 h-3.5" />
-        </button>
       </div>
 
       {/* Price & Action Row */}

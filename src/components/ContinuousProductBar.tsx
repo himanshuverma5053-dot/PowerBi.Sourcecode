@@ -15,7 +15,6 @@ interface ContinuousProductBarProps {
   currentCustomer?: CustomerAccount | null;
   isAdmin?: boolean;
   onInstantBuy?: (product: TyreProduct) => void;
-  onViewDetails: (product: TyreProduct) => void;
   onViewAllCategory?: () => void;
 }
 
@@ -30,7 +29,6 @@ export const ContinuousProductBar: React.FC<ContinuousProductBarProps> = ({
   currentCustomer,
   isAdmin,
   onInstantBuy,
-  onViewDetails,
   onViewAllCategory
 }) => {
   const [isPaused, setIsPaused] = useState(false);
@@ -84,8 +82,7 @@ export const ContinuousProductBar: React.FC<ContinuousProductBarProps> = ({
               >
                 {/* Product Image & Badges */}
                 <div
-                  className="relative w-full h-20 sm:h-24 md:h-32 lg:h-24 rounded-lg md:rounded-xl bg-slate-100 overflow-hidden flex items-center justify-center p-1.5 md:p-2 mb-1.5 md:mb-2 cursor-pointer group-hover/card:bg-slate-200/50 transition-colors"
-                  onClick={() => onViewDetails(product)}
+                  className="relative w-full h-20 sm:h-24 md:h-32 lg:h-24 rounded-lg md:rounded-xl bg-slate-100 overflow-hidden flex items-center justify-center p-1.5 md:p-2 mb-1.5 md:mb-2 select-none"
                 >
                   {product.image || product.images?.[0] ? (
                     <img
@@ -108,7 +105,7 @@ export const ContinuousProductBar: React.FC<ContinuousProductBarProps> = ({
                 </div>
 
                 {/* Product Info */}
-                <div className="space-y-0.5 md:space-y-1 cursor-pointer" onClick={() => onViewDetails(product)}>
+                <div className="space-y-0.5 md:space-y-1 select-none">
                   <div className="text-[9px] md:text-[10px] font-extrabold text-slate-700 uppercase tracking-wider flex items-center justify-between">
                     <span>{sizeString}</span>
                     <span className="text-[8px] md:text-[9px] text-slate-500 font-semibold">{product.category}</span>
@@ -141,26 +138,12 @@ export const ContinuousProductBar: React.FC<ContinuousProductBarProps> = ({
                       e.stopPropagation();
                       if (onInstantBuy) {
                         onInstantBuy(product);
-                      } else {
-                        onViewDetails(product);
                       }
                     }}
                     className="flex-1 py-1 md:py-1.5 px-1.5 md:px-2 rounded-xl bg-[#9800ff] hover:bg-[#8500df] active:bg-[#7200be] active:scale-95 text-white font-extrabold text-[10px] md:text-xs shadow-2xs transition-all flex items-center justify-center space-x-1 cursor-pointer"
                   >
                     <Zap className="w-3 h-3 md:w-3.5 md:h-3.5 fill-white text-white" />
                     <span>Buy Now</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onViewDetails(product);
-                    }}
-                    className="p-1 md:p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors flex items-center justify-center cursor-pointer"
-                    title="View Specs"
-                  >
-                    <Eye className="w-3 h-3 md:w-3.5 md:h-3.5" />
                   </button>
                 </div>
               </div>
