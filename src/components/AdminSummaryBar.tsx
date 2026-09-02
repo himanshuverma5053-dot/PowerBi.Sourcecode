@@ -81,12 +81,12 @@ export const AdminSummaryBar: React.FC<AdminSummaryBarProps> = ({
   const creditScoreStyle = getNumberStyle(creditScoreVal);
 
   return (
-    <section id="admin-static-overview-section" className="w-full max-w-[285px] sm:max-w-[310px] md:max-w-[460px] lg:max-w-[310px] mx-auto px-2 py-1 font-sans space-y-1.5 md:space-y-2.5">
+    <section id="admin-static-overview-section" className="w-full max-w-[255px] sm:max-w-[285px] md:max-w-[390px] lg:max-w-[285px] mx-auto px-2 py-1.5 font-sans space-y-2 md:space-y-3">
       {/* Top Header */}
-      <div className="flex items-center justify-between gap-1.5 px-1 pb-1">
-        <h1 id="admin-static-overview-heading" className="text-lg sm:text-xl md:text-2xl font-black text-white tracking-tight flex items-center gap-1.5 min-w-0">
-          <span className="text-white font-black text-lg sm:text-xl md:text-2xl tracking-tight truncate">Static Overview</span>
-          <span className="text-[9px] md:text-[10px] uppercase tracking-wider font-extrabold bg-purple-900/60 text-purple-200 border border-purple-700/50 px-1.5 md:px-2 py-0.5 rounded-full flex items-center gap-0.5 shrink-0">
+      <div className="flex items-center justify-between gap-1.5 px-0.5 pb-1">
+        <h1 id="admin-static-overview-heading" className="text-lg sm:text-xl md:text-2xl font-black text-white tracking-tight flex items-center gap-1.5 shrink-0">
+          <span className="text-white font-black text-lg sm:text-xl md:text-2xl tracking-tight whitespace-nowrap">Static Overview</span>
+          <span className="text-[9px] md:text-[10px] uppercase tracking-wider font-extrabold bg-purple-900/60 text-purple-200 border border-purple-700/50 px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shrink-0">
             <ShieldCheck className="w-3 h-3 md:w-3.5 md:h-3.5 text-purple-300" />
             Admin
           </span>
@@ -98,40 +98,40 @@ export const AdminSummaryBar: React.FC<AdminSummaryBarProps> = ({
           id="admin-static-overview-refresh-bar"
           onClick={handleRefresh}
           aria-label="Refresh admin metrics"
-          className="inline-flex items-center gap-1 px-2.5 md:px-3.5 py-1 md:py-1.5 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-white cursor-pointer select-none border border-white/20 shadow-sm shrink-0 -translate-x-1 sm:-translate-x-1.5"
+          className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-white cursor-pointer select-none border border-white/20 shadow-sm shrink-0"
         >
           <RefreshCw 
-            className={`w-3.5 h-3.5 md:w-4 md:h-4 text-white transition-transform duration-700 ${isRefreshing ? 'animate-spin' : ''}`} 
+            className={`w-3.5 h-3.5 sm:w-4 sm:h-4 text-white transition-transform duration-700 ${isRefreshing ? 'animate-spin' : ''}`} 
             strokeWidth={2.5}
           />
-          <span className="text-xs sm:text-sm md:text-base font-semibold text-white tracking-tight">Refresh</span>
+          <span className="text-xs sm:text-sm font-bold text-white tracking-tight">Refresh</span>
         </button>
       </div>
 
       {/* 2x2 Quadrant Card with Luxury Black Background & High-Contrast Separators */}
       <div 
         id="admin-overview-card-container" 
-        className="w-full bg-black rounded-[24px] sm:rounded-[26px] md:rounded-[32px] border border-neutral-800 shadow-[0_4px_24px_rgba(0,0,0,0.6)] grid grid-cols-2 grid-rows-2 overflow-hidden transition-all duration-200"
+        className="w-full bg-black rounded-[26px] sm:rounded-[30px] md:rounded-[36px] border border-neutral-800 shadow-[0_4px_24px_rgba(0,0,0,0.6)] grid grid-cols-2 grid-rows-2 overflow-hidden transition-all duration-200"
       >
         {/* Quadrant 1 (Top-Left): Upcoming Due */}
         <div 
           id="admin-upcoming-due-card"
           onClick={() => onSelectTab && onSelectTab('payments')}
-          className="border-r border-b border-neutral-800 py-5 sm:py-6 md:py-8 px-2 sm:px-2.5 md:px-3 flex flex-col items-center justify-between min-h-[120px] sm:min-h-[135px] md:min-h-[165px] cursor-pointer hover:bg-neutral-900/70 transition-colors select-none min-w-0 group"
+          className="border-r border-b border-neutral-800 py-6 sm:py-7 md:py-9 px-2.5 sm:px-3.5 md:px-4 flex flex-col items-center justify-between min-h-[135px] sm:min-h-[155px] md:min-h-[185px] cursor-pointer hover:bg-neutral-900/70 transition-colors select-none min-w-0 group"
         >
           {/* White icon positioned ABOVE the text */}
           <div className="w-full flex items-center justify-center pt-1.5">
-            <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110">
               <WhiteCoinStackIcon className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
             </div>
           </div>
 
-          <span className="text-[10px] sm:text-[11px] md:text-xs font-medium text-neutral-400 leading-tight text-center w-full truncate my-1.5">
+          <span className="text-[11px] sm:text-xs md:text-sm font-medium text-neutral-400 leading-tight text-center w-full truncate my-1.5">
             Upcoming Due
           </span>
 
           <div className={`w-full pb-1 flex items-center justify-center min-w-0 ${upcomingDueStyle.containerClass}`}>
-            <p className={`text-white tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${upcomingDueStyle.textClass}`}>
+            <p className={`text-white tracking-tight leading-tight truncate max-w-full text-lg sm:text-xl md:text-2xl font-black ${upcomingDueStyle.textClass}`}>
               {upcomingDueVal}
             </p>
           </div>
@@ -141,21 +141,21 @@ export const AdminSummaryBar: React.FC<AdminSummaryBarProps> = ({
         <div 
           id="admin-available-limit-card"
           onClick={() => onSelectTab && onSelectTab('customers')}
-          className="border-b border-neutral-800 py-5 sm:py-6 md:py-8 px-2 sm:px-2.5 md:px-3 flex flex-col items-center justify-between min-h-[120px] sm:min-h-[135px] md:min-h-[165px] cursor-pointer hover:bg-neutral-900/70 transition-colors select-none min-w-0 group"
+          className="border-b border-neutral-800 py-6 sm:py-7 md:py-9 px-2.5 sm:px-3.5 md:px-4 flex flex-col items-center justify-between min-h-[135px] sm:min-h-[155px] md:min-h-[185px] cursor-pointer hover:bg-neutral-900/70 transition-colors select-none min-w-0 group"
         >
           {/* White icon positioned ABOVE the text */}
           <div className="w-full flex items-center justify-center pt-1.5">
-            <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110">
               <WhiteMoneyBagIcon className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
             </div>
           </div>
 
-          <span className="text-[10px] sm:text-[11px] md:text-xs font-medium text-neutral-400 leading-tight text-center w-full truncate my-1.5">
+          <span className="text-[11px] sm:text-xs md:text-sm font-medium text-neutral-400 leading-tight text-center w-full truncate my-1.5">
             Available Limit
           </span>
 
           <div className={`w-full pb-1 flex items-center justify-center min-w-0 ${availableLimitStyle.containerClass}`}>
-            <p className={`text-white tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${availableLimitStyle.textClass}`}>
+            <p className={`text-white tracking-tight leading-tight truncate max-w-full text-lg sm:text-xl md:text-2xl font-black ${availableLimitStyle.textClass}`}>
               {availableLimitVal}
             </p>
           </div>
@@ -165,21 +165,21 @@ export const AdminSummaryBar: React.FC<AdminSummaryBarProps> = ({
         <div 
           id="admin-invoice-amount-due-card"
           onClick={() => onSelectTab && onSelectTab('orders')}
-          className="border-r border-neutral-800 py-5 sm:py-6 md:py-8 px-2 sm:px-2.5 md:px-3 flex flex-col items-center justify-between min-h-[120px] sm:min-h-[135px] md:min-h-[165px] cursor-pointer hover:bg-neutral-900/70 transition-colors select-none min-w-0 group"
+          className="border-r border-neutral-800 py-6 sm:py-7 md:py-9 px-2.5 sm:px-3.5 md:px-4 flex flex-col items-center justify-between min-h-[135px] sm:min-h-[155px] md:min-h-[185px] cursor-pointer hover:bg-neutral-900/70 transition-colors select-none min-w-0 group"
         >
           {/* White icon positioned ABOVE the text */}
           <div className="w-full flex items-center justify-center pt-1.5">
-            <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110">
               <WhiteHourglassIcon className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
             </div>
           </div>
 
-          <span className="text-[10px] sm:text-[11px] md:text-xs font-medium text-neutral-400 leading-tight text-center w-full truncate my-1.5">
+          <span className="text-[11px] sm:text-xs md:text-sm font-medium text-neutral-400 leading-tight text-center w-full truncate my-1.5">
             Invoice Amount Due
           </span>
 
           <div className={`w-full pb-1 flex items-center justify-center min-w-0 ${invoiceAmountDueStyle.containerClass}`}>
-            <p className={`text-white tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${invoiceAmountDueStyle.textClass}`}>
+            <p className={`text-white tracking-tight leading-tight truncate max-w-full text-lg sm:text-xl md:text-2xl font-black ${invoiceAmountDueStyle.textClass}`}>
               {invoiceAmountDueVal}
             </p>
           </div>
@@ -189,21 +189,21 @@ export const AdminSummaryBar: React.FC<AdminSummaryBarProps> = ({
         <div 
           id="admin-credit-score-card"
           onClick={() => onSelectTab && onSelectTab('customers')}
-          className="py-5 sm:py-6 md:py-8 px-2 sm:px-2.5 md:px-3 flex flex-col items-center justify-between min-h-[120px] sm:min-h-[135px] md:min-h-[165px] cursor-pointer hover:bg-neutral-900/70 transition-colors select-none min-w-0 group"
+          className="py-6 sm:py-7 md:py-9 px-2.5 sm:px-3.5 md:px-4 flex flex-col items-center justify-between min-h-[135px] sm:min-h-[155px] md:min-h-[185px] cursor-pointer hover:bg-neutral-900/70 transition-colors select-none min-w-0 group"
         >
           {/* White image/icon positioned ABOVE the text */}
           <div className="w-full flex items-center justify-center pt-1.5">
-            <div className="w-10 h-7 sm:w-12 sm:h-8 md:w-14 md:h-9 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110">
+            <div className="w-12 h-8 sm:w-14 sm:h-9 md:w-16 md:h-11 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110">
               <WhiteHandshakeIcon className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]" />
             </div>
           </div>
 
-          <span className="text-[10px] sm:text-[11px] md:text-xs font-medium text-neutral-400 leading-tight text-center w-full truncate my-1.5">
+          <span className="text-[11px] sm:text-xs md:text-sm font-medium text-neutral-400 leading-tight text-center w-full truncate my-1.5">
             Credit Score
           </span>
 
           <div className={`w-full pb-1 flex items-center justify-center min-w-0 ${creditScoreStyle.containerClass}`}>
-            <p className={`text-purple-400 tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${creditScoreStyle.textClass}`}>
+            <p className={`text-purple-400 tracking-tight leading-tight truncate max-w-full text-lg sm:text-xl md:text-2xl font-black ${creditScoreStyle.textClass}`}>
               {creditScoreVal}
             </p>
           </div>

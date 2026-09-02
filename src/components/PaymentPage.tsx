@@ -255,7 +255,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
         <header className="bg-white border-b border-slate-100 sticky top-0 z-30 shadow-2xs">
           <div className="max-w-2xl mx-auto px-4 py-2.5 flex items-center justify-between">
             
-            {/* Left: Back Arrow + Step 3 of 3 + Payment Page */}
+            {/* Left: Back Arrow + Confirm Payments */}
             <div className="flex items-center space-x-3">
               <button
                 type="button"
@@ -269,11 +269,8 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
               </button>
 
               <div>
-                <div className="text-[11px] font-medium text-slate-500 leading-tight">
-                  Step 3 of 3
-                </div>
                 <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight leading-snug">
-                  Payment Page
+                  Confirm Payments
                 </h1>
               </div>
             </div>

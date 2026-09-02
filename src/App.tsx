@@ -788,6 +788,9 @@ export default function App() {
             onBack={() => {
               setActiveTab('catalogue');
             }}
+            onNavigateToProfile={() => {
+              setActiveTab('account');
+            }}
           />
         )}
 

@@ -3,12 +3,10 @@ import { Order, PaymentRecord, CustomerAccount } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { calculateCustomerFinancials } from '../utils/customerFinancials';
 import { ShieldAlert, RefreshCw } from 'lucide-react';
-import { HandshakeIcon } from './HandshakeIcon';
-import { MoneyBagLimitIcon } from './MoneyBagLimitIcon';
-import { CoinStackDueIcon } from './CoinStackDueIcon';
-import { HourglassDueIcon } from './HourglassDueIcon';
-import handshakeImage from '../assets/images/regenerated_image_1788255059298.jpg';
-import availableLimitImage from '../assets/images/regenerated_image_1788255479730.png';
+import coinStackImage from '../assets/images/regenerated_image_1788353975825.png';
+import moneyBagImage from '../assets/images/regenerated_image_1788353978698.jpg';
+import hourglassImage from '../assets/images/regenerated_image_1788353981419.png';
+import handshakeImage from '../assets/images/regenerated_image_1788353984458.png';
 
 interface HomeSummaryBarProps {
   orders: Order[];
@@ -92,13 +90,13 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
   const creditScoreStyle = getNumberStyle(creditScoreVal);
 
   return (
-    <section id="home-static-overview-section" className="w-full max-w-[285px] sm:max-w-[310px] md:max-w-[460px] lg:max-w-[310px] mx-auto px-2 py-1 font-sans space-y-1.5 md:space-y-2.5">
+    <section id="home-static-overview-section" className="w-full max-w-[255px] sm:max-w-[285px] md:max-w-[390px] lg:max-w-[285px] mx-auto px-2 py-1.5 font-sans space-y-2 md:space-y-3">
       {/* Top Header */}
-      <div className="flex items-center justify-between gap-1.5 px-1 pb-1">
-        <h1 id="static-overview-heading" className="text-lg sm:text-xl md:text-2xl font-black text-slate-950 tracking-tight flex items-center gap-1.5 min-w-0">
-          <span className="text-slate-900 font-black text-lg sm:text-xl md:text-2xl tracking-tight truncate">Static Overview</span>
+      <div className="flex items-center justify-between gap-1.5 px-0.5 pb-1">
+        <h1 id="static-overview-heading" className="text-lg sm:text-xl md:text-2xl font-black text-slate-950 tracking-tight flex items-center gap-1.5 shrink-0">
+          <span className="text-slate-900 font-black text-lg sm:text-xl md:text-2xl tracking-tight whitespace-nowrap">Static Overview</span>
           {financials.isCreditSuspended && (
-            <span className="text-[9px] md:text-[10px] uppercase tracking-wider font-extrabold bg-rose-100 text-rose-700 px-1.5 md:px-2 py-0.5 rounded-full flex items-center gap-0.5 shrink-0">
+            <span className="text-[9px] md:text-[10px] uppercase tracking-wider font-extrabold bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shrink-0">
               <ShieldAlert className="w-3 h-3 md:w-3.5 md:h-3.5" />
               Suspended
             </span>
@@ -111,40 +109,43 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
           id="static-overview-refresh-bar"
           onClick={handleRefresh}
           aria-label="Refresh overview metrics"
-          className="inline-flex items-center gap-1 px-2.5 md:px-3.5 py-1 md:py-1.5 rounded-full bg-[#0972D3]/10 hover:bg-[#0972D3]/20 active:scale-95 transition-all text-[#0972D3] cursor-pointer select-none border border-[#0972D3]/30 shadow-2xs shrink-0 -translate-x-1 sm:-translate-x-1.5"
+          className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[#0972D3]/10 hover:bg-[#0972D3]/20 active:scale-95 transition-all text-[#0972D3] cursor-pointer select-none border border-[#0972D3]/30 shadow-2xs shrink-0"
         >
           <RefreshCw 
-            className={`w-3.5 h-3.5 md:w-4 md:h-4 text-[#0972D3] transition-transform duration-700 ${isRefreshing ? 'animate-spin' : ''}`} 
+            className={`w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0972D3] transition-transform duration-700 ${isRefreshing ? 'animate-spin' : ''}`} 
             strokeWidth={2.5}
           />
-          <span className="text-xs sm:text-sm md:text-base font-semibold text-[#0972D3] tracking-tight">Refresh</span>
+          <span className="text-xs sm:text-sm font-bold text-[#0972D3] tracking-tight">Refresh</span>
         </button>
       </div>
 
       {/* 2x2 Quadrant Card */}
       <div 
         id="static-overview-card-container" 
-        className="w-full bg-white rounded-[24px] sm:rounded-[26px] md:rounded-[32px] border border-gray-200/90 shadow-[0_2px_12px_rgba(0,0,0,0.04)] grid grid-cols-2 grid-rows-2 overflow-hidden transition-all duration-200"
+        className="w-full bg-white rounded-[26px] sm:rounded-[30px] md:rounded-[36px] border border-gray-200/90 shadow-[0_4px_16px_rgba(0,0,0,0.06)] grid grid-cols-2 grid-rows-2 overflow-hidden transition-all duration-200"
       >
         {/* Quadrant 1 (Top-Left): Upcoming Due */}
         <div 
           id="available-limit-card"
           onClick={() => setActiveTab('quick-payments')}
-          className="border-r border-b border-gray-200/90 py-5 sm:py-6 md:py-8 px-2 sm:px-2.5 md:px-3 flex flex-col items-center justify-between min-h-[120px] sm:min-h-[135px] md:min-h-[165px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
+          className="border-r border-b border-gray-200/90 py-6 sm:py-7 md:py-9 px-2.5 sm:px-3.5 md:px-4 flex flex-col items-center justify-between min-h-[135px] sm:min-h-[155px] md:min-h-[185px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
         >
           {/* Small image icon positioned ABOVE the text */}
           <div className="w-full flex items-center justify-center pt-1.5">
-            <CoinStackDueIcon 
-              className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 shrink-0 transition-transform duration-200 group-hover:scale-110"
+            <img 
+              src={coinStackImage} 
+              alt="Upcoming Due" 
+              className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 object-contain shrink-0 transition-transform duration-200 group-hover:scale-110 select-none pointer-events-none"
+              referrerPolicy="no-referrer"
             />
           </div>
 
-          <span className="text-[10px] sm:text-[11px] md:text-xs font-normal text-[#555d6e] leading-tight text-center w-full truncate my-1.5">
+          <span className="text-[11px] sm:text-xs md:text-sm font-medium text-[#555d6e] leading-tight text-center w-full truncate my-1.5">
             Upcoming Due
           </span>
 
           <div className={`w-full pb-1 flex items-center justify-center min-w-0 ${upcomingDueStyle.containerClass}`}>
-            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${upcomingDueStyle.textClass}`}>
+            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full text-lg sm:text-xl md:text-2xl font-black ${upcomingDueStyle.textClass}`}>
               {upcomingDueVal}
             </p>
           </div>
@@ -154,21 +155,24 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="hold-cca-card"
           onClick={() => setActiveTab('account')}
-          className="border-b border-gray-200/90 py-5 sm:py-6 md:py-8 px-2 sm:px-2.5 md:px-3 flex flex-col items-center justify-between min-h-[120px] sm:min-h-[135px] md:min-h-[165px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
+          className="border-b border-gray-200/90 py-6 sm:py-7 md:py-9 px-2.5 sm:px-3.5 md:px-4 flex flex-col items-center justify-between min-h-[135px] sm:min-h-[155px] md:min-h-[185px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
         >
           {/* Small image icon positioned ABOVE the text */}
           <div className="w-full flex items-center justify-center pt-1.5">
-            <MoneyBagLimitIcon 
-              className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 shrink-0 transition-transform duration-200 group-hover:scale-110"
+            <img 
+              src={moneyBagImage} 
+              alt="Available Limit" 
+              className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 object-contain shrink-0 transition-transform duration-200 group-hover:scale-110 select-none pointer-events-none"
+              referrerPolicy="no-referrer"
             />
           </div>
 
-          <span className="text-[10px] sm:text-[11px] md:text-xs font-normal text-[#555d6e] leading-tight text-center w-full truncate my-1.5">
+          <span className="text-[11px] sm:text-xs md:text-sm font-medium text-[#555d6e] leading-tight text-center w-full truncate my-1.5">
             Available Limit
           </span>
 
           <div className={`w-full pb-1 flex items-center justify-center min-w-0 ${availableLimitStyle.containerClass}`}>
-            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${availableLimitStyle.textClass}`}>
+            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full text-lg sm:text-xl md:text-2xl font-black ${availableLimitStyle.textClass}`}>
               {availableLimitVal}
             </p>
           </div>
@@ -178,21 +182,24 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="total-cca-card"
           onClick={() => setActiveTab('quick-payments')}
-          className="border-r border-gray-200/90 py-5 sm:py-6 md:py-8 px-2 sm:px-2.5 md:px-3 flex flex-col items-center justify-between min-h-[120px] sm:min-h-[135px] md:min-h-[165px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
+          className="border-r border-gray-200/90 py-6 sm:py-7 md:py-9 px-2.5 sm:px-3.5 md:px-4 flex flex-col items-center justify-between min-h-[135px] sm:min-h-[155px] md:min-h-[185px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
         >
           {/* Small image icon positioned ABOVE the text */}
           <div className="w-full flex items-center justify-center pt-1.5">
-            <HourglassDueIcon 
-              className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 shrink-0 transition-transform duration-200 group-hover:scale-110"
+            <img 
+              src={hourglassImage} 
+              alt="Invoice Amount Due" 
+              className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 object-contain shrink-0 transition-transform duration-200 group-hover:scale-110 select-none pointer-events-none"
+              referrerPolicy="no-referrer"
             />
           </div>
 
-          <span className="text-[10px] sm:text-[11px] md:text-xs font-normal text-[#555d6e] leading-tight text-center w-full truncate my-1.5">
+          <span className="text-[11px] sm:text-xs md:text-sm font-medium text-[#555d6e] leading-tight text-center w-full truncate my-1.5">
             Invoice Amount Due
           </span>
 
           <div className={`w-full pb-1 flex items-center justify-center min-w-0 ${invoiceAmountDueStyle.containerClass}`}>
-            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${invoiceAmountDueStyle.textClass}`}>
+            <p className={`text-slate-950 tracking-tight leading-tight truncate max-w-full text-lg sm:text-xl md:text-2xl font-black ${invoiceAmountDueStyle.textClass}`}>
               {invoiceAmountDueVal}
             </p>
           </div>
@@ -202,21 +209,24 @@ export const HomeSummaryBar: React.FC<HomeSummaryBarProps> = ({
         <div 
           id="invoice-amount-due-card"
           onClick={() => setActiveTab('account')}
-          className="py-5 sm:py-6 md:py-8 px-2 sm:px-2.5 md:px-3 flex flex-col items-center justify-between min-h-[120px] sm:min-h-[135px] md:min-h-[165px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
+          className="py-6 sm:py-7 md:py-9 px-2.5 sm:px-3.5 md:px-4 flex flex-col items-center justify-between min-h-[135px] sm:min-h-[155px] md:min-h-[185px] cursor-pointer hover:bg-slate-50/50 transition-colors select-none min-w-0 group"
         >
           {/* Image icon positioned ABOVE the text */}
           <div className="w-full flex items-center justify-center pt-1.5">
-            <HandshakeIcon 
-              className="w-10 h-7 sm:w-12 sm:h-8 md:w-14 md:h-9 shrink-0 transition-transform duration-200 group-hover:scale-110"
+            <img 
+              src={handshakeImage} 
+              alt="Credit Score Partnership" 
+              className="w-12 h-8 sm:w-14 sm:h-9 md:w-16 md:h-11 object-contain shrink-0 transition-transform duration-200 group-hover:scale-110 select-none pointer-events-none"
+              referrerPolicy="no-referrer"
             />
           </div>
 
-          <span className="text-[10px] sm:text-[11px] md:text-xs font-normal text-[#555d6e] leading-tight text-center w-full truncate my-1.5">
+          <span className="text-[11px] sm:text-xs md:text-sm font-medium text-[#555d6e] leading-tight text-center w-full truncate my-1.5">
             Credit Score
           </span>
 
           <div className={`w-full pb-1 flex items-center justify-center min-w-0 ${creditScoreStyle.containerClass}`}>
-            <p className={`text-[#0972D3] tracking-tight leading-tight truncate max-w-full md:text-xl font-bold ${creditScoreStyle.textClass}`}>
+            <p className={`text-[#0972D3] tracking-tight leading-tight truncate max-w-full text-lg sm:text-xl md:text-2xl font-black ${creditScoreStyle.textClass}`}>
               {creditScoreVal}
             </p>
           </div>

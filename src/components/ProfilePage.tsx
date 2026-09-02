@@ -169,6 +169,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     if (name) {
       setCurrentUser(name);
     }
+    
+    // Dispatch custom event so OrderDetailsPage and other listeners update immediately
+    window.dispatchEvent(new Event('magadh_profile_updated'));
+
     setIsSaved(true);
     setIsEditMode(false);
     showToast(`Profile details ${name ? 'for ' + name + ' ' : ''}saved successfully!`);

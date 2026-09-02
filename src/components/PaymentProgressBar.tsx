@@ -359,7 +359,7 @@ export const PaymentProgressBar: React.FC<PaymentProgressBarProps> = ({
                   fill="none" 
                   stroke="#94a3b8" 
                   strokeWidth="2.2" 
-                  strokeOpacity="0.75"
+                  strokeOpacity="0.75" 
                   pointerEvents="none" 
                 />
               </svg>

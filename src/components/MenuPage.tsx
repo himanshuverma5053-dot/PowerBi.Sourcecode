@@ -12,6 +12,10 @@ interface MenuPageProps {
   isStandalonePage?: boolean;
 }
 
+// Feature flags for navigation quick links (Toggle to true to reactivate on user prompt)
+const ENABLE_PRICE_LIST = false;
+const ENABLE_HELP_AND_SUPPORT = false;
+
 export const MenuPage: React.FC<MenuPageProps> = ({
   setActiveTab,
   onCloseMenu,
@@ -61,8 +65,8 @@ export const MenuPage: React.FC<MenuPageProps> = ({
   return (
     <div className={`w-full bg-white font-sans ${isStandalonePage ? 'max-w-xl mx-auto px-6 py-8 min-h-[85vh]' : 'px-6 sm:px-8 py-5 sm:py-6'}`}>
       
-      {/* TOP SECTION: 2x2 Grid of Purple Underlined Quick Links */}
-      <div className="grid grid-cols-2 gap-x-6 gap-y-7 pt-1 pb-8 sm:pb-9 border-b border-slate-100">
+      {/* TOP SECTION: Grid of Purple Underlined Quick Links */}
+      <div className="grid grid-cols-2 gap-x-6 gap-y-7 pt-1 pb-6 sm:pb-7 border-b border-slate-100">
         {/* Quick Order */}
         <button
           type="button"
@@ -81,26 +85,30 @@ export const MenuPage: React.FC<MenuPageProps> = ({
           Quick<br />Payments
         </button>
 
-        {/* Price List */}
-        <button
-          type="button"
-          onClick={() => handleItemClick('catalogue')}
-          className="text-left text-[#9333ea] hover:text-[#7e22ce] active:text-[#6b21a8] font-black text-[19px] sm:text-[21px] md:text-[22px] tracking-tight underline decoration-2 underline-offset-6 transition-colors cursor-pointer select-none"
-        >
-          Price List
-        </button>
+        {/* Price List (Disabled - Set ENABLE_PRICE_LIST = true to reactivate) */}
+        {ENABLE_PRICE_LIST && (
+          <button
+            type="button"
+            onClick={() => handleItemClick('catalogue')}
+            className="text-left text-[#9333ea] hover:text-[#7e22ce] active:text-[#6b21a8] font-black text-[19px] sm:text-[21px] md:text-[22px] tracking-tight underline decoration-2 underline-offset-6 transition-colors cursor-pointer select-none"
+          >
+            Price List
+          </button>
+        )}
 
-        {/* Help & Support */}
-        <button
-          type="button"
-          onClick={() => {
-            if (onOpenQuickContact) onOpenQuickContact();
-            else handleItemClick('my-requests');
-          }}
-          className="text-left text-[#9333ea] hover:text-[#7e22ce] active:text-[#6b21a8] font-black text-[19px] sm:text-[21px] md:text-[22px] tracking-tight underline decoration-2 underline-offset-6 transition-colors cursor-pointer select-none"
-        >
-          Help & Support
-        </button>
+        {/* Help & Support (Disabled - Set ENABLE_HELP_AND_SUPPORT = true to reactivate) */}
+        {ENABLE_HELP_AND_SUPPORT && (
+          <button
+            type="button"
+            onClick={() => {
+              if (onOpenQuickContact) onOpenQuickContact();
+              else handleItemClick('my-requests');
+            }}
+            className="text-left text-[#9333ea] hover:text-[#7e22ce] active:text-[#6b21a8] font-black text-[19px] sm:text-[21px] md:text-[22px] tracking-tight underline decoration-2 underline-offset-6 transition-colors cursor-pointer select-none"
+          >
+            Help & Support
+          </button>
+        )}
       </div>
 
       {/* MAIN MENU LIST: Accordion Category Items */}

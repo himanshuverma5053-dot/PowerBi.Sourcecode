@@ -35,6 +35,7 @@ interface OrderDetailsPageProps {
     totalAmount: number;
   }) => void;
   onBack: () => void;
+  onNavigateToProfile?: () => void;
 }
 
 export const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
@@ -44,37 +45,78 @@ export const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
   currentUser,
   currentUserEmail,
   onProceedOrder,
-  onBack
+  onBack,
+  onNavigateToProfile
 }) => {
   const [quantity, setQuantity] = useState<number>(initialQuantity || 1);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [isChangeAddressOpen, setIsChangeAddressOpen] = useState(false);
-  const [isGstModalOpen, setIsGstModalOpen] = useState(false);
 
   // Auto-scroll to top when page opens
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, []);
 
-  // Address state editable if user clicks "Change"
-  const [addressData, setAddressData] = useState({
-    name: currentCustomer?.customerName || currentUser || 'Himanshu Verma',
-    street: currentCustomer?.address || 'Yellow building, Vishwakarma Vihar, Dandiapali',
-    city: currentCustomer?.city || 'Rourkela',
-    state: currentCustomer?.state || 'Odisha',
-    pincode: currentCustomer?.pincode || '769004',
-    phone: currentCustomer?.phone || '6371231522',
-    email: currentCustomer?.email || currentUserEmail || 'himanshu.verma5053@gmail.com',
-    companyName: currentCustomer?.companyName || 'Magadh Sparsh Logistics',
-    gstNumber: currentCustomer?.gstNumber || '21AAACM1234F1Z5',
-  });
+  // Helper to load current user profile from localStorage or props
+  const getInitialProfileData = () => {
+    let savedProfile: any = null;
+    try {
+      const activeUser = currentUser || '';
+      const userKey = activeUser ? `user_profile_${activeUser.toLowerCase()}` : null;
+      const raw = userKey ? localStorage.getItem(userKey) || localStorage.getItem('user_profile') : localStorage.getItem('user_profile');
+      if (raw) {
+        savedProfile = JSON.parse(raw);
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    const name = savedProfile?.customerName || savedProfile?.name || currentCustomer?.customerName || currentUser || 'Himanshu Verma';
+    const street = savedProfile?.address || currentCustomer?.address || 'Yellow building, Vishwakarma Vihar, Dandiapali';
+    const city = currentCustomer?.city || 'Rourkela';
+    const state = currentCustomer?.state || 'Odisha';
+    const pincode = currentCustomer?.pincode || '769004';
+    const phone = savedProfile?.phone || currentCustomer?.phone || '6371231522';
+    const email = savedProfile?.email || savedProfile?.userId || currentCustomer?.email || currentUserEmail || 'himanshu.verma5053@gmail.com';
+    const companyName = savedProfile?.companyName || currentCustomer?.companyName || 'Magadh Sparsh Logistics';
+    const gstNumber = savedProfile?.gstNumber || currentCustomer?.gstNumber || '21AAACM1234F1Z5';
+
+    return {
+      name,
+      street,
+      city,
+      state,
+      pincode,
+      phone,
+      email,
+      companyName,
+      gstNumber
+    };
+  };
+
+  // Address and GST state
+  const [addressData, setAddressData] = useState(getInitialProfileData);
+
+  // Sync addressData instantly whenever props or storage changes
+  useEffect(() => {
+    const syncData = () => {
+      setAddressData(getInitialProfileData());
+    };
+
+    syncData();
+
+    window.addEventListener('storage', syncData);
+    window.addEventListener('magadh_profile_updated', syncData);
+    return () => {
+      window.removeEventListener('storage', syncData);
+      window.removeEventListener('magadh_profile_updated', syncData);
+    };
+  }, [currentCustomer, currentUser, currentUserEmail]);
 
   // Pricing calculations
   const pricingInfo = getCustomerEffectivePrice(product, currentCustomer);
   const unitPrice = (quantity >= 4 && product.bulkPrice) ? product.bulkPrice : pricingInfo.effectivePrice;
-  const protectPromiseFee = 29;
   const rawSubtotal = unitPrice * quantity;
-  const totalPayable = rawSubtotal + protectPromiseFee;
+  const totalPayable = rawSubtotal;
 
   // Accurate Net Value (Excl. tax) and Tax (Incl. TCS+GST) at 18% standard rate
   const netValue = Math.round((totalPayable / 1.18) * 100) / 100;
@@ -128,7 +170,7 @@ export const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
         <div className="max-w-2xl mx-auto px-4 py-3">
           
           {/* Header Row: Back Arrow + Confirm details */}
-          <div className="flex items-center space-x-4 mb-3.5">
+          <div className="flex items-center space-x-4">
             <button
               onClick={onBack}
               type="button"
@@ -142,61 +184,57 @@ export const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
             </h1>
           </div>
 
-          {/* 3-Step Checkout Flow: Address (Done) -> Confirm details (Active) -> Payment */}
-          <div className="max-w-md mx-auto px-2 pb-1">
-            <div className="flex items-center justify-between relative">
-              {/* Step 1: Address */}
-              <button
-                type="button"
-                onClick={() => setIsChangeAddressOpen(true)}
-                className="flex flex-col items-center group cursor-pointer focus:outline-hidden"
-              >
-                <div className="w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-full border-2 border-[#1064ea] bg-white text-[#1064ea] flex items-center justify-center mb-1 transition-transform group-hover:scale-105 shadow-2xs">
-                  <Check className="w-3.5 h-3.5 stroke-[3]" />
-                </div>
-                <span className="text-[12px] sm:text-[13px] font-medium text-slate-700">
-                  Address
-                </span>
-              </button>
-
-              {/* Connecting Line 1 */}
-              <div className="flex-1 h-[1px] bg-slate-200 mx-3 sm:mx-4 -mt-5" />
-
-              {/* Step 2: Confirm details */}
-              <div className="flex flex-col items-center">
-                <div className="w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-full bg-[#1064ea] text-white flex items-center justify-center font-bold text-xs mb-1 shadow-xs">
-                  2
-                </div>
-                <span className="text-[12px] sm:text-[13px] font-bold text-slate-900">
-                  Confirm details
-                </span>
-              </div>
-
-              {/* Connecting Line 2 */}
-              <div className="flex-1 h-[1px] bg-slate-200 mx-3 sm:mx-4 -mt-5" />
-
-              {/* Step 3: Payment */}
-              <button
-                type="button"
-                onClick={handleProceed}
-                className="flex flex-col items-center group cursor-pointer focus:outline-hidden"
-              >
-                <div className="w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-full border border-slate-300 bg-white text-slate-400 flex items-center justify-center font-medium text-xs mb-1 transition-transform group-hover:scale-105">
-                  3
-                </div>
-                <span className="text-[12px] sm:text-[13px] font-normal text-slate-400 group-hover:text-slate-600">
-                  Payment
-                </span>
-              </button>
-            </div>
-          </div>
-
         </div>
       </div>
 
       {/* MAIN CONTAINER ON PURE WHITE BACKGROUND */}
       <main className="max-w-2xl mx-auto px-4 pt-3.5 space-y-4">
         
+        {/* 2. DELIVERING TO ADDRESS SECTION */}
+        <section className="space-y-2">
+          <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+            Delivering to
+          </h2>
+
+          {/* Sharp Edge Pointed Corners Container */}
+          <div className="bg-[#f5f6f8] rounded-none p-4 sm:p-5 space-y-2.5">
+            {/* Name Row with Home icon and Change button */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2.5 min-w-0">
+                <Home className="w-5 h-5 text-slate-900 fill-slate-900 shrink-0" />
+                <span className="text-base sm:text-[17px] font-black text-slate-900 tracking-tight truncate">
+                  {addressData.name}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (onNavigateToProfile) {
+                    onNavigateToProfile();
+                  }
+                }}
+                className="text-[#1064ea] hover:text-[#0b4dc1] font-bold text-sm sm:text-[15px] cursor-pointer transition-colors shrink-0 ml-2"
+              >
+                Change
+              </button>
+            </div>
+
+            {/* Address Details */}
+            <div className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed pl-7.5 space-y-0.5">
+              <p className="line-clamp-2">
+                {addressData.street}, {addressData.city}, {addressData.state} - {addressData.pincode}
+              </p>
+              <p className="text-slate-500 font-mono">
+                +91 {addressData.phone}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Separator Line */}
+        <div className="w-full h-px bg-slate-200 my-2" role="separator" />
+
         {/* 3. PRODUCT ORDER SUMMARY SECTION */}
         <section className="space-y-2.5">
           
@@ -204,7 +242,7 @@ export const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
             
             {/* Left: Product Thumbnail & Quantity Stepper */}
             <div className="flex flex-col items-center shrink-0">
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-[#f5f6f8] p-2 flex items-center justify-center overflow-hidden">
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-none bg-[#f5f6f8] p-2 flex items-center justify-center overflow-hidden">
                 {product.image ? (
                   <img
                     src={product.image}
@@ -217,7 +255,7 @@ export const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
               </div>
 
               {/* Stepper Pill (- 1 +) Directly Under Thumbnail */}
-              <div className="flex items-center justify-between border border-slate-200 rounded-lg mt-2.5 w-full bg-white shadow-2xs overflow-hidden">
+              <div className="flex items-center justify-between border border-slate-200 rounded-none mt-2.5 w-full bg-white shadow-2xs overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setQuantity(q => Math.max(1, q - 1))}
@@ -253,21 +291,6 @@ export const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
                 {product.brand} Commercial Radial, {product.width}/{product.aspectRatio} R{product.rimSize}, Premium All-Weather Grip
               </p>
 
-              {/* Rating & Assured Badge */}
-              <div className="flex items-center space-x-2 pt-0.5">
-                <div className="inline-flex items-center space-x-1 px-1.5 py-0.5 rounded bg-emerald-700 text-white text-[10px] sm:text-[11px] font-bold">
-                  <span>4.2</span>
-                  <Star className="w-2.5 h-2.5 fill-white" />
-                  <span className="text-emerald-100 font-normal pl-0.5">39.6K+</span>
-                </div>
-
-                {/* Assured Shield Badge */}
-                <div className="inline-flex items-center space-x-1 text-[#1064ea] font-extrabold text-[11px] sm:text-xs italic tracking-tight">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#1064ea] fill-blue-50" />
-                  <span>Assured</span>
-                </div>
-              </div>
-
               {/* Price */}
               <div className="flex items-baseline flex-wrap gap-x-2 gap-y-0.5 pt-1">
                 <span className="text-base sm:text-lg font-black text-slate-900">
@@ -278,39 +301,72 @@ export const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
                 </span>
               </div>
 
-              {/* Protect Promise Fee row */}
-              <div className="pt-0.5">
-                <button
-                  type="button"
-                  onClick={() => {}}
-                  className="text-[11px] text-slate-500 hover:text-slate-700 inline-flex items-center space-x-0.5 cursor-pointer"
-                >
-                  <span>+₹{protectPromiseFee} Protect Promise Fee</span>
-                  <ChevronRight className="w-3 h-3 text-slate-400" />
-                </button>
-              </div>
-
             </div>
 
           </div>
 
-          {/* Delivery Pill Row with Flipkart Card Theme */}
-          <div className="bg-[#f5f6f8] rounded-xl px-3.5 py-2.5 flex items-center space-x-2 text-xs text-slate-700">
-            <Truck className="w-4 h-4 text-slate-600 shrink-0" />
-            <span className="text-slate-600">Delivery in</span>
-            <span className="font-bold italic text-slate-900">{getDeliveryDateString()}</span>
-          </div>
-
         </section>
 
-        {/* 4. PRICE DETAILS / ORDER SUMMARY SECTION */}
+        {/* Separator Line */}
+        <div className="w-full h-px bg-slate-200 my-2" role="separator" />
+
+        {/* 4. GST DETAILS SECTION */}
+        <section className="space-y-2">
+          <div className="flex items-center justify-between px-0.5">
+            <h2 className="text-[16px] sm:text-[17px] font-extrabold text-slate-900">
+              GST Details
+            </h2>
+          </div>
+
+          {/* Sharp Edge Pointed Corners Container */}
+          <div className="bg-[#f5f6f8] rounded-none p-4 sm:p-5 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2.5 min-w-0">
+                <FileText className="w-5 h-5 text-slate-900 shrink-0" />
+                <div className="min-w-0">
+                  <span className="text-sm sm:text-base font-black text-slate-900 tracking-tight block truncate">
+                    {addressData.gstNumber ? `GSTIN: ${addressData.gstNumber}` : 'No GSTIN Added'}
+                  </span>
+                  {addressData.companyName && (
+                    <span className="text-xs text-slate-600 block truncate font-medium">
+                      {addressData.companyName}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (onNavigateToProfile) {
+                    onNavigateToProfile();
+                  }
+                }}
+                className="text-[#1064ea] hover:text-[#0b4dc1] font-bold text-sm sm:text-[15px] cursor-pointer transition-colors shrink-0 ml-2"
+              >
+                {addressData.gstNumber ? 'Edit' : 'Add'}
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-500 pl-7.5 leading-relaxed">
+              {addressData.gstNumber 
+                ? 'GST input tax credit will be automatically mapped to your business invoice.' 
+                : 'Add your business GSTIN to claim GST input tax credit on this order.'}
+            </p>
+          </div>
+        </section>
+
+        {/* Separator Line */}
+        <div className="w-full h-px bg-slate-200 my-2" role="separator" />
+
+        {/* 5. PRICE DETAILS / ORDER SUMMARY SECTION */}
         <section className="space-y-2">
           <h2 className="text-[16px] sm:text-[17px] font-extrabold text-slate-900 px-0.5">
             Order Summary
           </h2>
 
-          {/* Flipkart Card Theme: Soft Off-White/Gray Container */}
-          <div className="bg-[#f5f6f8] rounded-2xl p-4 sm:p-5 space-y-3.5">
+          {/* Sharp Edge Corners: Soft Off-White/Gray Container */}
+          <div className="bg-[#f5f6f8] rounded-none p-4 sm:p-5 space-y-3.5">
             
             {/* Line Items matching requested data style and layout */}
             <div className="space-y-3 text-xs sm:text-[13px] text-slate-700">
@@ -364,43 +420,7 @@ export const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
             </div>
 
           </div>
-
-          {/* Trust Assurance Badge */}
-          <div className="pt-2 flex items-center justify-center space-x-2 text-center text-[11px] text-slate-500 font-medium">
-            <ShieldCheck className="w-4 h-4 text-slate-400 shrink-0" />
-            <span>Safe and secure payments. Easy returns. 100% Authentic products.</span>
-          </div>
         </section>
-
-        {/* 5. GST INPUT CREDIT BANNER */}
-        <section className="bg-[#f5f6f8] rounded-2xl p-4 sm:p-4.5 flex items-center justify-between">
-          <div className="space-y-1 pr-3">
-            <p className="text-xs sm:text-sm font-bold text-slate-900 leading-snug">
-              Claim up to 28% GST input credit on business purchases
-            </p>
-            <button
-              type="button"
-              onClick={() => setIsGstModalOpen(true)}
-              className="text-xs sm:text-[13px] font-bold text-[#1064ea] hover:text-[#0b4dc1] underline cursor-pointer"
-            >
-              {addressData.gstNumber ? `GSTIN: ${addressData.gstNumber}` : 'Add GSTIN number'}
-            </button>
-          </div>
-
-          {/* Receipt / Invoice Graphic */}
-          <div className="w-14 h-14 rounded-xl bg-white border border-slate-200/80 p-2 flex items-center justify-center shrink-0 shadow-2xs">
-            <FileText className="w-8 h-8 text-blue-500" />
-          </div>
-        </section>
-
-        {/* 6. LEGAL DISCLAIMER FOOTER */}
-        <footer className="text-center px-4 py-2">
-          <p className="text-[11px] text-slate-500 leading-relaxed">
-            By proceeding, you confirm that you're above 18 years of age and you agree to Flipkart's{' '}
-            <span className="text-[#1064ea] hover:underline cursor-pointer">Terms of Use</span> and{' '}
-            <span className="text-[#1064ea] hover:underline cursor-pointer">Privacy Policy</span>
-          </p>
-        </footer>
 
       </main>
 
@@ -438,150 +458,6 @@ export const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
 
         </div>
       </div>
-
-      {/* CHANGE ADDRESS MODAL */}
-      {isChangeAddressOpen && (
-        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-base font-bold text-slate-900">Update Delivery Address</h3>
-              <button
-                onClick={() => setIsChangeAddressOpen(false)}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded-full"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Full Name</label>
-                <input
-                  type="text"
-                  value={addressData.name}
-                  onChange={e => setAddressData({ ...addressData, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1064ea] focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Street Address / Building</label>
-                <input
-                  type="text"
-                  value={addressData.street}
-                  onChange={e => setAddressData({ ...addressData, street: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1064ea] focus:outline-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">City</label>
-                  <input
-                    type="text"
-                    value={addressData.city}
-                    onChange={e => setAddressData({ ...addressData, city: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1064ea] focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">Pincode</label>
-                  <input
-                    type="text"
-                    value={addressData.pincode}
-                    onChange={e => setAddressData({ ...addressData, pincode: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1064ea] focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Phone Number</label>
-                <input
-                  type="tel"
-                  value={addressData.phone}
-                  onChange={e => setAddressData({ ...addressData, phone: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1064ea] focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="pt-2 flex space-x-2">
-              <button
-                type="button"
-                onClick={() => setIsChangeAddressOpen(false)}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 font-bold text-slate-700 text-xs hover:bg-slate-50 cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsChangeAddressOpen(false)}
-                className="flex-1 py-2.5 rounded-xl bg-[#1064ea] font-bold text-white text-xs hover:bg-[#0b4dc1] cursor-pointer"
-              >
-                Save & Deliver Here
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* GSTIN MODAL */}
-      {isGstModalOpen && (
-        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-base font-bold text-slate-900">Add Business GSTIN</h3>
-              <button
-                onClick={() => setIsGstModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded-full"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">GSTIN Number</label>
-                <input
-                  type="text"
-                  placeholder="e.g. 21AAACM1234F1Z5"
-                  value={addressData.gstNumber}
-                  onChange={e => setAddressData({ ...addressData, gstNumber: e.target.value.toUpperCase() })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1064ea] focus:outline-none uppercase font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Company / Legal Business Name</label>
-                <input
-                  type="text"
-                  value={addressData.companyName}
-                  onChange={e => setAddressData({ ...addressData, companyName: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1064ea] focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="pt-2 flex space-x-2">
-              <button
-                type="button"
-                onClick={() => setIsGstModalOpen(false)}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 font-bold text-slate-700 text-xs hover:bg-slate-50 cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsGstModalOpen(false)}
-                className="flex-1 py-2.5 rounded-xl bg-[#1064ea] font-bold text-white text-xs hover:bg-[#0b4dc1] cursor-pointer"
-              >
-                Save GSTIN
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );
