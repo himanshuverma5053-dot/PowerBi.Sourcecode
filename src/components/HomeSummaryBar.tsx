@@ -3,10 +3,10 @@ import { Order, PaymentRecord, CustomerAccount } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { calculateCustomerFinancials } from '../utils/customerFinancials';
 import { ShieldAlert, RefreshCw } from 'lucide-react';
-import coinStackImage from '../assets/images/regenerated_image_1788353975825.png';
-import moneyBagImage from '../assets/images/regenerated_image_1788353978698.jpg';
-import hourglassImage from '../assets/images/regenerated_image_1788353981419.png';
-import handshakeImage from '../assets/images/regenerated_image_1788353984458.png';
+import coinStackImage from 'https://staticimagesforwebsite.s3.us-east-1.amazonaws.com/Screenshot_20260901_234614_Claude.png';
+import moneyBagImage from 'https://staticimagesforwebsite.s3.us-east-1.amazonaws.com/Screenshot_20260901_235029_Claude.jpg';
+import hourglassImage from 'https://staticimagesforwebsite.s3.us-east-1.amazonaws.com/hourglass_recolored.png';
+import handshakeImage from 'https://staticimagesforwebsite.s3.us-east-1.amazonaws.com/handshake_recolored.png';
 
 interface HomeSummaryBarProps {
   orders: Order[];
