@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, Power, ArrowRight, AlertCircle, ShieldCheck, FileText, Truck, User } from 'lucide-react';
+import { ChevronDown, Power, ArrowRight, AlertCircle, FileText, Truck, Building2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface MenuPageProps {
@@ -266,16 +266,8 @@ export const MenuPage: React.FC<MenuPageProps> = ({
                   onClick={() => handleItemClick('my-requests')}
                   className="w-full flex items-center justify-between py-2 px-3 text-xs sm:text-sm font-bold text-slate-700 hover:text-[#0066c0] hover:bg-white rounded-xl transition-all cursor-pointer"
                 >
-                  <span>Submit Complaint / Claim</span>
+                  <span>Complain Warranty</span>
                   <AlertCircle className="w-4 h-4 text-rose-500" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleItemClick('my-requests')}
-                  className="w-full flex items-center justify-between py-2 px-3 text-xs sm:text-sm font-bold text-slate-700 hover:text-[#0066c0] hover:bg-white rounded-xl transition-all cursor-pointer"
-                >
-                  <span>View Claim Status</span>
-                  <ShieldCheck className="w-4 h-4 text-emerald-500" />
                 </button>
               </motion.div>
             )}
@@ -312,8 +304,8 @@ export const MenuPage: React.FC<MenuPageProps> = ({
                   onClick={() => handleItemClick('account')}
                   className="w-full flex items-center justify-between py-2 px-3 text-xs sm:text-sm font-bold text-slate-700 hover:text-[#0066c0] hover:bg-white rounded-xl transition-all cursor-pointer"
                 >
-                  <span>Account Details & GST</span>
-                  <User className="w-4 h-4 text-slate-400" />
+                  <span>Company Details</span>
+                  <Building2 className="w-4 h-4 text-slate-400" />
                 </button>
               </motion.div>
             )}

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronDown, Power,
   ArrowRight,
-  Headphones, Tag, Award, AlertCircle, Phone, Mail, MapPin, Clock, MessageSquare, X
+  Tag, Award, Phone, Mail, MapPin, Clock, MessageSquare, X
 } from 'lucide-react';
 import { CustomSearchIcon } from './SearchIcon';
 import { QuickContactIcon } from './QuickContactIcon';
@@ -53,9 +53,42 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [quickContactOpen, setQuickContactOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileSearchExpanded, setIsMobileSearchExpanded] = useState(false);
+  const [isSearchFullyOpen, setIsSearchFullyOpen] = useState(false);
+  const openTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const headerRef = useRef<HTMLElement>(null);
   const [headerHeight, setHeaderHeight] = useState(72);
+
+  const handleOpenSearch = () => {
+    if (openTimeoutRef.current) {
+      clearTimeout(openTimeoutRef.current);
+    }
+    setIsSearchFullyOpen(false);
+    setIsMobileSearchExpanded(true);
+    openTimeoutRef.current = setTimeout(() => {
+      setIsSearchFullyOpen(true);
+    }, 230);
+  };
+
+  const handleCloseSearch = () => {
+    if (openTimeoutRef.current) {
+      clearTimeout(openTimeoutRef.current);
+      openTimeoutRef.current = null;
+    }
+    setIsSearchFullyOpen(false);
+    setIsMobileSearchExpanded(false);
+    if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (openTimeoutRef.current) {
+        clearTimeout(openTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -66,32 +99,48 @@ export const Navbar: React.FC<NavbarProps> = ({
   }, []);
 
   useEffect(() => {
+    if (!headerRef.current) return;
     const updateHeaderHeight = () => {
       if (headerRef.current) {
         setHeaderHeight(headerRef.current.offsetHeight);
       }
     };
     updateHeaderHeight();
-    const timer = setTimeout(updateHeaderHeight, 50);
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => {
+        updateHeaderHeight();
+      });
+      resizeObserver.observe(headerRef.current);
+    }
+
     window.addEventListener('resize', updateHeaderHeight);
     return () => {
-      clearTimeout(timer);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
       window.removeEventListener('resize', updateHeaderHeight);
     };
-  }, [isMobileSearchExpanded]);
+  }, []);
 
-  // Close drawer on ESC key
+  // Close drawer and search on ESC key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setMenuOpen(false);
+        if (isMobileSearchExpanded) {
+          handleCloseSearch();
+        }
+        if (menuOpen) {
+          setMenuOpen(false);
+        }
       }
     };
-    if (menuOpen) {
+    if (menuOpen || isMobileSearchExpanded) {
       document.addEventListener('keydown', handleKeyDown);
     }
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [menuOpen]);
+  }, [menuOpen, isMobileSearchExpanded]);
 
   const handleNavClick = (tabId: string) => {
     if (tabId === 'admin') {
@@ -114,7 +163,9 @@ export const Navbar: React.FC<NavbarProps> = ({
       setActiveTab(tabId);
     }
     setMenuOpen(false);
-    setIsMobileSearchExpanded(false);
+    if (isMobileSearchExpanded) {
+      handleCloseSearch();
+    }
   };
 
   const toggleSection = (id: string) => {
@@ -138,100 +189,165 @@ export const Navbar: React.FC<NavbarProps> = ({
             : 'shadow-2xs'
         }`}
       >
-      {/* Main Navbar */}
-      <div className="max-w-5xl mx-auto px-3 sm:px-5 lg:px-6 relative">
-        <div className="flex items-center justify-between h-14 sm:h-15 md:h-16 relative">
-          
-          {/* LEFT SECTION: Hamburger Menu + Separator 1 */}
-          <div className="flex items-center space-x-3 sm:space-x-4 pl-3 sm:pl-5 md:pl-6">
-            <button
-              id="hamburger-menu-toggle-btn"
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="p-0 border-0 bg-transparent outline-none focus:outline-none focus:ring-0 focus-visible:outline-none transition-transform duration-150 cursor-pointer select-none active:scale-95 flex items-center justify-center shrink-0"
-              aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
-              aria-expanded={menuOpen}
-              title={menuOpen ? "Close navigation menu (Esc)" : "Open navigation menu"}
-            >
-              <CustomMenuIcon
-                isOpen={menuOpen}
-                className="w-10 h-10 sm:w-11 sm:h-11 block"
+        {/* Main Navbar */}
+        <div className="max-w-5xl mx-auto px-3 sm:px-5 lg:px-6 relative">
+          <div className="flex items-center justify-between h-14 sm:h-15 md:h-16 relative">
+            
+            {/* LEFT SECTION: Hamburger Menu + Separator 1 */}
+            <div className="flex items-center space-x-3 sm:space-x-4 pl-3 sm:pl-5 md:pl-6">
+              <button
+                id="hamburger-menu-toggle-btn"
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="p-0 border-0 bg-transparent outline-none focus:outline-none focus:ring-0 focus-visible:outline-none transition-transform duration-150 cursor-pointer select-none active:scale-95 flex items-center justify-center shrink-0"
+                aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+                aria-expanded={menuOpen}
+                title={menuOpen ? "Close navigation menu (Esc)" : "Open navigation menu"}
+              >
+                <CustomMenuIcon
+                  isOpen={menuOpen}
+                  className="w-10 h-10 sm:w-11 sm:h-11 block"
+                />
+              </button>
+
+              {/* Separator 1: After Hamburger Menu */}
+              <div
+                className="w-[2.5px] sm:w-[3px] h-6 sm:h-7 bg-[#52525B] rounded-full shrink-0 select-none"
+                aria-hidden="true"
               />
-            </button>
+            </div>
 
-            {/* Separator 1: After Hamburger Menu */}
-            <div
-              className="w-[2.5px] sm:w-[3px] h-6 sm:h-7 bg-[#52525B] rounded-full shrink-0 select-none"
-              aria-hidden="true"
-            />
+            {/* MIDDLE SECTION: Magadh Sparsh Brand Logo (shifted a little left) */}
+            <div className="flex items-center justify-center py-0.5 -translate-x-3 sm:-translate-x-5 md:-translate-x-6">
+              <MagadhSparshLogo
+                size="md"
+                className="transform hover:scale-105 transition-transform cursor-pointer"
+                onClick={() => {
+                  setActiveTab('home');
+                  setMenuOpen(false);
+                }}
+              />
+            </div>
+
+            {/* RIGHT SECTION: Search Icon + Separator 2 + Quick Contact */}
+            <div className="flex items-center">
+              {/* Search Icon Slot in Header Heading Section */}
+              <div className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center shrink-0 relative">
+                <AnimatePresence mode="wait">
+                  {!isMobileSearchExpanded ? (
+                    <motion.button
+                      key="header-search-open-btn"
+                      id="header-search-toggle-btn"
+                      onClick={handleOpenSearch}
+                      initial={{ opacity: 0, scale: 0.88 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.88 }}
+                      transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                      className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-black hover:text-slate-700 transition-colors bg-transparent border-0 shadow-none cursor-pointer active:scale-95 shrink-0 z-30"
+                      aria-label="Search Tyres"
+                      title="Search tyres"
+                    >
+                      <CustomSearchIcon className="w-8 h-8 sm:w-8.5 sm:h-8.5 text-black" />
+                    </motion.button>
+                  ) : (
+                    <motion.button
+                      key="header-search-close-hitbox"
+                      type="button"
+                      onClick={handleCloseSearch}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.15 }}
+                      className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center bg-transparent border-0 cursor-pointer rounded-full hover:bg-slate-100/70 transition-colors active:scale-95"
+                      aria-label="Close search"
+                      title="Close search"
+                    />
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Separator 2: Between Search and Quick Contact */}
+              <div
+                className="mx-2.5 sm:mx-3.5 md:mx-4 w-[2.5px] sm:w-[3px] h-6 sm:h-7 bg-[#52525B] rounded-full shrink-0 select-none"
+                aria-hidden="true"
+              />
+
+              {/* Quick Contact Customer Support Icon Button */}
+              <button
+                id="header-quick-contact-btn"
+                type="button"
+                onClick={() => setQuickContactOpen(true)}
+                className="p-1 sm:p-1.5 text-black hover:text-slate-700 active:scale-95 rounded-2xl transition-all flex items-center justify-center bg-transparent border-0 cursor-pointer select-none group shrink-0"
+                aria-label="Quick Contact & Support"
+                title="Quick Contact & Customer Service"
+              >
+                <QuickContactIcon className="w-8 h-8 sm:w-9 sm:h-9 text-black group-hover:text-slate-700 transition-colors" />
+              </button>
+            </div>
           </div>
+        </div>
 
-          {/* MIDDLE SECTION: Magadh Sparsh Brand Logo (shifted a little left) */}
-          <div className="flex items-center justify-center py-0.5 -translate-x-3 sm:-translate-x-5 md:-translate-x-6">
-            <MagadhSparshLogo
-              size="md"
-              className="transform hover:scale-105 transition-transform cursor-pointer"
-              onClick={() => {
-                setActiveTab('home');
-                setMenuOpen(false);
+        {/* Header Search Expansion Bar */}
+        <AnimatePresence>
+          {isMobileSearchExpanded && (
+            <motion.div
+              key="header-search-expansion-bar"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{
+                height: 0,
+                opacity: 0,
+                transition: {
+                  height: { duration: 0.26, ease: [0.32, 0.72, 0, 1] },
+                  opacity: { duration: 0.18, ease: 'easeIn' },
+                },
               }}
-            />
-          </div>
-
-          {/* RIGHT SECTION: Search Icon + Separator 2 + Quick Contact */}
-          <div className="flex items-center">
-            {/* Search Icon Button */}
-            <button
-              id="header-search-toggle-btn"
-              onClick={() => setIsMobileSearchExpanded(!isMobileSearchExpanded)}
-              className="p-1 sm:p-1.5 text-black hover:text-slate-700 transition-colors flex items-center justify-center bg-transparent border-0 shadow-none cursor-pointer active:scale-95 shrink-0"
-              aria-label="Search Tyres"
-              title="Search tyres"
+              transition={{
+                height: { duration: 0.26, ease: [0.16, 1, 0.3, 1] },
+                opacity: { duration: 0.2, ease: 'easeOut' },
+              }}
+              onAnimationComplete={() => {
+                if (isMobileSearchExpanded) {
+                  setIsSearchFullyOpen(true);
+                }
+              }}
+              className={`border-t border-slate-200/90 bg-white/98 backdrop-blur-md shadow-md relative z-20 ${
+                isSearchFullyOpen ? 'overflow-visible' : 'overflow-hidden'
+              }`}
             >
-              <CustomSearchIcon className="w-8 h-8 sm:w-9 sm:h-9 text-black" />
-            </button>
-
-            {/* Separator 2: Between Search and Quick Contact */}
-            <div
-              className="mx-2.5 sm:mx-3.5 md:mx-4 w-[2.5px] sm:w-[3px] h-6 sm:h-7 bg-[#52525B] rounded-full shrink-0 select-none"
-              aria-hidden="true"
-            />
-
-            {/* Quick Contact Customer Support Icon Button */}
-            <button
-              id="header-quick-contact-btn"
-              type="button"
-              onClick={() => setQuickContactOpen(true)}
-              className="p-1 sm:p-1.5 text-black hover:text-slate-700 active:scale-95 rounded-2xl transition-all flex items-center justify-center bg-transparent border-0 cursor-pointer select-none group shrink-0"
-              aria-label="Quick Contact & Support"
-              title="Quick Contact & Customer Service"
-            >
-              <QuickContactIcon className="w-8 h-8 sm:w-9 sm:h-9 text-black group-hover:text-slate-700 transition-colors" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Header Search Expansion Bar */}
-      <div
-        className={`transition-all duration-300 ease-in-out border-t ${
-          isMobileSearchExpanded
-            ? 'opacity-100 py-2.5 px-3 sm:py-3 sm:px-6 border-slate-200 bg-white/98 backdrop-blur-md shadow-md overflow-visible relative z-50'
-            : 'max-h-0 opacity-0 overflow-hidden py-0 px-4 border-transparent bg-transparent pointer-events-none'
-        }`}
-      >
-        <div className="max-w-3xl mx-auto">
-          <HeaderSearchBar
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            onSelectProduct={onSelectProduct}
-            allProducts={allProducts}
-            setActiveTab={setActiveTab}
-            placeholder="Search tyre name, size e.g. 295/90 R20, brand..."
-            autoFocus={isMobileSearchExpanded}
-            onCloseMobileSearch={() => setIsMobileSearchExpanded(false)}
-          />
-        </div>
-      </div>
+              <motion.div
+                initial={{ y: -6, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{
+                  y: -8,
+                  opacity: 0,
+                  transition: {
+                    duration: 0.18,
+                    ease: [0.32, 0.72, 0, 1],
+                  },
+                }}
+                transition={{
+                  duration: 0.22,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="py-2.5 px-3 sm:py-3 sm:px-6 max-w-3xl mx-auto"
+              >
+                <HeaderSearchBar
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                  onSelectProduct={onSelectProduct}
+                  allProducts={allProducts}
+                  setActiveTab={setActiveTab}
+                  placeholder="Search tyre name, size e.g. 295/90 R20, brand..."
+                  autoFocus={isMobileSearchExpanded}
+                  isExpanded={isMobileSearchExpanded}
+                  isFullyOpen={isSearchFullyOpen}
+                  onCloseMobileSearch={handleCloseSearch}
+                />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
 
       {/* NAVIGATION MENU DRAWER */}
       {typeof document !== 'undefined' && createPortal(
@@ -411,32 +527,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </span>
                     </div>
                   </div>
-
-                  {/* Action Buttons */}
-                  <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setQuickContactOpen(false);
-                        handleNavClick('complaint');
-                      }}
-                      className="flex-1 py-3 px-4 rounded-2xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold text-xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
-                    >
-                      <AlertCircle className="w-4 h-4" />
-                      <span>Register Complaint Request</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setQuickContactOpen(false);
-                        handleNavClick('support');
-                      }}
-                      className="flex-1 py-3 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
-                    >
-                      <Headphones className="w-4 h-4" />
-                      <span>Open Help Center</span>
-                    </button>
-                  </div>
                 </div>
               </motion.div>
             </div>
@@ -444,7 +534,6 @@ export const Navbar: React.FC<NavbarProps> = ({
         </AnimatePresence>,
         document.body
       )}
-    </header>
 
     {/* Spacer so page content begins perfectly below the fixed header */}
     <div style={{ height: `${headerHeight}px` }} aria-hidden="true" className="w-full flex-shrink-0" />

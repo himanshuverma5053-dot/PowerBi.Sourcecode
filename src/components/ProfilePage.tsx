@@ -210,7 +210,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-normal text-slate-700 leading-snug tracking-tight">
-            User Access<br />Management
+            Company Details
           </h1>
         </div>
 

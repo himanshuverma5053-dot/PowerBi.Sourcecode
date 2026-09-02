@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Loader2, X, Tag, Lightbulb, Disc, AlertCircle, ExternalLink, ArrowRight, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { CustomSearchIcon } from './SearchIcon';
 import { TyreProduct } from '../types';
 import { searchProductsInBackend } from '../services/productService';
@@ -15,6 +16,8 @@ interface HeaderSearchBarProps {
   className?: string;
   isMobile?: boolean;
   autoFocus?: boolean;
+  isExpanded?: boolean;
+  isFullyOpen?: boolean;
   onCloseMobileSearch?: () => void;
 }
 
@@ -28,6 +31,8 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
   className = '',
   isMobile = false,
   autoFocus = false,
+  isExpanded = true,
+  isFullyOpen = false,
   onCloseMobileSearch,
 }) => {
   const [inputValue, setInputValue] = useState(searchQuery);
@@ -47,6 +52,16 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
       inputRef.current.focus();
     }
   }, [autoFocus]);
+
+  // Cleanly dismiss dropdown and blur on search closing
+  useEffect(() => {
+    if (!isExpanded) {
+      setIsOpen(false);
+      if (inputRef.current) {
+        inputRef.current.blur();
+      }
+    }
+  }, [isExpanded]);
 
   // Sync external searchQuery state changes
   useEffect(() => {
@@ -269,12 +284,29 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
             }`}
           />
 
-          {/* Search Icon / Spinner on Left */}
-          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center text-slate-700 pointer-events-none">
+          {/* Search Icon / Spinner on Left - Only visible when search bar is fully open */}
+          <div className="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 z-20">
             {isLoading ? (
-              <Loader2 className="w-6.5 h-6.5 animate-spin text-slate-900" />
+              <Loader2 className="w-6 h-6 animate-spin text-slate-900" />
             ) : (
-              <CustomSearchIcon className="w-7.5 h-7.5 sm:w-8 sm:h-8 text-slate-800" />
+              <AnimatePresence>
+                {isFullyOpen && (
+                  <motion.button
+                    key="search-bar-input-icon-btn"
+                    type="button"
+                    initial={{ opacity: 0, scale: 0.82 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.82 }}
+                    transition={{ duration: 0.16, ease: 'easeOut' }}
+                    onClick={onCloseMobileSearch}
+                    className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center bg-transparent border-0 cursor-pointer text-slate-800 hover:text-black transition-colors focus:outline-none select-none active:scale-95 group"
+                    aria-label="Close search"
+                    title="Click search icon to close"
+                  >
+                    <CustomSearchIcon className="w-8 h-8 sm:w-8.5 sm:h-8.5 text-slate-800 group-hover:text-black transition-colors" />
+                  </motion.button>
+                )}
+              </AnimatePresence>
             )}
           </div>
 
