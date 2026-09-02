@@ -403,7 +403,7 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
                       No products found matching "{searchedTerm}"
                     </p>
                     <p className="text-[11px] text-slate-500 mt-1 max-w-xs mx-auto">
-                      Try searching for tyre models like <span className="font-semibold text-slate-900">Endutrax md+</span>, <span className="font-semibold text-slate-900">295/90 R20</span>, or <span className="font-semibold text-slate-900">Apollo</span>.
+                      Try searching by tyre size like <span className="font-semibold text-slate-900">295/90 R20</span>, category, or brand.
                     </p>
                   </div>
                   <button

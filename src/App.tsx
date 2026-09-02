@@ -34,7 +34,6 @@ import { isRadialProduct, isNonRadialProduct } from './utils/productCategories';
 import { safeSetLocalStorage, safeGetLocalStorage } from './utils/storage';
 import { calculateCustomerFinancials } from './utils/customerFinancials';
 import { MOCK_TYRES } from './data/mockData';
-import { apolloEndutraxImg, apolloEndutraxMaDImg, apolloEnduraceLdImg, apolloEnduraceRatDImg, apolloEndutraxTreadImg } from './assets/tyreImages';
 import apolloEnduBannerImg from './assets/images/regenerated_image_1787248277167.png';
 
 import {
@@ -92,54 +91,28 @@ export default function App() {
     safeSetLocalStorage('magadh_interface_mode', interfaceMode);
   }, [interfaceMode]);
 
-  // Helper to ensure mock tyres always have the high resolution product and tread images
-  const initializeProducts = (rawList: TyreProduct[]): TyreProduct[] => {
-    const list = [...rawList];
-    // Ensure all MOCK_TYRES exist in list
-    for (const mock of MOCK_TYRES) {
-      const existingIdx = list.findIndex(p => p.id === mock.id);
-      if (existingIdx === -1) {
-        list.unshift(mock);
-      } else {
-        list[existingIdx] = { ...mock, ...list[existingIdx], price: mock.price, image: mock.image, images: mock.images, components: mock.components };
-      }
-    }
+  // Helper to filter out removed products permanently
+  const isRemovedProduct = (p: TyreProduct): boolean => {
+    const text = `${p.name || ''} ${p.id || ''} ${p.pattern || ''} ${p.sku || ''}`.toUpperCase();
+    return (
+      text.includes('ENDUTRAX') ||
+      text.includes('INDOTRAX') ||
+      text.includes('ENDURACE') ||
+      text.includes('INDORACE') ||
+      text.includes('MD+') ||
+      text.includes('MA-D') ||
+      text.includes('LD-D') ||
+      text.includes('RAT-D') ||
+      text.includes('RA(T)')
+    );
+  };
 
-    return list.map(p => {
-      if (p.id === 'tyre-endutrax-ma-d' || p.name.includes('ENDUTRAX MA')) {
-        return {
-          ...p,
-          image: apolloEndutraxMaDImg || p.image,
-          images: [apolloEndutraxMaDImg || p.image, apolloEndutraxTreadImg]
-        };
-      }
-      if (p.id === 'tyre-endutrax-md-plus-d' || p.name.includes('ENDUTRAX MD')) {
-        return {
-          ...p,
-          image: apolloEndutraxImg,
-          images: [apolloEndutraxImg, apolloEndutraxTreadImg]
-        };
-      }
-      if (p.id === 'tyre-endurace-ld-d' || p.name.includes('ENDURACE LD')) {
-        return {
-          ...p,
-          image: apolloEnduraceLdImg || p.image,
-          images: [apolloEnduraceLdImg || p.image, apolloEndutraxTreadImg]
-        };
-      }
-      if (p.id === 'tyre-endurace-rat-d' || p.name.includes('ENDURACE RA')) {
-        return {
-          ...p,
-          image: apolloEnduraceRatDImg || p.image,
-          images: [apolloEnduraceRatDImg || p.image, apolloEndutraxTreadImg]
-        };
-      }
-      return {
-        ...p,
-        image: p.image || '',
-        images: p.images || []
-      };
-    });
+  const initializeProducts = (rawList: TyreProduct[]): TyreProduct[] => {
+    return rawList.filter(p => !isRemovedProduct(p)).map(p => ({
+      ...p,
+      image: p.image || '',
+      images: p.images || []
+    }));
   };
 
   // Shared Master State 1: Products (fetched live from backend or fallback)
@@ -220,8 +193,9 @@ export default function App() {
     setIsProductsLoading(true);
     try {
       const dbProducts = await fetchProductsFromBackend();
-      if (dbProducts && Array.isArray(dbProducts) && dbProducts.length > 0) {
-        setProducts(dbProducts);
+      if (dbProducts && Array.isArray(dbProducts)) {
+        const filtered = dbProducts.filter(p => !isRemovedProduct(p));
+        setProducts(filtered);
       } else {
         setProducts(MOCK_TYRES);
       }

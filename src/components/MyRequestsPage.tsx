@@ -34,7 +34,7 @@ const DEFAULT_COMPLAINTS: ComplaintItem[] = [
     id: 'comp-101',
     ticketNumber: 'CMP-2026-8841',
     category: 'Tyre Defect',
-    tyreSerialOrSize: '295/90 R20 ENDUTRAX MA',
+    tyreSerialOrSize: '295/90 R20 Radial',
     orderNumber: 'ORD-9921',
     vehicleNumber: 'BR01GB4492',
     description: 'Uneven sidewall bulge noted on rear axle tyre after 2,400 km operation on NH-31 route.',

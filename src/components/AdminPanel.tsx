@@ -1139,7 +1139,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     required
                     value={editingProduct.name || ''}
                     onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
-                    placeholder="e.g. 295/90 R20 ENDUTRAX MD+"
+                    placeholder="e.g. 295/90 R20 Radial Commercial"
                     className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white outline-hidden"
                   />
                 </div>

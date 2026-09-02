@@ -25,77 +25,22 @@ interface ShowcaseProductItem {
   productData: Partial<TyreProduct>;
 }
 
-const SHOWCASE_PRODUCTS: ShowcaseProductItem[] = [
-  {
-    id: 'tyre-endutrax-md-plus-s-d',
-    type: 'product',
-    dateOrCategory: 'Commercial Drive Axle',
-    title: 'ENDUTRAX MD+ (S)-D',
-    subtitle: '295/90 R20 • Extra Casing Life & High Torque Resistance',
-    price: 25685,
-    image: '/src/assets/images/regenerated_image_1786961965737.jpg',
-    productData: {
-      id: 'tyre-endutrax-md-plus-s-d',
-      name: 'ENDUTRAX MD+ (S)-D',
-      brand: 'Apollo',
-      category: 'Truck',
-      width: 295,
-      aspectRatio: 90,
-      rimSize: 20,
-      speedRating: 'J',
-      loadIndex: 152,
-      price: 25685,
-      bulkPrice: 25685,
-      image: '/src/assets/images/regenerated_image_1786961965737.jpg',
-      description: 'Heavy duty commercial drive axle tyre built for high torque and endurance.',
-      status: 'Active',
-      tireType: 'Radial',
-      tire_type: 'Radial'
-    }
-  },
-  {
-    id: 'tyre-endurace-ld-d',
-    type: 'product',
-    dateOrCategory: 'Long Haul Commercial',
-    title: 'ENDURACE LD-D',
-    subtitle: '295/90 R20 • High Fuel Mileage & Highway Grip',
-    price: 27917,
-    image: '/src/assets/images/apollo_endurace_ld_1786970458406.jpg',
-    productData: {
-      id: 'tyre-endurace-ld-d',
-      name: 'ENDURACE LD-D',
-      brand: 'Apollo',
-      category: 'Truck',
-      width: 295,
-      aspectRatio: 90,
-      rimSize: 20,
-      speedRating: 'K',
-      loadIndex: 154,
-      price: 27917,
-      bulkPrice: 27917,
-      image: '/src/assets/images/apollo_endurace_ld_1786970458406.jpg',
-      description: 'Heavy duty commercial drive axle tyre designed for high mileage and endurance. Complete set includes FLAP-D and TUBE-D.',
-      status: 'Active',
-      tireType: 'Radial',
-      tire_type: 'Radial'
-    }
-  }
-];
+const SHOWCASE_PRODUCTS: ShowcaseProductItem[] = [];
 
 const BLOG_GUIDE = {
-  title: 'Commercial Radial Tyres: MD+ & LD Maintenance Guide',
+  title: 'Commercial Radial Tyres Maintenance Guide',
   date: '27.07.2023',
   category: 'Commercial Radial Insights',
   readTime: '4 min read',
-  summary: 'Achieving maximum casing life and lowest cost per kilometer (CPKM) with Apollo EnduTrax MD+ and EnduRace LD tyres.',
+  summary: 'Achieving maximum casing life and lowest cost per kilometer (CPKM) with commercial radial tyres.',
   sections: [
     {
-      heading: 'ENDUTRAX MD+ (S)-D vs. ENDURACE LD-D Applications',
-      content: 'Choosing the right radial drive tyre depends directly on road conditions, terrain topology, and gross axle load.',
+      heading: 'Commercial Radial Applications',
+      content: 'Choosing the right radial tyre depends directly on road conditions, terrain topology, and gross axle load.',
       bulletPoints: [
-        'ENDUTRAX MD+ (S)-D: Specially formulated for severe mining, quarry, and mixed-service terrain with cut-and-chip resistant compound.',
-        'ENDURACE LD-D: Engineered for long-haul national highway routes, delivering ultra-high mileage, even tread wear, and low rolling resistance.',
-        'Proper Inflation: Maintain cold tyre pressures according to payload charts to protect radial steel belts and enhance multiple retreadability cycles.'
+        'Drive Axle Tyres: Formulated for severe quarry, mining, and mixed terrain with cut-and-chip resistant compound.',
+        'Highway Radial Tyres: Engineered for long-haul national highway routes, delivering high mileage and low rolling resistance.',
+        'Proper Inflation: Maintain cold tyre pressures according to payload charts to protect radial steel belts and enhance retreadability.'
       ]
     }
   ]
@@ -140,9 +85,9 @@ export const ForYourKnowledgeSection: React.FC<ForYourKnowledgeSectionProps> = (
     const isRightSwipe = distance < -45;
 
     if (isLeftSwipe) {
-      setActiveIndex((prev) => (prev + 1) % SHOWCASE_PRODUCTS.length);
+      setActiveIndex((prev) => (prev + 1) % (SHOWCASE_PRODUCTS.length || 1));
     } else if (isRightSwipe) {
-      setActiveIndex((prev) => (prev - 1 + SHOWCASE_PRODUCTS.length) % SHOWCASE_PRODUCTS.length);
+      setActiveIndex((prev) => (prev - 1 + (SHOWCASE_PRODUCTS.length || 1)) % (SHOWCASE_PRODUCTS.length || 1));
     }
     setTouchStartX(null);
     setTouchEndX(null);
@@ -154,6 +99,10 @@ export const ForYourKnowledgeSection: React.FC<ForYourKnowledgeSectionProps> = (
       onExploreCatalogue('Truck');
     }
   };
+
+  if (SHOWCASE_PRODUCTS.length === 0) {
+    return null;
+  }
 
   return (
     <section id="for-your-knowledge" className="py-6 sm:py-8 border-t border-slate-200/80">
