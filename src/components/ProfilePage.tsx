@@ -117,7 +117,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
     const userKey = name ? name.toLowerCase() : 'default';
     safeSetLocalStorage(`user_profile_${userKey}`, profileToSave);
-    safeSetLocalStorage('user_profile', profileToSave);
+    safeSetLocalStorage('https://o5skhjqub2.execute-api.us-east-1.amazonaws.com/Prod', profileToSave);
 
     if (customerAccounts && onUpdateCustomerAccounts) {
       const existingIdx = customerAccounts.findIndex(
