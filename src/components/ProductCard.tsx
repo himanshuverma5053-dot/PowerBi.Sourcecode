@@ -42,23 +42,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   return (
-    <div className={`group bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-slate-300 transition-all duration-300 flex flex-col justify-between overflow-hidden relative ${
+    <div className={`group bg-white rounded-2xl shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between overflow-hidden relative ${
       compact ? 'h-full' : ''
     }`}>
       {/* Top Badges Overlay */}
       <div className="p-3 pb-0 flex justify-between items-start z-10 gap-1">
         <div className="flex flex-wrap gap-1 items-center">
-          <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-slate-900 text-white border border-slate-950 shadow-2xs">
+          <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-slate-900 text-white shadow-2xs">
             {product.brand}
           </span>
           {product.evReady && (
-            <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-900 flex items-center border border-emerald-300">
+            <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-900 flex items-center">
               <Zap className="w-2.5 h-2.5 mr-0.5 text-emerald-700 fill-emerald-700" />
               EV
             </span>
           )}
           {isCustomRate && (
-            <span className="px-1.5 py-0.5 rounded-md text-[9px] font-extrabold bg-amber-400 text-slate-950 shadow-2xs border border-amber-300">
+            <span className="px-1.5 py-0.5 rounded-md text-[9px] font-extrabold bg-amber-400 text-slate-950 shadow-2xs">
               Custom Rate
             </span>
           )}
@@ -66,11 +66,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         <div className="text-right shrink-0">
           {product.stock > 0 ? (
-            <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-slate-100 text-slate-800 border border-slate-200">
+            <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-slate-100 text-slate-800">
               {product.stock} in Stock
             </span>
           ) : (
-            <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+            <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-amber-100 text-amber-900">
               Pre-Order
             </span>
           )}
@@ -97,7 +97,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       <div className="p-3.5 pt-0 flex-1 flex flex-col justify-between space-y-2.5 mt-2">
         <div>
           {/* Tyre Dimension Badge */}
-          <div className="text-[10px] font-extrabold text-amber-900 tracking-wide uppercase bg-amber-100 inline-block px-2 py-0.5 rounded-md border border-amber-300 mb-1">
+          <div className="text-[10px] font-extrabold text-amber-900 tracking-wide uppercase bg-amber-100 inline-block px-2 py-0.5 rounded-md mb-1">
             {product.width}/{product.aspectRatio} R{product.rimSize} | {product.speedRating}
           </div>
 
@@ -113,12 +113,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Specs Pill Grid */}
-        <div className="grid grid-cols-3 gap-1 bg-slate-50 p-1.5 rounded-lg border border-slate-200 text-[10px] font-semibold text-slate-900">
+        <div className="grid grid-cols-3 gap-1 bg-slate-50 p-1.5 rounded-lg text-[10px] font-semibold text-slate-900">
           <div className="text-center">
             <span className="text-[8px] text-slate-500 block uppercase font-bold">Eff.</span>
             <span className="text-slate-950 font-extrabold">{product.fuelEfficiency}</span>
           </div>
-          <div className="text-center border-x border-slate-200">
+          <div className="text-center">
             <span className="text-[8px] text-slate-500 block uppercase font-bold">Grip</span>
             <span className="text-slate-950 font-extrabold">{product.wetGrip}</span>
           </div>
@@ -129,7 +129,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Pricing & Quantity + Buy Now */}
-        <div className="pt-2 border-t border-slate-200 space-y-2">
+        <div className="pt-2 space-y-2">
           <div className="flex items-baseline justify-between">
             <div className="flex items-baseline space-x-1">
               <span className="text-sm sm:text-base font-black text-slate-950 font-display">
@@ -146,7 +146,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
           {/* Quantity Stepper & Buy Now Button */}
           <div className="flex items-center gap-1.5">
-            <div className="flex items-center border border-slate-200 rounded-xl bg-white h-8 shrink-0 shadow-2xs">
+            <div className="flex items-center rounded-xl bg-slate-100 h-8 shrink-0 shadow-2xs">
               <button
                 type="button"
                 onClick={handleDecrement}

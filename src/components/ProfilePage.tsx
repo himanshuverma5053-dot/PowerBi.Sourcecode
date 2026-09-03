@@ -13,8 +13,12 @@ import {
   Home,
   CheckCircle2,
   RotateCcw,
-  Edit3
+  Edit3,
+  Loader2,
+  Cloud
 } from 'lucide-react';
+
+export const AWS_PROFILE_INVOKE_URL = 'https://o5skhjqub2.execute-api.us-east-1.amazonaws.com/prod';
 
 interface ProfilePageProps {
   orders?: Order[];
@@ -56,6 +60,17 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [isSaved, setIsSaved] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [ripple, setRipple] = useState<{ x: number; y: number; id: number } | null>(null);
+
+  const triggerRipple = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setRipple({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+      id: Date.now(),
+    });
+  };
 
   // Load profile from local storage if previously written/saved
   useEffect(() => {
@@ -99,8 +114,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     }
   }, [currentUser, currentUserEmail]);
 
-  // Handle Save
-  const handleSave = () => {
+  // Handle Save with AWS API Gateway Invoke URL
+  const handleSave = async () => {
+    setIsSubmitting(true);
+
     const profileToSave = {
       customerName: name,
       name,
@@ -113,11 +130,13 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       gstNumber,
       deliveryLocation,
       address,
+      updatedAt: new Date().toISOString(),
     };
 
+    // Always persist to local storage so user data is instantly preserved
     const userKey = name ? name.toLowerCase() : 'default';
     safeSetLocalStorage(`user_profile_${userKey}`, profileToSave);
-    safeSetLocalStorage('https://o5skhjqub2.execute-api.us-east-1.amazonaws.com/Prod', profileToSave);
+    safeSetLocalStorage('user_profile', profileToSave);
 
     if (customerAccounts && onUpdateCustomerAccounts) {
       const existingIdx = customerAccounts.findIndex(
@@ -173,10 +192,69 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     // Dispatch custom event so OrderDetailsPage and other listeners update immediately
     window.dispatchEvent(new Event('magadh_profile_updated'));
 
+    // Invoke AWS API Gateway endpoint
+    let apiStatus: 'synced' | 'local_only' = 'local_only';
+    let apiFeedback = '';
+
+    try {
+      let response: Response | null = null;
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        response = await fetch(AWS_PROFILE_INVOKE_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify(profileToSave),
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+      } catch (browserFetchErr) {
+        // Fallback to server-side proxy in case of browser CORS restriction or timeout
+        console.warn('Direct browser fetch failed or CORS-restricted, falling back to server-side proxy:', browserFetchErr);
+        response = await fetch('/api/profile/sync-aws', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify(profileToSave),
+        });
+      }
+
+      if (response && response.ok) {
+        apiStatus = 'synced';
+        try {
+          const resJson = await response.json();
+          apiFeedback = resJson?.message || 'Cloud synchronized';
+        } catch {
+          apiFeedback = 'Cloud synchronized';
+        }
+      } else if (response) {
+        apiStatus = 'local_only';
+        apiFeedback = `Cloud status ${response.status}`;
+        console.warn(`AWS API invoke returned HTTP ${response.status}:`, response.statusText);
+      }
+    } catch (err: any) {
+      apiStatus = 'local_only';
+      apiFeedback = err?.message || 'Network unreachable';
+      console.warn('AWS API invoke exception (local profile saved successfully):', err);
+    } finally {
+      setIsSubmitting(false);
+    }
+
     setIsSaved(true);
     setIsEditMode(false);
-    showToast(`Profile details ${name ? 'for ' + name + ' ' : ''}saved successfully!`);
-    setTimeout(() => setIsSaved(false), 3000);
+
+    if (apiStatus === 'synced') {
+      showToast(`Profile details committed and synced to cloud API!`);
+    } else {
+      showToast(`Profile committed locally! (${apiFeedback})`);
+    }
+
+    setTimeout(() => setIsSaved(false), 3500);
   };
 
   // Toggle status
@@ -307,16 +385,37 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           <div className="w-1/3 sm:w-1/4 text-sm sm:text-base font-normal text-slate-700">
             Action
           </div>
-          <div className="flex items-center justify-end space-x-5 sm:space-x-6 text-slate-800">
+          <div className="flex items-center justify-end space-x-3 sm:space-x-5 text-slate-800">
+            {/* Status reaction pill */}
+            {isSaved && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 animate-in fade-in zoom-in duration-200">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Committed</span>
+              </span>
+            )}
             
             {/* Save Icon */}
             <button
               type="button"
-              onClick={handleSave}
-              title="Save User Profile"
-              className="p-1 text-slate-700 hover:text-[#54b4e7] active:scale-90 transition-all cursor-pointer"
+              onClick={(e) => {
+                triggerRipple(e);
+                handleSave();
+              }}
+              disabled={isSubmitting}
+              title={isSaved ? 'Profile Committed & Synced!' : 'Save & Commit Profile'}
+              className={`p-1.5 rounded-xl transition-all duration-200 cursor-pointer active:scale-90 active:translate-y-0.5 relative overflow-hidden ${
+                isSaved
+                  ? 'text-emerald-700 bg-emerald-100 ring-2 ring-emerald-400 shadow-sm'
+                  : 'text-slate-700 hover:text-[#54b4e7] hover:bg-slate-100'
+              }`}
             >
-              <Save className="w-6 h-6 stroke-[1.8]" />
+              {isSubmitting ? (
+                <Loader2 className="w-6 h-6 stroke-[2] animate-spin text-[#54b4e7]" />
+              ) : isSaved ? (
+                <CheckCircle2 className="w-6 h-6 stroke-[2.2] text-emerald-600 animate-in zoom-in-75 duration-200" />
+              ) : (
+                <Save className="w-6 h-6 stroke-[1.8]" />
+              )}
             </button>
 
             {/* Minus Icon */}
@@ -502,14 +601,56 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 <span>Clear Form Details</span>
               </button>
 
-              <div className="flex items-center space-x-3 w-full sm:w-auto">
+              <div className="flex items-center space-x-3 w-full sm:w-auto justify-end">
+                <div className="hidden sm:flex items-center text-[10px] text-slate-400 gap-1 font-mono pr-1" title={AWS_PROFILE_INVOKE_URL}>
+                  <Cloud className="w-3.5 h-3.5 text-sky-500" />
+                  <span>AWS Cloud Sync</span>
+                </div>
                 <button
                   type="button"
-                  onClick={handleSave}
-                  className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#54b4e7] hover:bg-[#3ea5dc] text-white text-xs font-bold shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
+                  onClick={(e) => {
+                    triggerRipple(e);
+                    handleSave();
+                  }}
+                  disabled={isSubmitting}
+                  className={`relative overflow-hidden w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-bold shadow-sm flex items-center justify-center space-x-2 select-none cursor-pointer transition-all duration-200 active:scale-95 active:shadow-inner active:brightness-95 ${
+                    isSaved
+                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white ring-2 ring-emerald-300 shadow-md scale-[1.02]'
+                      : isSubmitting
+                      ? 'bg-sky-600 text-white opacity-90 cursor-wait'
+                      : 'bg-[#54b4e7] hover:bg-[#3ea5dc] hover:shadow-md text-white'
+                  }`}
                 >
-                  <Save className="w-4 h-4" />
-                  <span>Commit Updates</span>
+                  {/* Dynamic Click Ripple */}
+                  {ripple && (
+                    <span
+                      key={ripple.id}
+                      className="absolute bg-white/40 rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2 animate-ping"
+                      style={{
+                        left: ripple.x,
+                        top: ripple.y,
+                        width: 120,
+                        height: 120,
+                      }}
+                    />
+                  )}
+
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      <span className="tracking-wide">Committing Updates...</span>
+                    </>
+                  ) : isSaved ? (
+                    <>
+                      <CheckCircle2 className="w-4 h-4 text-white animate-bounce" />
+                      <span className="tracking-wide font-black">Updates Committed!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 transition-transform group-hover:scale-110" />
+                      <span className="tracking-wide">Commit Updates</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>

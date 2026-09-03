@@ -61,7 +61,7 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
   return (
     <div
       id={`vertical-product-card-${product.id}`}
-      className="bg-white rounded-[28px] p-5 sm:p-6 shadow-sm border border-slate-100/90 hover:shadow-md hover:border-slate-200 transition-all duration-200 flex flex-col justify-between relative group"
+      className="bg-white rounded-[28px] p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between relative group"
     >
       {/* Top Header: Title & Brand Logo */}
       <div>
@@ -139,7 +139,7 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
         {/* Quantity Bar and Buy Now button */}
         <div className="flex items-center gap-2 sm:gap-2.5">
           {/* Quantity Stepper Bar */}
-          <div className="flex items-center border border-slate-200 rounded-2xl bg-white overflow-hidden shadow-2xs h-11 shrink-0">
+          <div className="flex items-center rounded-2xl bg-slate-100 overflow-hidden shadow-2xs h-11 shrink-0">
             <button
               type="button"
               onClick={handleDecrement}

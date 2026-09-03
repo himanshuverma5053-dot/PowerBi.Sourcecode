@@ -35,7 +35,7 @@ export const ContinuousProductBar: React.FC<ContinuousProductBarProps> = ({
 
   if (!products || products.length === 0) {
     return (
-      <div className="bg-white rounded-2xl p-6 text-center border border-slate-200 shadow-2xs space-y-2 my-4">
+      <div className="bg-white rounded-2xl p-6 text-center shadow-xs space-y-2 my-4">
         <Disc3 className="w-8 h-8 text-slate-400 mx-auto animate-spin" />
         <h3 className="text-sm font-bold text-slate-800">No {badgeText} Products Available</h3>
         <p className="text-xs text-slate-500">Check back soon for inventory updates.</p>
@@ -47,15 +47,15 @@ export const ContinuousProductBar: React.FC<ContinuousProductBarProps> = ({
   const displayItems = [...products, ...products, ...products, ...products];
 
   const badgeColorClasses = badgeType === 'radial'
-    ? 'bg-slate-900 text-white border-slate-950 shadow-2xs'
-    : 'bg-amber-950 text-amber-200 border-amber-800 shadow-2xs';
+    ? 'bg-slate-900 text-white shadow-2xs'
+    : 'bg-amber-950 text-amber-200 shadow-2xs';
 
   const headerGradient = badgeType === 'radial'
     ? 'from-slate-100 via-slate-50 to-transparent'
     : 'from-amber-500/10 via-amber-500/5 to-transparent';
 
   return (
-    <div className="my-2 space-y-1 bg-white rounded-2xl md:rounded-3xl p-2 sm:p-2.5 md:p-4 border border-slate-200/90 shadow-2xs overflow-hidden relative group/bar">
+    <div className="my-2 space-y-1 bg-white rounded-2xl md:rounded-3xl p-2 sm:p-2.5 md:p-4 shadow-xs overflow-hidden relative group/bar">
       {/* CONTINUOUS MOVING CAROUSEL MARQUEE TRACK */}
       <div className="relative overflow-hidden py-1 md:py-2 -mx-2 sm:-mx-2.5 md:-mx-4 px-2 sm:px-2.5 md:px-4">
         {/* Visual edge gradient overlays */}
@@ -78,7 +78,7 @@ export const ContinuousProductBar: React.FC<ContinuousProductBarProps> = ({
             return (
               <div
                 key={`${product.id}-${idx}`}
-                className="w-40 sm:w-48 md:w-56 lg:w-48 shrink-0 mx-1.5 md:mx-2 group/card bg-slate-50 hover:bg-white rounded-xl md:rounded-2xl border border-slate-200 hover:border-slate-400 p-2 md:p-3 transition-all duration-200 hover:shadow-md flex flex-col justify-between select-none relative"
+                className="w-40 sm:w-48 md:w-56 lg:w-48 shrink-0 mx-1.5 md:mx-2 group/card bg-slate-50 hover:bg-white rounded-xl md:rounded-2xl p-2 md:p-3 transition-all duration-200 hover:shadow-md flex flex-col justify-between select-none relative"
               >
                 {/* Product Image & Badges */}
                 <div
