@@ -15,10 +15,16 @@ import {
   RotateCcw,
   Edit3,
   Loader2,
-  Cloud
+  Cloud,
+  AlertCircle,
+  Key,
+  Globe,
+  RefreshCw,
+  Sliders
 } from 'lucide-react';
 
-export const AWS_PROFILE_INVOKE_URL = 'https://o5skhjqub2.execute-api.us-east-1.amazonaws.com/prod';
+export const YOUR_API_URL_HERE = 'https://o5skhjqub2.execute-api.us-east-1.amazonaws.com/Prod';
+export const AWS_PROFILE_INVOKE_URL = YOUR_API_URL_HERE;
 
 interface ProfilePageProps {
   orders?: Order[];
@@ -56,21 +62,28 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [deliveryLocation, setDeliveryLocation] = useState<string>('');
   const [address, setAddress] = useState<string>('');
   
-  // Accordion state
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  const [isEditMode, setIsEditMode] = useState<boolean>(false);
+  // Form and AWS settings state - directly open & editable by default
+  const [isExpanded, setIsExpanded] = useState<boolean>(true);
+  const [isEditMode, setIsEditMode] = useState<boolean>(true);
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [ripple, setRipple] = useState<{ x: number; y: number; id: number } | null>(null);
 
-  const triggerRipple = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setRipple({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-      id: Date.now(),
-    });
-  };
+  // AWS Configuration and Diagnostics
+  const [customEndpoint, setCustomEndpoint] = useState<string>(() => {
+    return localStorage.getItem('aws_profile_endpoint') || AWS_PROFILE_INVOKE_URL;
+  });
+  const [apiKey, setApiKey] = useState<string>(() => {
+    return localStorage.getItem('aws_profile_api_key') || '';
+  });
+  const [showAwsConfig, setShowAwsConfig] = useState<boolean>(false);
+  const [lastAwsResponse, setLastAwsResponse] = useState<{
+    status: number | null;
+    success: boolean;
+    data: any;
+    targetUrl: string;
+    timestamp: string;
+  } | null>(null);
+  const [isTestingEndpoint, setIsTestingEndpoint] = useState<boolean>(false);
 
   // Load profile from local storage if previously written/saved
   useEffect(() => {
@@ -114,29 +127,78 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     }
   }, [currentUser, currentUserEmail]);
 
-  // Handle Save with AWS API Gateway Invoke URL
+  // Handle Save / Commit Updates with API endpoint
   const handleSave = async () => {
+    // 1. Collect values from required input fields
+    const firmName = companyName.trim();
+    const contactNumber = phone.trim();
+    const gstin = gstNumber.trim();
+    const logisticsHub = deliveryLocation.trim();
+    const billingAddress = address.trim();
+
+    // 2. Validation: none of the fields should be empty
+    if (!firmName) {
+      showToast('Please enter the Registered Firm / Trading Name.');
+      return;
+    }
+
+    if (!contactNumber) {
+      showToast('Please enter the Verified Contact Number.');
+      return;
+    }
+
+    // Validation: contact number should be a valid number format
+    const cleanPhoneDigits = contactNumber.replace(/[\s\-\(\)]/g, '');
+    const isValidPhone = /^\+?[0-9]{7,15}$/.test(cleanPhoneDigits);
+    if (!isValidPhone) {
+      showToast('Please enter a valid contact number format (e.g. +91 9876543210).');
+      return;
+    }
+
+    if (!gstin) {
+      showToast('Please enter the GSTIN Identification.');
+      return;
+    }
+
+    if (!logisticsHub) {
+      showToast('Please enter the Primary Logistics / Depot Hub.');
+      return;
+    }
+
+    if (!billingAddress) {
+      showToast('Please enter the Registered Billing & Consignment Address.');
+      return;
+    }
+
+    // 3. Show loading state on button
     setIsSubmitting(true);
 
-    const profileToSave = {
-      customerName: name,
-      name,
-      companyName,
-      phone,
-      email: userId,
-      userId,
+    // 4. Construct JSON payload with clear key names matching each field
+    const payload = {
+      firmName,
+      contactNumber,
+      gstin,
+      logisticsHub,
+      billingAddress,
+      // Complementary aliases for state & storage sync
+      companyName: firmName,
+      phone: contactNumber,
+      gstNumber: gstin,
+      deliveryLocation: logisticsHub,
+      address: billingAddress,
+      customerName: name.trim() || firmName,
+      name: name.trim() || firmName,
+      email: userId.trim(),
+      userId: userId.trim(),
       role,
       status,
-      gstNumber,
-      deliveryLocation,
-      address,
       updatedAt: new Date().toISOString(),
     };
 
     // Always persist to local storage so user data is instantly preserved
-    const userKey = name ? name.toLowerCase() : 'default';
-    safeSetLocalStorage(`user_profile_${userKey}`, profileToSave);
-    safeSetLocalStorage('user_profile', profileToSave);
+    const userKey = (name.trim() || firmName).toLowerCase();
+    safeSetLocalStorage(`user_profile_${userKey}`, payload);
+    safeSetLocalStorage('user_profile', payload);
 
     if (customerAccounts && onUpdateCustomerAccounts) {
       const existingIdx = customerAccounts.findIndex(
@@ -150,27 +212,27 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         updatedList = [...customerAccounts];
         updatedList[existingIdx] = {
           ...updatedList[existingIdx],
-          customerName: name,
-          companyName,
-          phone,
+          customerName: name.trim() || firmName,
+          companyName: firmName,
+          phone: contactNumber,
           email: userId,
-          gstNumber,
-          deliveryLocation,
-          address,
+          gstNumber: gstin,
+          deliveryLocation: logisticsHub,
+          address: billingAddress,
           updatedAt: new Date().toISOString(),
         };
       } else {
-        const username = name || (userId ? userId.split('@')[0] : 'customer');
+        const username = name.trim() || (userId ? userId.split('@')[0] : 'customer');
         const newAccount: CustomerAccount = {
           id: `cust_${Date.now()}`,
           username,
-          customerName: name,
-          companyName,
+          customerName: name.trim() || firmName,
+          companyName: firmName,
           email: userId,
-          phone,
-          gstNumber,
-          deliveryLocation,
-          address,
+          phone: contactNumber,
+          gstNumber: gstin,
+          deliveryLocation: logisticsHub,
+          address: billingAddress,
           accountStatus: status === 'Active' ? 'Active' : 'Suspended',
           pricingType: 'gst',
           creditEnabled: true,
@@ -192,69 +254,184 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     // Dispatch custom event so OrderDetailsPage and other listeners update immediately
     window.dispatchEvent(new Event('magadh_profile_updated'));
 
-    // Invoke AWS API Gateway endpoint
-    let apiStatus: 'synced' | 'local_only' = 'local_only';
-    let apiFeedback = '';
+    // 5. Invoke API endpoint: YOUR_API_URL_HERE
+    let requestSucceeded = false;
+    let failureReason = '';
+    const targetUrl = customEndpoint.trim() || YOUR_API_URL_HERE;
+
+    console.group('%c[Commit Updates] API Invocation', 'color: #0284c7; font-weight: bold; font-size: 13px;');
+    console.log('%cTarget Endpoint:%c ' + targetUrl, 'color: #0284c7; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
+    console.log('%cHTTP Method:%c POST', 'color: #10b981; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
+    if (apiKey.trim()) {
+      console.log('%cx-api-key Provided:%c Yes', 'color: #0284c7; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
+    }
+    console.log('%cJSON Body:%c', 'color: #6366f1; font-weight: bold;', '', payload);
 
     try {
       let response: Response | null = null;
+      let rawData: any = null;
+
+      const requestHeaders: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      if (apiKey.trim()) {
+        requestHeaders['x-api-key'] = apiKey.trim();
+      }
+
       try {
+        console.log('%c[1/2] Attempting direct fetch to API endpoint...', 'color: #0284c7;');
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2000);
-        response = await fetch(AWS_PROFILE_INVOKE_URL, {
+        const timeoutId = setTimeout(() => controller.abort(), 3500);
+
+        response = await fetch(targetUrl, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: JSON.stringify(profileToSave),
+          headers: requestHeaders,
+          body: JSON.stringify(payload),
           signal: controller.signal,
         });
         clearTimeout(timeoutId);
-      } catch (browserFetchErr) {
-        // Fallback to server-side proxy in case of browser CORS restriction or timeout
-        console.warn('Direct browser fetch failed or CORS-restricted, falling back to server-side proxy:', browserFetchErr);
-        response = await fetch('/api/profile/sync-aws', {
+
+        console.log(`%c[Direct Fetch Result]: HTTP ${response.status} ${response.statusText}`, response.ok ? 'color: #10b981; font-weight: bold;' : 'color: #ea580c; font-weight: bold;');
+        try {
+          rawData = await response.json();
+          console.log('[Direct Fetch Response Data]:', rawData);
+        } catch {
+          rawData = null;
+        }
+
+        if (response.ok) {
+          requestSucceeded = true;
+        } else {
+          failureReason = rawData?.message || rawData?.error || `HTTP ${response.status} ${response.statusText || ''}`.trim();
+        }
+      } catch (browserFetchErr: any) {
+        // Fallback to server-side proxy in case of browser CORS restriction or network block
+        console.warn('%c[Direct Fetch Blocked / Error]:%c ' + (browserFetchErr?.message || 'CORS / Preflight failure'), 'color: #ea580c; font-weight: bold;', 'color: #475569;');
+        console.log('%c[2/2] Invoking via server-side proxy (/api/profile/sync-aws)...', 'color: #0284c7; font-weight: bold;');
+
+        const proxyResponse = await fetch('/api/profile/sync-aws', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
           },
-          body: JSON.stringify(profileToSave),
+          body: JSON.stringify({
+            ...payload,
+            endpoint: targetUrl,
+            apiKey: apiKey.trim() || undefined,
+          }),
         });
+
+        response = proxyResponse;
+        try {
+          const proxyJson = await proxyResponse.json();
+          rawData = proxyJson?.data || proxyJson;
+          console.log(`%c[Server Proxy Result]: AWS HTTP ${proxyJson?.awsStatus || proxyResponse.status}`, proxyJson?.success ? 'color: #10b981; font-weight: bold;' : 'color: #ef4444; font-weight: bold;', rawData);
+          if (proxyJson && proxyJson.success) {
+            requestSucceeded = true;
+          } else {
+            failureReason = rawData?.message || proxyJson?.message || `HTTP ${proxyJson?.awsStatus || proxyResponse.status}`;
+          }
+        } catch {
+          rawData = null;
+          if (proxyResponse.ok) {
+            requestSucceeded = true;
+          } else {
+            failureReason = `HTTP ${proxyResponse.status}`;
+          }
+        }
       }
 
-      if (response && response.ok) {
-        apiStatus = 'synced';
-        try {
-          const resJson = await response.json();
-          apiFeedback = resJson?.message || 'Cloud synchronized';
-        } catch {
-          apiFeedback = 'Cloud synchronized';
-        }
-      } else if (response) {
-        apiStatus = 'local_only';
-        apiFeedback = `Cloud status ${response.status}`;
-        console.warn(`AWS API invoke returned HTTP ${response.status}:`, response.statusText);
-      }
+      const effectiveStatus = response ? response.status : null;
+      setLastAwsResponse({
+        status: effectiveStatus,
+        success: requestSucceeded,
+        data: rawData,
+        targetUrl,
+        timestamp: new Date().toLocaleTimeString(),
+      });
     } catch (err: any) {
-      apiStatus = 'local_only';
-      apiFeedback = err?.message || 'Network unreachable';
-      console.warn('AWS API invoke exception (local profile saved successfully):', err);
+      requestSucceeded = false;
+      failureReason = err?.message || 'Network unreachable';
+      setLastAwsResponse({
+        status: null,
+        success: false,
+        data: { message: failureReason },
+        targetUrl,
+        timestamp: new Date().toLocaleTimeString(),
+      });
+      console.error('[Commit Updates Error]:', err);
     } finally {
       setIsSubmitting(false);
+      console.groupEnd();
     }
 
-    setIsSaved(true);
-    setIsEditMode(false);
-
-    if (apiStatus === 'synced') {
-      showToast(`Profile details committed and synced to cloud API!`);
+    // 6. User feedback on success or failure
+    if (requestSucceeded) {
+      setIsSaved(true);
+      showToast('Enterprise details and billing profile committed successfully!');
+      setTimeout(() => setIsSaved(false), 3500);
     } else {
-      showToast(`Profile committed locally! (${apiFeedback})`);
+      showToast(`Failed to commit updates: ${failureReason || 'Endpoint unreachable'}`);
     }
+  };
 
-    setTimeout(() => setIsSaved(false), 3500);
+  // Test AWS API Gateway endpoint immediately
+  const handleTestEndpoint = async () => {
+    setIsTestingEndpoint(true);
+    const targetUrl = customEndpoint.trim() || AWS_PROFILE_INVOKE_URL;
+    console.log('[AWS Test Probe] Testing endpoint:', targetUrl);
+
+    try {
+      const proxyResponse = await fetch('/api/profile/sync-aws', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          customerName: name || 'Test Customer',
+          name: name || 'Test User',
+          companyName: companyName || 'Magadh Tyres Test',
+          phone: phone || '+91 9876543210',
+          email: userId || 'test@magadhtyres.com',
+          userId: userId || 'test@magadhtyres.com',
+          gstNumber: gstNumber || '08AABCT1332L1Z4',
+          endpoint: targetUrl,
+          apiKey: apiKey.trim() || undefined,
+        }),
+      });
+
+      const json = await proxyResponse.json();
+      const status = json?.awsStatus || proxyResponse.status;
+      const success = !!json?.success;
+
+      setLastAwsResponse({
+        status,
+        success,
+        data: json?.data || json,
+        targetUrl,
+        timestamp: new Date().toLocaleTimeString(),
+      });
+
+      if (success) {
+        showToast(`AWS Connection Success! (HTTP ${status})`);
+      } else {
+        showToast(`AWS returned HTTP ${status}: ${json?.data?.message || 'Check config'}`);
+      }
+    } catch (err: any) {
+      setLastAwsResponse({
+        status: 502,
+        success: false,
+        data: { message: err?.message || 'Failed to reach backend proxy' },
+        targetUrl,
+        timestamp: new Date().toLocaleTimeString(),
+      });
+      showToast(`Connection test failed: ${err?.message}`);
+    } finally {
+      setIsTestingEndpoint(false);
+    }
   };
 
   // Toggle status
@@ -397,22 +574,19 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             {/* Save Icon */}
             <button
               type="button"
-              onClick={(e) => {
-                triggerRipple(e);
-                handleSave();
-              }}
+              onClick={handleSave}
               disabled={isSubmitting}
               title={isSaved ? 'Profile Committed & Synced!' : 'Save & Commit Profile'}
-              className={`p-1.5 rounded-xl transition-all duration-200 cursor-pointer active:scale-90 active:translate-y-0.5 relative overflow-hidden ${
+              className={`p-1.5 rounded-xl cursor-pointer ${
                 isSaved
-                  ? 'text-emerald-700 bg-emerald-100 ring-2 ring-emerald-400 shadow-sm'
+                  ? 'text-emerald-700 bg-emerald-100 ring-1 ring-emerald-400'
                   : 'text-slate-700 hover:text-[#54b4e7] hover:bg-slate-100'
               }`}
             >
               {isSubmitting ? (
-                <Loader2 className="w-6 h-6 stroke-[2] animate-spin text-[#54b4e7]" />
+                <Loader2 className="w-6 h-6 stroke-[2] text-[#54b4e7]" />
               ) : isSaved ? (
-                <CheckCircle2 className="w-6 h-6 stroke-[2.2] text-emerald-600 animate-in zoom-in-75 duration-200" />
+                <CheckCircle2 className="w-6 h-6 stroke-[2.2] text-emerald-600" />
               ) : (
                 <Save className="w-6 h-6 stroke-[1.8]" />
               )}
@@ -590,6 +764,157 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
             </div>
 
+            {/* AWS Cloud Gateway Configuration & Diagnostics Card */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex items-center space-x-2">
+                  <Cloud className="w-4 h-4 text-sky-600" />
+                  <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                    AWS API Gateway Integration & Live Diagnostics
+                  </span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowAwsConfig(!showAwsConfig)}
+                    className="text-[11px] font-semibold text-sky-600 hover:text-sky-700 flex items-center space-x-1 cursor-pointer"
+                  >
+                    <Sliders className="w-3.5 h-3.5" />
+                    <span>{showAwsConfig ? 'Hide Settings' : 'Configure Endpoint / API Key'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Endpoint details & test probe */}
+              <div className="space-y-3">
+                {showAwsConfig ? (
+                  <div className="space-y-3 pt-2 border-t border-slate-200">
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-600 uppercase flex items-center space-x-1.5 mb-1">
+                        <Globe className="w-3.5 h-3.5 text-slate-500" />
+                        <span>AWS API Gateway Invoke URL</span>
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={customEndpoint}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setCustomEndpoint(val);
+                            localStorage.setItem('aws_profile_endpoint', val);
+                          }}
+                          placeholder="https://...execute-api.us-east-1.amazonaws.com/Prod"
+                          className="flex-1 px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-mono text-slate-800 focus:outline-none focus:border-[#54b4e7]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCustomEndpoint(AWS_PROFILE_INVOKE_URL);
+                            localStorage.removeItem('aws_profile_endpoint');
+                          }}
+                          className="px-2.5 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-semibold rounded-lg cursor-pointer"
+                        >
+                          Reset
+                        </button>
+                      </div>
+                      <p className="text-[10px] text-slate-500 mt-1">
+                        If your API Gateway resource path is not root (e.g., <code>/Prod/company</code> or <code>/Prod/profile</code>), append it here.
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-600 uppercase flex items-center space-x-1.5 mb-1">
+                        <Key className="w-3.5 h-3.5 text-slate-500" />
+                        <span>x-api-key Header (Optional)</span>
+                      </label>
+                      <input
+                        type="password"
+                        value={apiKey}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setApiKey(val);
+                          if (val) {
+                            localStorage.setItem('aws_profile_api_key', val);
+                          } else {
+                            localStorage.removeItem('aws_profile_api_key');
+                          }
+                        }}
+                        placeholder="Leave blank unless API Key Required = true in API Gateway"
+                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-mono text-slate-800 focus:outline-none focus:border-[#54b4e7]"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between text-xs bg-white px-3 py-2 rounded-xl border border-slate-200 font-mono text-slate-600 overflow-hidden">
+                    <span className="truncate" title={customEndpoint}>{customEndpoint}</span>
+                    <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-sans font-bold shrink-0 ml-2">Active</span>
+                  </div>
+                )}
+
+                {/* Quick Test Probe Button */}
+                <div className="flex items-center justify-between pt-1">
+                  <button
+                    type="button"
+                    onClick={handleTestEndpoint}
+                    disabled={isTestingEndpoint || isSubmitting}
+                    className="px-3.5 py-1.5 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 text-xs font-semibold flex items-center space-x-1.5 transition-all cursor-pointer shadow-2xs"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 text-sky-600 ${isTestingEndpoint ? 'animate-spin' : ''}`} />
+                    <span>{isTestingEndpoint ? 'Testing Endpoint...' : 'Test AWS Endpoint Now'}</span>
+                  </button>
+
+                  {lastAwsResponse && (
+                    <span className="text-[11px] text-slate-500">
+                      Last response: {lastAwsResponse.timestamp}
+                    </span>
+                  )}
+                </div>
+
+                {/* Live Diagnostic Output Card */}
+                {lastAwsResponse && (
+                  <div className={`p-3.5 rounded-xl border text-xs space-y-2 ${
+                    lastAwsResponse.success
+                      ? 'bg-emerald-50/70 border-emerald-300 text-emerald-950'
+                      : 'bg-amber-50/70 border-amber-300 text-amber-950'
+                  }`}>
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold flex items-center space-x-1.5">
+                        {lastAwsResponse.success ? (
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                        ) : (
+                          <AlertCircle className="w-4 h-4 text-amber-600" />
+                        )}
+                        <span>
+                          {lastAwsResponse.success ? 'AWS Endpoint Responded 200 OK' : `AWS Response: HTTP ${lastAwsResponse.status || 'Error'}`}
+                        </span>
+                      </span>
+                      <span className="font-mono text-[10px] bg-white/80 px-2 py-0.5 rounded border border-slate-200">
+                        HTTP {lastAwsResponse.status}
+                      </span>
+                    </div>
+
+                    <div className="bg-white/90 p-2.5 rounded-lg font-mono text-[11px] border border-slate-200 overflow-x-auto text-slate-800">
+                      {typeof lastAwsResponse.data === 'object'
+                        ? JSON.stringify(lastAwsResponse.data, null, 2)
+                        : String(lastAwsResponse.data || 'No response body')}
+                    </div>
+
+                    {!lastAwsResponse.success && lastAwsResponse.status === 403 && (
+                      <div className="text-[11px] text-slate-700 bg-white/80 p-2.5 rounded-lg border border-amber-200 space-y-1 leading-relaxed">
+                        <p className="font-bold text-amber-900">Why does AWS return &quot;Missing Authentication Token&quot;?</p>
+                        <p>In AWS API Gateway, this response occurs when the gateway rejects the request before it reaches Lambda:</p>
+                        <ol className="list-decimal list-inside space-y-0.5 pl-1 text-[10.5px]">
+                          <li><strong>Resource path mismatch</strong>: If your Lambda is configured under a specific path (e.g. <code className="bg-slate-100 px-1 py-0.5 rounded">/company</code> or <code className="bg-slate-100 px-1 py-0.5 rounded">/profile</code>), click <strong>Configure Endpoint</strong> above and append it.</li>
+                          <li><strong>API not deployed to Prod stage</strong>: In AWS API Gateway Console &rarr; Actions &rarr; <strong>Deploy API</strong> &rarr; Select Stage <strong>Prod</strong>.</li>
+                          <li><strong>API Key Required</strong>: If Method Request has API Key enabled, enter your <code className="bg-slate-100 px-1 py-0.5 rounded">x-api-key</code> in the configuration above.</li>
+                        </ol>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Bottom Controls inside Accordion */}
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-slate-200">
               <button
@@ -608,46 +933,29 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 </div>
                 <button
                   type="button"
-                  onClick={(e) => {
-                    triggerRipple(e);
-                    handleSave();
-                  }}
+                  onClick={handleSave}
                   disabled={isSubmitting}
-                  className={`relative overflow-hidden w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-bold shadow-sm flex items-center justify-center space-x-2 select-none cursor-pointer transition-all duration-200 active:scale-95 active:shadow-inner active:brightness-95 ${
+                  className={`w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-bold shadow-sm flex items-center justify-center space-x-2 select-none cursor-pointer ${
                     isSaved
-                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white ring-2 ring-emerald-300 shadow-md scale-[1.02]'
+                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                       : isSubmitting
-                      ? 'bg-sky-600 text-white opacity-90 cursor-wait'
-                      : 'bg-[#54b4e7] hover:bg-[#3ea5dc] hover:shadow-md text-white'
+                      ? 'bg-sky-600 text-white opacity-80 cursor-wait'
+                      : 'bg-[#54b4e7] hover:bg-[#3ea5dc] text-white'
                   }`}
                 >
-                  {/* Dynamic Click Ripple */}
-                  {ripple && (
-                    <span
-                      key={ripple.id}
-                      className="absolute bg-white/40 rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2 animate-ping"
-                      style={{
-                        left: ripple.x,
-                        top: ripple.y,
-                        width: 120,
-                        height: 120,
-                      }}
-                    />
-                  )}
-
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      <Loader2 className="w-4 h-4 text-white" />
                       <span className="tracking-wide">Committing Updates...</span>
                     </>
                   ) : isSaved ? (
                     <>
-                      <CheckCircle2 className="w-4 h-4 text-white animate-bounce" />
-                      <span className="tracking-wide font-black">Updates Committed!</span>
+                      <CheckCircle2 className="w-4 h-4 text-white" />
+                      <span className="tracking-wide">Updates Committed</span>
                     </>
                   ) : (
                     <>
-                      <Save className="w-4 h-4 transition-transform group-hover:scale-110" />
+                      <Save className="w-4 h-4" />
                       <span className="tracking-wide">Commit Updates</span>
                     </>
                   )}
