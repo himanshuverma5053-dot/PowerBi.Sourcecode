@@ -16,11 +16,8 @@ import {
   Edit3,
   Loader2,
   Cloud,
-  AlertCircle,
-  Key,
-  Globe,
-  RefreshCw,
-  Sliders
+  User,
+  Mail
 } from 'lucide-react';
 
 export const YOUR_API_URL_HERE = 'https://wsl820vpr8.execute-api.us-east-1.amazonaws.com/DataAPI';
@@ -58,6 +55,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   // Extended profile details - blank unless written by user
   const [companyName, setCompanyName] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
+  const [email, setEmail] = useState<string>(currentUserEmail || '');
   const [gstNumber, setGstNumber] = useState<string>('');
   const [deliveryLocation, setDeliveryLocation] = useState<string>('');
   const [address, setAddress] = useState<string>('');
@@ -68,22 +66,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // AWS Configuration and Diagnostics
-  const [customEndpoint, setCustomEndpoint] = useState<string>(() => {
-    return localStorage.getItem('aws_profile_endpoint') || AWS_PROFILE_INVOKE_URL;
-  });
-  const [apiKey, setApiKey] = useState<string>(() => {
-    return localStorage.getItem('aws_profile_api_key') || '';
-  });
-  const [showAwsConfig, setShowAwsConfig] = useState<boolean>(false);
-  const [lastAwsResponse, setLastAwsResponse] = useState<{
-    status: number | null;
-    success: boolean;
-    data: any;
-    targetUrl: string;
-    timestamp: string;
-  } | null>(null);
-  const [isTestingEndpoint, setIsTestingEndpoint] = useState<boolean>(false);
+
 
   // Load profile from local storage if previously written/saved
   useEffect(() => {
@@ -102,8 +85,14 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         }
         if (parsed.email || parsed.userId) {
           setUserId(parsed.email || parsed.userId);
+          setEmail(parsed.email || parsed.userId);
         } else if (currentUserEmail) {
           setUserId(currentUserEmail);
+          setEmail(currentUserEmail);
+        }
+        if (parsed.emailAddress) {
+          setEmail(parsed.emailAddress);
+          setUserId(parsed.emailAddress);
         }
         setCompanyName(parsed.companyName || '');
         setPhone(parsed.phone || '');
@@ -121,6 +110,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
     if (currentUserEmail) {
       setUserId(currentUserEmail);
+      setEmail(currentUserEmail);
     }
     if (currentUser) {
       setName(currentUser.toUpperCase());
@@ -132,18 +122,19 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     // 1. Collect values from required input fields
     const firmName = companyName.trim();
     const contactNumber = phone.trim();
+    const emailAddress = (email || userId).trim();
     const gstin = gstNumber.trim();
     const logisticsHub = deliveryLocation.trim();
     const billingAddress = address.trim();
 
     // 2. Validation: none of the fields should be empty
     if (!firmName) {
-      showToast('Please enter the Registered Firm / Trading Name.');
+      showToast('Please enter your User Name.');
       return;
     }
 
     if (!contactNumber) {
-      showToast('Please enter the Verified Contact Number.');
+      showToast('Please enter your Contact Number.');
       return;
     }
 
@@ -155,18 +146,24 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       return;
     }
 
-    if (!gstin) {
-      showToast('Please enter the GSTIN Identification.');
+    if (!emailAddress) {
+      showToast('Please enter your Email Address.');
       return;
     }
 
-    if (!logisticsHub) {
-      showToast('Please enter the Primary Logistics / Depot Hub.');
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailAddress);
+    if (!isValidEmail) {
+      showToast('Please enter a valid email address.');
+      return;
+    }
+
+    if (!gstin) {
+      showToast('Please enter your GSTIN.');
       return;
     }
 
     if (!billingAddress) {
-      showToast('Please enter the Registered Billing & Consignment Address.');
+      showToast('Please enter your Workshop Address.');
       return;
     }
 
@@ -175,21 +172,22 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
     // 4. Construct JSON payload with clear key names matching each field
     const payload = {
+      userName: firmName,
       firmName,
       contactNumber,
+      emailAddress,
+      email: emailAddress,
       gstin,
-      logisticsHub,
+      workshopAddress: billingAddress,
       billingAddress,
       // Complementary aliases for state & storage sync
       companyName: firmName,
       phone: contactNumber,
       gstNumber: gstin,
-      deliveryLocation: logisticsHub,
       address: billingAddress,
       customerName: name.trim() || firmName,
       name: name.trim() || firmName,
-      email: userId.trim(),
-      userId: userId.trim(),
+      userId: emailAddress,
       role,
       status,
       updatedAt: new Date().toISOString(),
@@ -257,14 +255,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     // 5. Invoke API endpoint: YOUR_API_URL_HERE
     let requestSucceeded = false;
     let failureReason = '';
-    const targetUrl = customEndpoint.trim() || YOUR_API_URL_HERE;
+    const targetUrl = YOUR_API_URL_HERE;
 
     console.group('%c[Commit Updates] API Invocation', 'color: #0284c7; font-weight: bold; font-size: 13px;');
     console.log('%cTarget Endpoint:%c ' + targetUrl, 'color: #0284c7; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
     console.log('%cHTTP Method:%c POST', 'color: #10b981; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
-    if (apiKey.trim()) {
-      console.log('%cx-api-key Provided:%c Yes', 'color: #0284c7; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
-    }
     console.log('%cJSON Body:%c', 'color: #6366f1; font-weight: bold;', '', payload);
 
     try {
@@ -275,9 +270,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       };
-      if (apiKey.trim()) {
-        requestHeaders['x-api-key'] = apiKey.trim();
-      }
 
       try {
         console.log('%c[1/2] Attempting direct fetch to API endpoint...', 'color: #0284c7;');
@@ -319,7 +311,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           body: JSON.stringify({
             ...payload,
             endpoint: targetUrl,
-            apiKey: apiKey.trim() || undefined,
           }),
         });
 
@@ -342,25 +333,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           }
         }
       }
-
-      const effectiveStatus = response ? response.status : null;
-      setLastAwsResponse({
-        status: effectiveStatus,
-        success: requestSucceeded,
-        data: rawData,
-        targetUrl,
-        timestamp: new Date().toLocaleTimeString(),
-      });
     } catch (err: any) {
       requestSucceeded = false;
       failureReason = err?.message || 'Network unreachable';
-      setLastAwsResponse({
-        status: null,
-        success: false,
-        data: { message: failureReason },
-        targetUrl,
-        timestamp: new Date().toLocaleTimeString(),
-      });
       console.error('[Commit Updates Error]:', err);
     } finally {
       setIsSubmitting(false);
@@ -377,62 +352,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     }
   };
 
-  // Test AWS API Gateway endpoint immediately
-  const handleTestEndpoint = async () => {
-    setIsTestingEndpoint(true);
-    const targetUrl = customEndpoint.trim() || AWS_PROFILE_INVOKE_URL;
-    console.log('[AWS Test Probe] Testing endpoint:', targetUrl);
 
-    try {
-      const proxyResponse = await fetch('/api/profile/sync-aws', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          customerName: name || 'Test Customer',
-          name: name || 'Test User',
-          companyName: companyName || 'Magadh Tyres Test',
-          phone: phone || '+91 9876543210',
-          email: userId || 'test@magadhtyres.com',
-          userId: userId || 'test@magadhtyres.com',
-          gstNumber: gstNumber || '08AABCT1332L1Z4',
-          endpoint: targetUrl,
-          apiKey: apiKey.trim() || undefined,
-        }),
-      });
-
-      const json = await proxyResponse.json();
-      const status = json?.awsStatus || proxyResponse.status;
-      const success = !!json?.success;
-
-      setLastAwsResponse({
-        status,
-        success,
-        data: json?.data || json,
-        targetUrl,
-        timestamp: new Date().toLocaleTimeString(),
-      });
-
-      if (success) {
-        showToast(`AWS Connection Success! (HTTP ${status})`);
-      } else {
-        showToast(`AWS returned HTTP ${status}: ${json?.data?.message || 'Check config'}`);
-      }
-    } catch (err: any) {
-      setLastAwsResponse({
-        status: 502,
-        success: false,
-        data: { message: err?.message || 'Failed to reach backend proxy' },
-        targetUrl,
-        timestamp: new Date().toLocaleTimeString(),
-      });
-      showToast(`Connection test failed: ${err?.message}`);
-    } finally {
-      setIsTestingEndpoint(false);
-    }
-  };
 
   // Toggle status
   const handleToggleStatus = () => {
@@ -445,6 +365,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const handleResetProfile = () => {
     setName('');
     setUserId('');
+    setEmail('');
     setCompanyName('');
     setPhone('');
     setGstNumber('');
@@ -464,8 +385,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       {/* Page Title */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-normal text-slate-700 leading-snug tracking-tight">
-            Company Details
+          <h1 id="user-access-management-heading" className="text-2xl sm:text-3xl lg:text-4xl font-normal font-poppins text-[#5f6368] leading-tight tracking-tight">
+            User Access<br />Management
           </h1>
         </div>
 
@@ -624,22 +545,19 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         {isExpanded && (
           <div className="bg-slate-50/70 border-t border-slate-200 px-6 sm:px-8 py-6 sm:py-8 space-y-6 animate-fade-in">
             
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-3 border-b border-slate-200">
-              <div>
-                <h3 className="text-sm sm:text-base font-bold text-slate-900 flex items-center space-x-2">
-                  <Building2 className="w-4 h-4 text-slate-700" />
-                  <span>Enterprise Profile & Commercial Billing Details</span>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3.5 py-3 sm:py-4 border-b border-slate-200">
+              <div className="py-0.5">
+                <h3 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900 flex items-center space-x-2.5 tracking-tight">
+                  <Building2 className="w-5 h-5 text-slate-700" />
+                  <span>Billing Details</span>
                 </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Configure primary GST credentials, shipping destination hub, and contact verification.
-                </p>
               </div>
 
               <div className="flex items-center space-x-2">
                 <button
                   type="button"
                   onClick={() => setIsEditMode(!isEditMode)}
-                  className="px-3.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-semibold shadow-2xs flex items-center space-x-1.5 transition-all cursor-pointer"
+                  className="px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-semibold shadow-2xs flex items-center space-x-1.5 transition-all cursor-pointer"
                 >
                   <Edit3 className="w-3.5 h-3.5 text-slate-500" />
                   <span>{isEditMode ? 'Exit Edit Mode' : 'Edit Full Profile'}</span>
@@ -650,11 +568,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             {/* Detailed Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               
-              {/* Company / Firm Name */}
+              {/* User Name */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
-                  <Building2 className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Registered Firm / Trading Name</span>
+                  <User className="w-3.5 h-3.5 text-slate-500" />
+                  <span>User Name</span>
                 </label>
                 {isEditMode ? (
                   <input
@@ -671,11 +589,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 )}
               </div>
 
-              {/* Phone */}
+              {/* Contact Number */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
                   <Phone className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Verified Contact Number</span>
+                  <span>Contact Number</span>
                 </label>
                 {isEditMode ? (
                   <input
@@ -692,12 +610,36 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 )}
               </div>
 
-              {/* GST Number */}
+              {/* Email Address */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
+                  <Mail className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Email Address</span>
+                </label>
+                {isEditMode ? (
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setUserId(e.target.value);
+                    }}
+                    className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 lowercase focus:outline-none focus:border-[#54b4e7]"
+                    placeholder=""
+                  />
+                ) : (
+                  <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 lowercase min-h-[42px] flex items-center break-all">
+                    {email || userId || ''}
+                  </div>
+                )}
+              </div>
+
+              {/* GSTIN */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
                   <span className="flex items-center space-x-1.5">
                     <FileText className="w-3.5 h-3.5 text-slate-500" />
-                    <span>GSTIN Identification</span>
+                    <span>GSTIN</span>
                   </span>
                   {gstNumber?.trim() ? (
                     <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
@@ -720,32 +662,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 )}
               </div>
 
-              {/* Delivery Hub */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Primary Logistics / Depot Hub</span>
-                </label>
-                {isEditMode ? (
-                  <input
-                    type="text"
-                    value={deliveryLocation}
-                    onChange={(e) => setDeliveryLocation(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#54b4e7]"
-                    placeholder=""
-                  />
-                ) : (
-                  <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 min-h-[42px] flex items-center">
-                    {deliveryLocation || ''}
-                  </div>
-                )}
-              </div>
-
-              {/* Full Address */}
+              {/* Workshop Address */}
               <div className="space-y-1.5 md:col-span-2">
                 <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
                   <Home className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Registered Billing & Consignment Address</span>
+                  <span>Workshop Address</span>
                 </label>
                 {isEditMode ? (
                   <textarea
@@ -762,157 +683,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 )}
               </div>
 
-            </div>
-
-            {/* AWS Cloud Gateway Configuration & Diagnostics Card */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="flex items-center space-x-2">
-                  <Cloud className="w-4 h-4 text-sky-600" />
-                  <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                    AWS API Gateway Integration & Live Diagnostics
-                  </span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowAwsConfig(!showAwsConfig)}
-                    className="text-[11px] font-semibold text-sky-600 hover:text-sky-700 flex items-center space-x-1 cursor-pointer"
-                  >
-                    <Sliders className="w-3.5 h-3.5" />
-                    <span>{showAwsConfig ? 'Hide Settings' : 'Configure Endpoint / API Key'}</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Endpoint details & test probe */}
-              <div className="space-y-3">
-                {showAwsConfig ? (
-                  <div className="space-y-3 pt-2 border-t border-slate-200">
-                    <div>
-                      <label className="text-[11px] font-bold text-slate-600 uppercase flex items-center space-x-1.5 mb-1">
-                        <Globe className="w-3.5 h-3.5 text-slate-500" />
-                        <span>AWS API Gateway Invoke URL</span>
-                      </label>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={customEndpoint}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setCustomEndpoint(val);
-                            localStorage.setItem('aws_profile_endpoint', val);
-                          }}
-                          placeholder="https://...execute-api.us-east-1.amazonaws.com/Prod"
-                          className="flex-1 px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-mono text-slate-800 focus:outline-none focus:border-[#54b4e7]"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setCustomEndpoint(AWS_PROFILE_INVOKE_URL);
-                            localStorage.removeItem('aws_profile_endpoint');
-                          }}
-                          className="px-2.5 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-semibold rounded-lg cursor-pointer"
-                        >
-                          Reset
-                        </button>
-                      </div>
-                      <p className="text-[10px] text-slate-500 mt-1">
-                        If your API Gateway resource path is not root (e.g., <code>/Prod/company</code> or <code>/Prod/profile</code>), append it here.
-                      </p>
-                    </div>
-
-                    <div>
-                      <label className="text-[11px] font-bold text-slate-600 uppercase flex items-center space-x-1.5 mb-1">
-                        <Key className="w-3.5 h-3.5 text-slate-500" />
-                        <span>x-api-key Header (Optional)</span>
-                      </label>
-                      <input
-                        type="password"
-                        value={apiKey}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setApiKey(val);
-                          if (val) {
-                            localStorage.setItem('aws_profile_api_key', val);
-                          } else {
-                            localStorage.removeItem('aws_profile_api_key');
-                          }
-                        }}
-                        placeholder="Leave blank unless API Key Required = true in API Gateway"
-                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-mono text-slate-800 focus:outline-none focus:border-[#54b4e7]"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between text-xs bg-white px-3 py-2 rounded-xl border border-slate-200 font-mono text-slate-600 overflow-hidden">
-                    <span className="truncate" title={customEndpoint}>{customEndpoint}</span>
-                    <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-sans font-bold shrink-0 ml-2">Active</span>
-                  </div>
-                )}
-
-                {/* Quick Test Probe Button */}
-                <div className="flex items-center justify-between pt-1">
-                  <button
-                    type="button"
-                    onClick={handleTestEndpoint}
-                    disabled={isTestingEndpoint || isSubmitting}
-                    className="px-3.5 py-1.5 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 text-xs font-semibold flex items-center space-x-1.5 transition-all cursor-pointer shadow-2xs"
-                  >
-                    <RefreshCw className={`w-3.5 h-3.5 text-sky-600 ${isTestingEndpoint ? 'animate-spin' : ''}`} />
-                    <span>{isTestingEndpoint ? 'Testing Endpoint...' : 'Test AWS Endpoint Now'}</span>
-                  </button>
-
-                  {lastAwsResponse && (
-                    <span className="text-[11px] text-slate-500">
-                      Last response: {lastAwsResponse.timestamp}
-                    </span>
-                  )}
-                </div>
-
-                {/* Live Diagnostic Output Card */}
-                {lastAwsResponse && (
-                  <div className={`p-3.5 rounded-xl border text-xs space-y-2 ${
-                    lastAwsResponse.success
-                      ? 'bg-emerald-50/70 border-emerald-300 text-emerald-950'
-                      : 'bg-amber-50/70 border-amber-300 text-amber-950'
-                  }`}>
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold flex items-center space-x-1.5">
-                        {lastAwsResponse.success ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                        ) : (
-                          <AlertCircle className="w-4 h-4 text-amber-600" />
-                        )}
-                        <span>
-                          {lastAwsResponse.success ? 'AWS Endpoint Responded 200 OK' : `AWS Response: HTTP ${lastAwsResponse.status || 'Error'}`}
-                        </span>
-                      </span>
-                      <span className="font-mono text-[10px] bg-white/80 px-2 py-0.5 rounded border border-slate-200">
-                        HTTP {lastAwsResponse.status}
-                      </span>
-                    </div>
-
-                    <div className="bg-white/90 p-2.5 rounded-lg font-mono text-[11px] border border-slate-200 overflow-x-auto text-slate-800">
-                      {typeof lastAwsResponse.data === 'object'
-                        ? JSON.stringify(lastAwsResponse.data, null, 2)
-                        : String(lastAwsResponse.data || 'No response body')}
-                    </div>
-
-                    {!lastAwsResponse.success && lastAwsResponse.status === 403 && (
-                      <div className="text-[11px] text-slate-700 bg-white/80 p-2.5 rounded-lg border border-amber-200 space-y-1 leading-relaxed">
-                        <p className="font-bold text-amber-900">Why does AWS return &quot;Missing Authentication Token&quot;?</p>
-                        <p>In AWS API Gateway, this response occurs when the gateway rejects the request before it reaches Lambda:</p>
-                        <ol className="list-decimal list-inside space-y-0.5 pl-1 text-[10.5px]">
-                          <li><strong>Resource path mismatch</strong>: If your Lambda is configured under a specific path (e.g. <code className="bg-slate-100 px-1 py-0.5 rounded">/company</code> or <code className="bg-slate-100 px-1 py-0.5 rounded">/profile</code>), click <strong>Configure Endpoint</strong> above and append it.</li>
-                          <li><strong>API not deployed to Prod stage</strong>: In AWS API Gateway Console &rarr; Actions &rarr; <strong>Deploy API</strong> &rarr; Select Stage <strong>Prod</strong>.</li>
-                          <li><strong>API Key Required</strong>: If Method Request has API Key enabled, enter your <code className="bg-slate-100 px-1 py-0.5 rounded">x-api-key</code> in the configuration above.</li>
-                        </ol>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
             </div>
 
             {/* Bottom Controls inside Accordion */}
