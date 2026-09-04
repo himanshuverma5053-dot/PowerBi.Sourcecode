@@ -23,7 +23,7 @@ import {
   Sliders
 } from 'lucide-react';
 
-export const YOUR_API_URL_HERE = 'https://o5skhjqub2.execute-api.us-east-1.amazonaws.com/Prod';
+export const YOUR_API_URL_HERE = 'https://wsl820vpr8.execute-api.us-east-1.amazonaws.com/DataAPI';
 export const AWS_PROFILE_INVOKE_URL = YOUR_API_URL_HERE;
 
 interface ProfilePageProps {
