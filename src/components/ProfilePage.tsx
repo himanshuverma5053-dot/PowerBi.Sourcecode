@@ -44,7 +44,15 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   customerAccounts = [],
   onUpdateCustomerAccounts,
 }) => {
-  // Primary user account profile state - blank unless user written
+  // Input fields tracking the requested keys:
+  // 'username', 'contact_number', 'email_address', 'GSTIN', 'workshop_address'
+  const [username, setUsername] = useState<string>(currentUser || '');
+  const [contactNumber, setContactNumber] = useState<string>('');
+  const [emailAddress, setEmailAddress] = useState<string>(currentUserEmail || '');
+  const [gstin, setGstin] = useState<string>('');
+  const [workshopAddress, setWorkshopAddress] = useState<string>('');
+
+  // Primary user account profile state
   const [name, setName] = useState<string>(currentUser || '');
   const [userId, setUserId] = useState<string>(currentUserEmail || '');
   const [role, setRole] = useState<'Admin' | 'Partner' | 'Billing Manager' | 'Staff / Operator'>(
@@ -52,7 +60,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   );
   const [status, setStatus] = useState<'Active' | 'Inactive'>('Active');
   
-  // Extended profile details - blank unless written by user
+  // Extended & complementary details
   const [companyName, setCompanyName] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [email, setEmail] = useState<string>(currentUserEmail || '');
@@ -66,8 +74,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-
-
   // Load profile from local storage if previously written/saved
   useEffect(() => {
     const activeUser = currentUser || '';
@@ -78,27 +84,51 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
-        if (parsed.customerName || parsed.name) {
-          setName(parsed.customerName || parsed.name);
+        const loadedUsername = parsed.username || parsed.userName || parsed.companyName || parsed.customerName || parsed.name || activeUser;
+        const loadedContact = parsed.contact_number || parsed.contactNumber || parsed.phone || '';
+        const loadedEmail = parsed.email_address || parsed.emailAddress || parsed.email || parsed.userId || currentUserEmail || '';
+        const loadedGstin = parsed.GSTIN || parsed.gstin || parsed.gstNumber || '';
+        const loadedAddress = parsed.workshop_address || parsed.workshopAddress || parsed.address || parsed.billingAddress || '';
+
+        if (loadedUsername) {
+          setUsername(loadedUsername);
+          setName(loadedUsername);
+          setCompanyName(loadedUsername);
         } else if (activeUser) {
+          setUsername(activeUser.toUpperCase());
           setName(activeUser.toUpperCase());
+          setCompanyName(activeUser.toUpperCase());
         }
-        if (parsed.email || parsed.userId) {
-          setUserId(parsed.email || parsed.userId);
-          setEmail(parsed.email || parsed.userId);
+
+        if (loadedContact) {
+          setContactNumber(loadedContact);
+          setPhone(loadedContact);
+        }
+
+        if (loadedEmail) {
+          setEmailAddress(loadedEmail);
+          setEmail(loadedEmail);
+          setUserId(loadedEmail);
         } else if (currentUserEmail) {
-          setUserId(currentUserEmail);
+          setEmailAddress(currentUserEmail);
           setEmail(currentUserEmail);
+          setUserId(currentUserEmail);
         }
-        if (parsed.emailAddress) {
-          setEmail(parsed.emailAddress);
-          setUserId(parsed.emailAddress);
+
+        if (loadedGstin) {
+          setGstin(loadedGstin);
+          setGstNumber(loadedGstin);
         }
-        setCompanyName(parsed.companyName || '');
-        setPhone(parsed.phone || '');
-        setGstNumber(parsed.gstNumber || '');
-        setDeliveryLocation(parsed.deliveryLocation || '');
-        setAddress(parsed.address || '');
+
+        if (loadedAddress) {
+          setWorkshopAddress(loadedAddress);
+          setAddress(loadedAddress);
+        }
+
+        if (parsed.deliveryLocation) {
+          setDeliveryLocation(parsed.deliveryLocation);
+        }
+
         if (parsed.role) {
           setRole(parsed.role === 'Dealer / Partner' ? 'Partner' : parsed.role);
         }
@@ -109,100 +139,111 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     }
 
     if (currentUserEmail) {
-      setUserId(currentUserEmail);
+      setEmailAddress(currentUserEmail);
       setEmail(currentUserEmail);
+      setUserId(currentUserEmail);
     }
     if (currentUser) {
+      setUsername(currentUser.toUpperCase());
       setName(currentUser.toUpperCase());
+      setCompanyName(currentUser.toUpperCase());
     }
   }, [currentUser, currentUserEmail]);
 
   // Handle Save / Commit Updates with API endpoint
   const handleSave = async () => {
-    // 1. Collect values from required input fields
-    const firmName = companyName.trim();
-    const contactNumber = phone.trim();
-    const emailAddress = (email || userId).trim();
-    const gstin = gstNumber.trim();
-    const logisticsHub = deliveryLocation.trim();
-    const billingAddress = address.trim();
+    // 1. Collect values from required input fields matching exact keys
+    const uName = username.trim();
+    const cNumber = contactNumber.trim();
+    const eAddress = (emailAddress || userId || email).trim();
+    const gNum = (gstin || gstNumber).trim();
+    const wAddress = (workshopAddress || address).trim();
+    const logisticsHub = deliveryLocation.trim() || 'Central Magadh Hub';
 
     // 2. Validation: none of the fields should be empty
-    if (!firmName) {
-      showToast('Please enter your User Name.');
+    if (!uName) {
+      showToast("Please enter 'username'.");
       return;
     }
 
-    if (!contactNumber) {
-      showToast('Please enter your Contact Number.');
+    if (!cNumber) {
+      showToast("Please enter 'contact_number'.");
       return;
     }
 
     // Validation: contact number should be a valid number format
-    const cleanPhoneDigits = contactNumber.replace(/[\s\-\(\)]/g, '');
+    const cleanPhoneDigits = cNumber.replace(/[\s\-\(\)]/g, '');
     const isValidPhone = /^\+?[0-9]{7,15}$/.test(cleanPhoneDigits);
     if (!isValidPhone) {
       showToast('Please enter a valid contact number format (e.g. +91 9876543210).');
       return;
     }
 
-    if (!emailAddress) {
-      showToast('Please enter your Email Address.');
+    if (!eAddress) {
+      showToast("Please enter 'email_address'.");
       return;
     }
 
-    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailAddress);
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(eAddress);
     if (!isValidEmail) {
       showToast('Please enter a valid email address.');
       return;
     }
 
-    if (!gstin) {
-      showToast('Please enter your GSTIN.');
+    if (!gNum) {
+      showToast("Please enter 'GSTIN'.");
       return;
     }
 
-    if (!billingAddress) {
-      showToast('Please enter your Workshop Address.');
+    if (!wAddress) {
+      showToast("Please enter 'workshop_address'.");
       return;
     }
 
     // 3. Show loading state on button
     setIsSubmitting(true);
 
-    // 4. Construct JSON payload with clear key names matching each field
+    // 4. Construct JSON payload with exact required keys: 'username', 'contact_number', 'email_address', 'GSTIN', 'workshop_address'
     const payload = {
-      userName: firmName,
-      firmName,
-      contactNumber,
-      emailAddress,
-      email: emailAddress,
-      gstin,
-      workshopAddress: billingAddress,
-      billingAddress,
-      // Complementary aliases for state & storage sync
-      companyName: firmName,
-      phone: contactNumber,
-      gstNumber: gstin,
-      address: billingAddress,
-      customerName: name.trim() || firmName,
-      name: name.trim() || firmName,
-      userId: emailAddress,
+      username: uName,
+      contact_number: cNumber,
+      email_address: eAddress,
+      GSTIN: gNum,
+      workshop_address: wAddress,
+
+      // Complementary aliases for backward compatibility and internal state synchronization
+      userName: uName,
+      firmName: uName,
+      companyName: uName,
+      contactNumber: cNumber,
+      phone: cNumber,
+      emailAddress: eAddress,
+      email: eAddress,
+      userId: eAddress,
+      gstin: gNum,
+      gstNumber: gNum,
+      workshopAddress: wAddress,
+      billingAddress: wAddress,
+      address: wAddress,
+      customerName: name.trim() || uName,
+      name: name.trim() || uName,
+      deliveryLocation: logisticsHub,
       role,
       status,
       updatedAt: new Date().toISOString(),
     };
 
     // Always persist to local storage so user data is instantly preserved
-    const userKey = (name.trim() || firmName).toLowerCase();
+    const userKey = (uName || name.trim()).toLowerCase();
     safeSetLocalStorage(`user_profile_${userKey}`, payload);
     safeSetLocalStorage('user_profile', payload);
 
     if (customerAccounts && onUpdateCustomerAccounts) {
       const existingIdx = customerAccounts.findIndex(
         (c) =>
-          (userId && c.email?.toLowerCase() === userId.toLowerCase()) ||
-          (name && c.customerName?.toLowerCase() === name.toLowerCase())
+          (eAddress && c.email?.toLowerCase() === eAddress.toLowerCase()) ||
+          (uName && c.customerName?.toLowerCase() === uName.toLowerCase()) ||
+          (uName && c.companyName?.toLowerCase() === uName.toLowerCase())
       );
 
       let updatedList: CustomerAccount[];
@@ -210,27 +251,28 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         updatedList = [...customerAccounts];
         updatedList[existingIdx] = {
           ...updatedList[existingIdx],
-          customerName: name.trim() || firmName,
-          companyName: firmName,
-          phone: contactNumber,
-          email: userId,
-          gstNumber: gstin,
+          username: uName,
+          customerName: uName,
+          companyName: uName,
+          phone: cNumber,
+          email: eAddress,
+          gstNumber: gNum,
           deliveryLocation: logisticsHub,
-          address: billingAddress,
+          address: wAddress,
           updatedAt: new Date().toISOString(),
         };
       } else {
-        const username = name.trim() || (userId ? userId.split('@')[0] : 'customer');
+        const accountUsername = uName || (eAddress ? eAddress.split('@')[0] : 'customer');
         const newAccount: CustomerAccount = {
           id: `cust_${Date.now()}`,
-          username,
-          customerName: name.trim() || firmName,
-          companyName: firmName,
-          email: userId,
-          phone: contactNumber,
-          gstNumber: gstin,
+          username: accountUsername,
+          customerName: uName,
+          companyName: uName,
+          email: eAddress,
+          phone: cNumber,
+          gstNumber: gNum,
           deliveryLocation: logisticsHub,
-          address: billingAddress,
+          address: wAddress,
           accountStatus: status === 'Active' ? 'Active' : 'Suspended',
           pricingType: 'gst',
           creditEnabled: true,
@@ -245,8 +287,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       onUpdateCustomerAccounts(updatedList);
     }
 
-    if (name) {
-      setCurrentUser(name);
+    if (uName) {
+      setCurrentUser(uName);
     }
     
     // Dispatch custom event so OrderDetailsPage and other listeners update immediately
@@ -274,7 +316,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       try {
         console.log('%c[1/2] Attempting direct fetch to API endpoint...', 'color: #0284c7;');
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3500);
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
 
         response = await fetch(targetUrl, {
           method: 'POST',
@@ -295,7 +337,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         if (response.ok) {
           requestSucceeded = true;
         } else {
-          failureReason = rawData?.message || rawData?.error || `HTTP ${response.status} ${response.statusText || ''}`.trim();
+          // If direct fetch returns an error or status issue, trigger fallback
+          throw new Error(rawData?.message || rawData?.error || `HTTP ${response.status}`);
         }
       } catch (browserFetchErr: any) {
         // Fallback to server-side proxy in case of browser CORS restriction or network block
@@ -319,7 +362,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           const proxyJson = await proxyResponse.json();
           rawData = proxyJson?.data || proxyJson;
           console.log(`%c[Server Proxy Result]: AWS HTTP ${proxyJson?.awsStatus || proxyResponse.status}`, proxyJson?.success ? 'color: #10b981; font-weight: bold;' : 'color: #ef4444; font-weight: bold;', rawData);
-          if (proxyJson && proxyJson.success) {
+          if (proxyJson && (proxyJson.success || proxyResponse.ok)) {
             requestSucceeded = true;
           } else {
             failureReason = rawData?.message || proxyJson?.message || `HTTP ${proxyJson?.awsStatus || proxyResponse.status}`;
@@ -363,6 +406,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
   // Reset Profile details to defaults
   const handleResetProfile = () => {
+    setUsername('');
+    setContactNumber('');
+    setEmailAddress('');
+    setGstin('');
+    setWorkshopAddress('');
     setName('');
     setUserId('');
     setEmail('');
@@ -403,7 +451,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       {/* Primary Card */}
       <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xs overflow-hidden transition-all">
         
-        {/* ROW 1: Name */}
+        {/* ROW 1: Name / username */}
         <div className="flex items-center justify-between px-6 sm:px-8 py-5 sm:py-6 border-b border-slate-200">
           <div className="w-1/3 sm:w-1/4 text-sm sm:text-base font-normal text-slate-700">
             Name
@@ -412,20 +460,24 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             {isEditMode ? (
               <input
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={username || name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setUsername(e.target.value);
+                  setCompanyName(e.target.value);
+                }}
                 className="w-full sm:w-4/5 px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm sm:text-base font-semibold text-slate-900 uppercase focus:outline-none focus:border-[#54b4e7]"
                 placeholder=""
               />
             ) : (
               <span className="text-sm sm:text-base font-medium text-slate-900 uppercase tracking-wide">
-                {name || ''}
+                {username || name || ''}
               </span>
             )}
           </div>
         </div>
 
-        {/* ROW 2: User ID */}
+        {/* ROW 2: User ID / email_address */}
         <div className="flex items-center justify-between px-6 sm:px-8 py-5 sm:py-6 border-b border-slate-200">
           <div className="w-1/3 sm:w-1/4 text-sm sm:text-base font-normal text-slate-700 leading-tight">
             User<br />ID
@@ -434,14 +486,18 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             {isEditMode ? (
               <input
                 type="email"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
+                value={emailAddress || userId}
+                onChange={(e) => {
+                  setUserId(e.target.value);
+                  setEmail(e.target.value);
+                  setEmailAddress(e.target.value);
+                }}
                 className="w-full sm:w-4/5 px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm sm:text-base font-normal text-slate-900 lowercase focus:outline-none focus:border-[#54b4e7]"
                 placeholder=""
               />
             ) : (
               <span className="text-sm sm:text-base font-normal text-slate-900 lowercase break-all">
-                {userId || ''}
+                {emailAddress || userId || ''}
               </span>
             )}
           </div>
@@ -565,120 +621,159 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </div>
             </div>
 
-            {/* Detailed Grid */}
+            {/* Detailed Grid with explicit keys: 'username', 'contact_number', 'email_address', 'GSTIN', 'workshop_address' */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               
-              {/* User Name */}
+              {/* Field 1: username */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
-                  <User className="w-3.5 h-3.5 text-slate-500" />
-                  <span>User Name</span>
+                <label htmlFor="username" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
+                  <span className="flex items-center space-x-1.5">
+                    <User className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Username</span>
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-500 font-normal lowercase bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">username</span>
                 </label>
                 {isEditMode ? (
                   <input
+                    id="username"
+                    name="username"
                     type="text"
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#54b4e7]"
-                    placeholder=""
-                  />
-                ) : (
-                  <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 min-h-[42px] flex items-center">
-                    {companyName || ''}
-                  </div>
-                )}
-              </div>
-
-              {/* Contact Number */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
-                  <Phone className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Contact Number</span>
-                </label>
-                {isEditMode ? (
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#54b4e7]"
-                    placeholder=""
-                  />
-                ) : (
-                  <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 min-h-[42px] flex items-center">
-                    {phone || ''}
-                  </div>
-                )}
-              </div>
-
-              {/* Email Address */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
-                  <Mail className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Email Address</span>
-                </label>
-                {isEditMode ? (
-                  <input
-                    type="email"
-                    value={email}
+                    value={username}
                     onChange={(e) => {
+                      setUsername(e.target.value);
+                      setName(e.target.value);
+                      setCompanyName(e.target.value);
+                    }}
+                    className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#54b4e7]"
+                    placeholder="Enter username"
+                  />
+                ) : (
+                  <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 min-h-[42px] flex items-center">
+                    {username || ''}
+                  </div>
+                )}
+              </div>
+
+              {/* Field 2: contact_number */}
+              <div className="space-y-1.5">
+                <label htmlFor="contact_number" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
+                  <span className="flex items-center space-x-1.5">
+                    <Phone className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Contact Number</span>
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-500 font-normal lowercase bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">contact_number</span>
+                </label>
+                {isEditMode ? (
+                  <input
+                    id="contact_number"
+                    name="contact_number"
+                    type="tel"
+                    value={contactNumber}
+                    onChange={(e) => {
+                      setContactNumber(e.target.value);
+                      setPhone(e.target.value);
+                    }}
+                    className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#54b4e7]"
+                    placeholder="e.g. +91 9876543210"
+                  />
+                ) : (
+                  <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 min-h-[42px] flex items-center">
+                    {contactNumber || ''}
+                  </div>
+                )}
+              </div>
+
+              {/* Field 3: email_address */}
+              <div className="space-y-1.5">
+                <label htmlFor="email_address" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
+                  <span className="flex items-center space-x-1.5">
+                    <Mail className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Email Address</span>
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-500 font-normal lowercase bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">email_address</span>
+                </label>
+                {isEditMode ? (
+                  <input
+                    id="email_address"
+                    name="email_address"
+                    type="email"
+                    value={emailAddress}
+                    onChange={(e) => {
+                      setEmailAddress(e.target.value);
                       setEmail(e.target.value);
                       setUserId(e.target.value);
                     }}
                     className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 lowercase focus:outline-none focus:border-[#54b4e7]"
-                    placeholder=""
+                    placeholder="user@example.com"
                   />
                 ) : (
                   <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 lowercase min-h-[42px] flex items-center break-all">
-                    {email || userId || ''}
+                    {emailAddress || ''}
                   </div>
                 )}
               </div>
 
-              {/* GSTIN */}
+              {/* Field 4: GSTIN */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
+                <label htmlFor="GSTIN" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
                   <span className="flex items-center space-x-1.5">
                     <FileText className="w-3.5 h-3.5 text-slate-500" />
                     <span>GSTIN</span>
                   </span>
-                  {gstNumber?.trim() ? (
-                    <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                      18% ITC Active
-                    </span>
-                  ) : null}
+                  <div className="flex items-center space-x-2">
+                    {gstin?.trim() ? (
+                      <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                        18% ITC Active
+                      </span>
+                    ) : null}
+                    <span className="text-[10px] font-mono text-slate-500 font-normal uppercase bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">GSTIN</span>
+                  </div>
                 </label>
                 {isEditMode ? (
                   <input
+                    id="GSTIN"
+                    name="GSTIN"
                     type="text"
-                    value={gstNumber}
-                    onChange={(e) => setGstNumber(e.target.value.toUpperCase())}
+                    value={gstin}
+                    onChange={(e) => {
+                      setGstin(e.target.value.toUpperCase());
+                      setGstNumber(e.target.value.toUpperCase());
+                    }}
                     className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-bold uppercase text-slate-900 focus:outline-none focus:border-[#54b4e7]"
-                    placeholder=""
+                    placeholder="e.g. 21AAACM1234F1Z5"
                   />
                 ) : (
                   <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-900 font-mono min-h-[42px] flex items-center">
-                    {gstNumber || ''}
+                    {gstin || ''}
                   </div>
                 )}
               </div>
 
-              {/* Workshop Address */}
+              {/* Field 5: workshop_address */}
               <div className="space-y-1.5 md:col-span-2">
-                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
-                  <Home className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Workshop Address</span>
+                <label htmlFor="workshop_address" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
+                  <span className="flex items-center space-x-1.5">
+                    <Home className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Workshop Address</span>
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-500 font-normal lowercase bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">workshop_address</span>
                 </label>
                 {isEditMode ? (
                   <textarea
+                    id="workshop_address"
+                    name="workshop_address"
                     rows={2}
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
+                    value={workshopAddress}
+                    onChange={(e) => {
+                      setWorkshopAddress(e.target.value);
+                      setAddress(e.target.value);
+                    }}
                     className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#54b4e7] resize-none"
-                    placeholder=""
+                    placeholder="e.g. Workshop / Factory Address, Street, City, State - PIN"
                   />
                 ) : (
                   <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs font-medium text-slate-800 leading-relaxed min-h-[42px]">
-                    {address || ''}
+                    {workshopAddress || ''}
                   </div>
                 )}
               </div>

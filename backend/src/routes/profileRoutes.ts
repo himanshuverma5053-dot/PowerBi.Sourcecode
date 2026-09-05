@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 
 const router = Router();
-export const DEFAULT_AWS_INVOKE_URL = 'https://o5skhjqub2.execute-api.us-east-1.amazonaws.com/Prod';
+export const DEFAULT_AWS_INVOKE_URL = 'https://wsl820vpr8.execute-api.us-east-1.amazonaws.com/DataAPI';
 
 router.post('/profile/sync-aws', async (req: Request, res: Response) => {
   try {
