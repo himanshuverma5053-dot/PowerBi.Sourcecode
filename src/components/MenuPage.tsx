@@ -278,38 +278,15 @@ export const MenuPage: React.FC<MenuPageProps> = ({
         <div className="border-b border-slate-50 pb-1">
           <button
             type="button"
-            onClick={() => toggleSection('profile')}
+            id="nav-my-profile-btn"
+            onClick={() => handleItemClick('account')}
             className="w-full flex items-center justify-between py-2 text-left text-black hover:text-[#0066c0] transition-colors cursor-pointer group select-none"
           >
             <span className="text-[21px] sm:text-[23px] md:text-[24px] font-black tracking-tight text-slate-950 group-hover:text-[#0066c0] transition-colors">
               My Profile
             </span>
-            <ChevronDown
-              className={`w-6 h-6 sm:w-7 sm:h-7 stroke-[2.5] text-slate-950 group-hover:text-[#0066c0] transition-transform duration-200 ${
-                expandedSection === 'profile' ? 'rotate-180 text-[#0066c0]' : ''
-              }`}
-            />
+            <ArrowRight className="w-6 h-6 stroke-[2.5] text-slate-950 group-hover:text-[#0066c0] transition-transform duration-200 group-hover:translate-x-1" />
           </button>
-
-          <AnimatePresence>
-            {expandedSection === 'profile' && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="pl-3 pr-2 py-2 space-y-1.5 bg-slate-50/90 rounded-2xl my-2 border border-slate-200/70"
-              >
-                <button
-                  type="button"
-                  onClick={() => handleItemClick('account')}
-                  className="w-full flex items-center justify-between py-2 px-3 text-xs sm:text-sm font-bold text-slate-700 hover:text-[#0066c0] hover:bg-white rounded-xl transition-all cursor-pointer"
-                >
-                  <span>Company Details</span>
-                  <Building2 className="w-4 h-4 text-slate-400" />
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
 
       </div>

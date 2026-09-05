@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 
 export const YOUR_API_URL_HERE = 'https://wsl820vpr8.execute-api.us-east-1.amazonaws.com/DataAPI';
+export const AWS_PROFILE_INVOKE_URL = YOUR_API_URL_HERE;
 
 interface ProfilePageProps {
   orders?: Order[];
@@ -67,11 +68,16 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [deliveryLocation, setDeliveryLocation] = useState<string>('');
   const [address, setAddress] = useState<string>('');
   
-  // Form and AWS settings state - directly open & editable by default
-  const [isExpanded, setIsExpanded] = useState<boolean>(true);
-  const [isEditMode, setIsEditMode] = useState<boolean>(true);
+  // Form and AWS settings state - closed by default whenever customer views my profile page
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  // Always ensure the profile bar / accordion is closed whenever the customer views the profile page
+  useEffect(() => {
+    setIsExpanded(false);
+  }, [currentUser]);
 
   // Load profile from local storage if previously written/saved
   useEffect(() => {
@@ -203,14 +209,15 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     // 3. Show loading state on button
     setIsSubmitting(true);
 
-    // 4. Construct JSON payload with exact required keys: 'customerid', 'username', 'contact number', 'email address', 'GSTIN', 'workshop address'
+    // 4. Construct JSON payload with exact required keys: 'customer_id', 'username', 'contact_number', 'email_address', 'GSTIN', 'workshop_address'
     const payload = {
       customer_id: customerId,
-      username: username,
-      contact_number: contact number,
-      email_address: email address,
-      gstin: gstin,
-      workshop_address: workshop address,
+      username: uName || username,
+      contact_number: cNumber || contactNumber,
+      email_address: eAddress || emailAddress,
+      gstin: gNum || gstin,
+      GSTIN: gNum || gstin,
+      workshop_address: wAddress || workshopAddress,
 
       // Complementary aliases for backward compatibility and internal state synchronization
       userName: uName,

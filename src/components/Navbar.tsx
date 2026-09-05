@@ -142,6 +142,13 @@ export const Navbar: React.FC<NavbarProps> = ({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [menuOpen, isMobileSearchExpanded]);
 
+  // Always close the profile / navigation bar whenever customer visits or clicks on the my profile page
+  useEffect(() => {
+    if (activeTab === 'account' || activeTab === 'profile') {
+      setMenuOpen(false);
+    }
+  }, [activeTab]);
+
   const handleNavClick = (tabId: string) => {
     if (tabId === 'admin') {
       if (onSwitchMode) {
@@ -383,21 +390,31 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <div className="flex-1 overflow-y-auto">
                   {/* User Greeting Section if logged in */}
                   {isLoggedIn && (
-                    <div className="px-6 sm:px-8 pt-5 pb-3 border-b border-slate-100 bg-slate-50/50">
+                    <button
+                      type="button"
+                      id="drawer-user-profile-header-btn"
+                      onClick={() => {
+                        setActiveTab('account');
+                        setMenuOpen(false);
+                      }}
+                      className="w-full text-left px-6 sm:px-8 pt-5 pb-3 border-b border-slate-100 bg-slate-50/50 hover:bg-purple-50/50 transition-colors cursor-pointer group block"
+                      title="View & Edit My Profile"
+                    >
                       <div className="flex items-center space-x-3">
-                        <div className="w-9 h-9 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-sm">
+                        <div className="w-9 h-9 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
                           {currentUser.charAt(0).toUpperCase() || 'U'}
                         </div>
-                        <div className="overflow-hidden">
-                          <p className="text-sm font-black text-slate-900 truncate">
+                        <div className="overflow-hidden flex-1">
+                          <p className="text-sm font-black text-slate-900 group-hover:text-purple-700 transition-colors truncate">
                             {currentUser || 'Valued Partner'}
                           </p>
                           <p className="text-xs text-slate-500 font-medium truncate">
                             {currentUserEmail || 'Verified Fleet Account'}
                           </p>
                         </div>
+                        <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-purple-700 group-hover:translate-x-0.5 transition-all" />
                       </div>
-                    </div>
+                    </button>
                   )}
 
                   <MenuPage
