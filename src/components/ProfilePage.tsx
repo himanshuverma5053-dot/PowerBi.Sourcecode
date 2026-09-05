@@ -154,19 +154,21 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const handleSave = async () => {
     // 1. Collect values from required input fields matching exact keys
     const uName = username.trim();
-    const cNumber = contact_Number.trim();
-    const eAddress = (email_Address || userId || email).trim();
-    const gNum = (gstin || gstin).trim();
-    const wAddress = (workshop_Address || address).trim();
+    const cNumber = contactNumber.trim();
+    const eAddress = (emailAddress || userId || email).trim();
+    const gNum = (gstin || gstNumber).trim();
+    const wAddress = (workshopAddress || address).trim();
+    const logisticsHub = deliveryLocation.trim() || 'Central Magadh Hub';
+    const customerId = (userId || currentUserEmail || `cust_${uName.toLowerCase().replace(/\s+/g, '_')}`).trim();
 
     // 2. Validation: none of the fields should be empty
     if (!uName) {
-      showToast("Please enter 'username'.");
+      showToast('Please enter your username.');
       return;
     }
 
     if (!cNumber) {
-      showToast("Please enter 'contact_number'.");
+      showToast('Please enter your contact number.');
       return;
     }
 
@@ -179,7 +181,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     }
 
     if (!eAddress) {
-      showToast("Please enter 'email_address'.");
+      showToast('Please enter your email address.');
       return;
     }
 
@@ -190,26 +192,27 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     }
 
     if (!gNum) {
-      showToast("Please enter 'GSTIN'.");
+      showToast('Please enter your GSTIN.');
       return;
     }
 
     if (!wAddress) {
-      showToast("Please enter 'workshop_address'.");
+      showToast('Please enter your workshop address.');
       return;
     }
 
     // 3. Show loading state on button
     setIsSubmitting(true);
 
-    // 4. Construct JSON payload with exact required keys: 'username', 'contact_number', 'email address', 'GSTIN', 'workshop_address'
+    // 4. Construct JSON payload with exact required keys: 'customer_id', 'username', 'contact_number', 'email_address', 'GSTIN', 'workshop_address'
     const payload = {
-      customer_id: customerid,
-      username: username,
-      contact_number: contactnumber,
-      email_address: emailaddress,
-      gstin: gstin,
-      workshop_address: workshopaddress,
+      customer_id: customerId,
+      username: uName,
+      contact_number: cNumber,
+      email_address: eAddress,
+      gstin: gNum,
+      GSTIN: gNum,
+      workshop_address: wAddress,
 
       // Complementary aliases for backward compatibility and internal state synchronization
       userName: uName,
@@ -220,7 +223,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       emailAddress: eAddress,
       email: eAddress,
       userId: eAddress,
-      gstin: gNum,
       gstNumber: gNum,
       workshopAddress: wAddress,
       billingAddress: wAddress,
@@ -626,12 +628,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               
               {/* Field 1: username */}
               <div className="space-y-1.5">
-                <label htmlFor="username" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
-                  <span className="flex items-center space-x-1.5">
-                    <User className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Username</span>
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-500 font-normal lowercase bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">username</span>
+                <label htmlFor="username" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
+                  <User className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Username</span>
                 </label>
                 {isEditMode ? (
                   <input
@@ -656,12 +655,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
               {/* Field 2: contact_number */}
               <div className="space-y-1.5">
-                <label htmlFor="contact_number" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
-                  <span className="flex items-center space-x-1.5">
-                    <Phone className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Contact Number</span>
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-500 font-normal lowercase bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">contact_number</span>
+                <label htmlFor="contact_number" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
+                  <Phone className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Contact Number</span>
                 </label>
                 {isEditMode ? (
                   <input
@@ -685,12 +681,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
               {/* Field 3: email_address */}
               <div className="space-y-1.5">
-                <label htmlFor="email_address" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
-                  <span className="flex items-center space-x-1.5">
-                    <Mail className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Email Address</span>
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-500 font-normal lowercase bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">email_address</span>
+                <label htmlFor="email_address" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
+                  <Mail className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Email Address</span>
                 </label>
                 {isEditMode ? (
                   <input
@@ -715,19 +708,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
               {/* Field 4: GSTIN */}
               <div className="space-y-1.5">
-                <label htmlFor="GSTIN" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
-                  <span className="flex items-center space-x-1.5">
-                    <FileText className="w-3.5 h-3.5 text-slate-500" />
-                    <span>GSTIN</span>
-                  </span>
-                  <div className="flex items-center space-x-2">
-                    {gstin?.trim() ? (
-                      <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                        18% ITC Active
-                      </span>
-                    ) : null}
-                    <span className="text-[10px] font-mono text-slate-500 font-normal uppercase bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">GSTIN</span>
-                  </div>
+                <label htmlFor="GSTIN" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
+                  <FileText className="w-3.5 h-3.5 text-slate-500" />
+                  <span>GSTIN</span>
                 </label>
                 {isEditMode ? (
                   <input
@@ -751,12 +734,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
               {/* Field 5: workshop_address */}
               <div className="space-y-1.5 md:col-span-2">
-                <label htmlFor="workshop_address" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
-                  <span className="flex items-center space-x-1.5">
-                    <Home className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Workshop Address</span>
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-500 font-normal lowercase bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">workshop_address</span>
+                <label htmlFor="workshop_address" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
+                  <Home className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Workshop Address</span>
                 </label>
                 {isEditMode ? (
                   <textarea
