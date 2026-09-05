@@ -203,15 +203,14 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     // 3. Show loading state on button
     setIsSubmitting(true);
 
-    // 4. Construct JSON payload with exact required keys: 'customer_id', 'username', 'contact_number', 'email_address', 'GSTIN', 'workshop_address'
+    // 4. Construct JSON payload with exact required keys: 'customerid', 'username', 'contact number', 'email address', 'GSTIN', 'workshop address'
     const payload = {
       customer_id: customerId,
-      username: uName,
-      contact_number: cNumber,
-      email_address: eAddress,
-      gstin: gNum,
-      GSTIN: gNum,
-      workshop_address: wAddress,
+      username: username,
+      contact_number: contact number,
+      email_address: email address,
+      gstin: gstin,
+      workshop_address: workshop address,
 
       // Complementary aliases for backward compatibility and internal state synchronization
       userName: uName,
