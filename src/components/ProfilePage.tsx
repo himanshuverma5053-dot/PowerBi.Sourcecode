@@ -154,11 +154,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const handleSave = async () => {
     // 1. Collect values from required input fields matching exact keys
     const uName = username.trim();
-    const cNumber = contactNumber.trim();
-    const eAddress = (emailAddress || userId || email).trim();
-    const gNum = (gstin || gstNumber).trim();
-    const wAddress = (workshopAddress || address).trim();
-    const logisticsHub = deliveryLocation.trim() || 'Central Magadh Hub';
+    const cNumber = contact_Number.trim();
+    const eAddress = (email_Address || userId || email).trim();
+    const gNum = (gstin || gstin).trim();
+    const wAddress = (workshop_Address || address).trim();
 
     // 2. Validation: none of the fields should be empty
     if (!uName) {
