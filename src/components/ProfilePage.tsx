@@ -20,7 +20,7 @@ import {
   Mail
 } from 'lucide-react';
 
-export const = 'https://wsl820vpr8.execute-api.us-east-1.amazonaws.com/DataAPI';
+export const AWS_PROFILE_INVOKE_URL = 'https://wsl820vpr8.execute-api.us-east-1.amazonaws.com/DataAPI';
 
 interface ProfilePageProps {
   orders?: Order[];
@@ -155,251 +155,245 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   }, [currentUser, currentUserEmail]);
 
   // Handle Save / Commit Updates with API endpoint
-  const handleSave = async () => {
-    // 1. Collect values from required input fields matching exact keys
-    const username = username.trim();
-    const contactnumber = contactNumber.trim();
-    const emailsddress = (emailAddress || userId || email).trim();
-    const gstin = (gstin || gstNumber).trim();
-    const workshopaddress = (workshopAddress || address).trim();
-    const deliverylocation = deliveryLocation.trim() || 'Central Magadh Hub';
-    const customerId = (userId || currentUserEmail || `cust_${uName.toLowerCase().replace(/\s+/g, '_')}`).trim();
+const handleSave = async () => {
+  // 1. Collect values from required input fields matching exact keys
+  const uName = username.trim();
+  const cNumber = contactNumber.trim();
+  const eAddress = (emailAddress || userId || email).trim();
+  const gNum = (gstin || gstNumber).trim();
+  const wAddress = (workshopAddress || address).trim();
+  const logisticsHub = deliveryLocation.trim() || 'Central Magadh Hub';
+  const customerId = (userId || currentUserEmail || `cust_${uName.toLowerCase().replace(/\s+/g, '_')}`).trim();
 
-    // 2. Validation: none of the fields should be empty
-    if (!uName) {
-      showToast('Please enter your username.');
-      return;
+  // 2. Validation: none of the fields should be empty
+  if (!uName) {
+    showToast('Please enter your username.');
+    return;
+  }
+
+  if (!cNumber) {
+    showToast('Please enter your contact number.');
+    return;
+  }
+
+  const cleanPhoneDigits = cNumber.replace(/[\s\-\(\)]/g, '');
+  const isValidPhone = /^\+?[0-9]{7,15}$/.test(cleanPhoneDigits);
+  if (!isValidPhone) {
+    showToast('Please enter a valid contact number format (e.g. +91 9876543210).');
+    return;
+  }
+
+  if (!eAddress) {
+    showToast('Please enter your email address.');
+    return;
+  }
+
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(eAddress);
+  if (!isValidEmail) {
+    showToast('Please enter a valid email address.');
+    return;
+  }
+
+  if (!gNum) {
+    showToast('Please enter your GSTIN.');
+    return;
+  }
+
+  if (!wAddress) {
+    showToast('Please enter your workshop address.');
+    return;
+  }
+
+  // 3. Show loading state on button
+  setIsSubmitting(true);
+
+  // 4. Construct JSON payload
+  const payload = {
+    customer_id: customerId,
+    username: uName,
+    contact_number: cNumber,
+    email_address: eAddress,
+    gstin: gNum,
+    GSTIN: gNum,
+    workshop_address: wAddress,
+
+    userName: uName,
+    firmName: uName,
+    companyName: uName,
+    contactNumber: cNumber,
+    phone: cNumber,
+    emailAddress: eAddress,
+    email: eAddress,
+    userId: eAddress,
+    gstNumber: gNum,
+    workshopAddress: wAddress,
+    billingAddress: wAddress,
+    address: wAddress,
+    customerName: name.trim() || uName,
+    name: name.trim() || uName,
+    deliveryLocation: logisticsHub,
+    role,
+    status,
+    updatedAt: new Date().toISOString(),
+  };
+
+  const userKey = (uName || name.trim()).toLowerCase();
+  safeSetLocalStorage(`user_profile_${userKey}`, payload);
+  safeSetLocalStorage('user_profile', payload);
+
+  if (customerAccounts && onUpdateCustomerAccounts) {
+    const existingIdx = customerAccounts.findIndex(
+      (c) =>
+        (eAddress && c.email?.toLowerCase() === eAddress.toLowerCase()) ||
+        (uName && c.customerName?.toLowerCase() === uName.toLowerCase()) ||
+        (uName && c.companyName?.toLowerCase() === uName.toLowerCase())
+    );
+
+    let updatedList;
+    if (existingIdx !== -1) {
+      updatedList = [...customerAccounts];
+      updatedList[existingIdx] = {
+        ...updatedList[existingIdx],
+        username: uName,
+        customerName: uName,
+        companyName: uName,
+        phone: cNumber,
+        email: eAddress,
+        gstNumber: gNum,
+        deliveryLocation: logisticsHub,
+        address: wAddress,
+        updatedAt: new Date().toISOString(),
+      };
+    } else {
+      const accountUsername = uName || (eAddress ? eAddress.split('@')[0] : 'customer');
+      const newAccount = {
+        id: `cust_${Date.now()}`,
+        username: accountUsername,
+        customerName: uName,
+        companyName: uName,
+        email: eAddress,
+        phone: cNumber,
+        gstNumber: gNum,
+        deliveryLocation: logisticsHub,
+        address: wAddress,
+        accountStatus: status === 'Active' ? 'Active' : 'Suspended',
+        pricingType: 'gst',
+        creditEnabled: true,
+        creditLimit: 500000,
+        usedCredit: 0,
+        paymentTermsDays: 30,
+        dueDaysGrace: 5,
+        createdAt: new Date().toISOString(),
+      };
+      updatedList = [newAccount, ...customerAccounts];
     }
+    onUpdateCustomerAccounts(updatedList);
+  }
 
-    if (!cNumber) {
-      showToast('Please enter your contact number.');
-      return;
-    }
+  if (uName) {
+    setCurrentUser(uName);
+  }
 
-    // Validation: contact number should be a valid number format
-    const cleanPhoneDigits = cNumber.replace(/[\s\-\(\)]/g, '');
-    const isValidPhone = /^\+?[0-9]{7,15}$/.test(cleanPhoneDigits);
-    if (!isValidPhone) {
-      showToast('Please enter a valid contact number format (e.g. +91 9876543210).');
-      return;
-    }
+  window.dispatchEvent(new Event('magadh_profile_updated'));
 
-    if (!eAddress) {
-      showToast('Please enter your email address.');
-      return;
-    }
+  // 5. Invoke API endpoint
+  let requestSucceeded = false;
+  let failureReason = '';
+  const targetUrl = AWS_PROFILE_INVOKE_URL;
 
-    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(eAddress);
-    if (!isValidEmail) {
-      showToast('Please enter a valid email address.');
-      return;
-    }
+  console.group('%c[Commit Updates] API Invocation', 'color: #0284c7; font-weight: bold; font-size: 13px;');
+  console.log('%cTarget Endpoint:%c ' + targetUrl, 'color: #0284c7; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
+  console.log('%cHTTP Method:%c POST', 'color: #10b981; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
+  console.log('%cJSON Body:%c', 'color: #6366f1; font-weight: bold;', '', payload);
 
-    if (!gNum) {
-      showToast('Please enter your GSTIN.');
-      return;
-    }
+  try {
+    let response = null;
+    let rawData = null;
 
-    if (!wAddress) {
-      showToast('Please enter your workshop address.');
-      return;
-    }
-
-    // 3. Show loading state on button
-    setIsSubmitting(true);
-
-    // 4. Construct JSON payload with exact required keys: 'customer_id', 'username', 'contact_number', 'email_address', 'GSTIN', 'workshop_address'
-    const payload = {
-      customer_id: customerId,
-      username: uName || username,
-      contact_number: cNumber || contactNumber,
-      email_address: eAddress || emailAddress,
-      gstin: gNum || gstin,
-      GSTIN: gNum || gstin,
-      workshop_address: wAddress || workshopAddress,
-
-      // Complementary aliases for backward compatibility and internal state synchronization
-      userName: uName,
-      firmName: uName,
-      companyName: uName,
-      contactNumber: cNumber,
-      phone: cNumber,
-      emailAddress: eAddress,
-      email: eAddress,
-      userId: eAddress,
-      gstNumber: gNum,
-      workshopAddress: wAddress,
-      billingAddress: wAddress,
-      address: wAddress,
-      customerName: name.trim() || uName,
-      name: name.trim() || uName,
-      deliveryLocation: logisticsHub,
-      role,
-      status,
-      updatedAt: new Date().toISOString(),
+    const requestHeaders = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
     };
 
-    // Always persist to local storage so user data is instantly preserved
-    const userKey = (uName || name.trim()).toLowerCase();
-    safeSetLocalStorage(`user_profile_${userKey}`, payload);
-    safeSetLocalStorage('user_profile', payload);
-
-    if (customerAccounts && onUpdateCustomerAccounts) {
-      const existingIdx = customerAccounts.findIndex(
-        (c) =>
-          (eAddress && c.email?.toLowerCase() === eAddress.toLowerCase()) ||
-          (uName && c.customerName?.toLowerCase() === uName.toLowerCase()) ||
-          (uName && c.companyName?.toLowerCase() === uName.toLowerCase())
-      );
-
-      let updatedList: CustomerAccount[];
-      if (existingIdx !== -1) {
-        updatedList = [...customerAccounts];
-        updatedList[existingIdx] = {
-          ...updatedList[existingIdx],
-          username: uName,
-          customerName: uName,
-          companyName: uName,
-          phone: cNumber,
-          email: eAddress,
-          gstNumber: gNum,
-          deliveryLocation: logisticsHub,
-          address: wAddress,
-          updatedAt: new Date().toISOString(),
-        };
-      } else {
-        const accountUsername = uName || (eAddress ? eAddress.split('@')[0] : 'customer');
-        const newAccount: CustomerAccount = {
-          id: `cust_${Date.now()}`,
-          username: accountUsername,
-          customerName: uName,
-          companyName: uName,
-          email: eAddress,
-          phone: cNumber,
-          gstNumber: gNum,
-          deliveryLocation: logisticsHub,
-          address: wAddress,
-          accountStatus: status === 'Active' ? 'Active' : 'Suspended',
-          pricingType: 'gst',
-          creditEnabled: true,
-          creditLimit: 500000,
-          usedCredit: 0,
-          paymentTermsDays: 30,
-          dueDaysGrace: 5,
-          createdAt: new Date().toISOString(),
-        };
-        updatedList = [newAccount, ...customerAccounts];
-      }
-      onUpdateCustomerAccounts(updatedList);
-    }
-
-    if (uName) {
-      setCurrentUser(uName);
-    }
-    
-    // Dispatch custom event so OrderDetailsPage and other listeners update immediately
-    window.dispatchEvent(new Event('magadh_profile_updated'));
-
-    // 5. Invoke API endpoint: YOUR_API_URL_HERE
-    let requestSucceeded = false;
-    let failureReason = '';
-    const targetUrl = YOUR_API_URL_HERE;
-
-    console.group('%c[Commit Updates] API Invocation', 'color: #0284c7; font-weight: bold; font-size: 13px;');
-    console.log('%cTarget Endpoint:%c ' + targetUrl, 'color: #0284c7; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
-    console.log('%cHTTP Method:%c POST', 'color: #10b981; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
-    console.log('%cJSON Body:%c', 'color: #6366f1; font-weight: bold;', '', payload);
-
     try {
-      let response: Response | null = null;
-      let rawData: any = null;
+      console.log('%c[1/2] Attempting direct fetch to API endpoint...', 'color: #0284c7;');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
 
-      const requestHeaders: Record<string, string> = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      };
+      response = await fetch(targetUrl, {
+        method: 'POST',
+        headers: requestHeaders,
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
 
+      console.log(`%c[Direct Fetch Result]: HTTP ${response.status} ${response.statusText}`, response.ok ? 'color: #10b981; font-weight: bold;' : 'color: #ea580c; font-weight: bold;');
       try {
-        console.log('%c[1/2] Attempting direct fetch to API endpoint...', 'color: #0284c7;');
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000);
+        rawData = await response.json();
+        console.log('[Direct Fetch Response Data]:', rawData);
+      } catch {
+        rawData = null;
+      }
 
-        response = await fetch(targetUrl, {
-          method: 'POST',
-          headers: requestHeaders,
-          body: JSON.stringify(payload),
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
+      if (response.ok) {
+        requestSucceeded = true;
+      } else {
+        throw new Error(rawData?.message || rawData?.error || `HTTP ${response.status}`);
+      }
+    } catch (browserFetchErr) {
+      console.warn('%c[Direct Fetch Blocked / Error]:%c ' + (browserFetchErr?.message || 'CORS / Preflight failure'), 'color: #ea580c; font-weight: bold;', 'color: #475569;');
+      console.log('%c[2/2] Invoking via server-side proxy (/api/profile/sync-aws)...', 'color: #0284c7; font-weight: bold;');
 
-        console.log(`%c[Direct Fetch Result]: HTTP ${response.status} ${response.statusText}`, response.ok ? 'color: #10b981; font-weight: bold;' : 'color: #ea580c; font-weight: bold;');
-        try {
-          rawData = await response.json();
-          console.log('[Direct Fetch Response Data]:', rawData);
-        } catch {
-          rawData = null;
-        }
+      const proxyResponse = await fetch('/api/profile/sync-aws', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          ...payload,
+          endpoint: targetUrl,
+        }),
+      });
 
-        if (response.ok) {
+      response = proxyResponse;
+      try {
+        const proxyJson = await proxyResponse.json();
+        rawData = proxyJson?.data || proxyJson;
+        console.log(`%c[Server Proxy Result]: AWS HTTP ${proxyJson?.awsStatus || proxyResponse.status}`, proxyJson?.success ? 'color: #10b981; font-weight: bold;' : 'color: #ef4444; font-weight: bold;', rawData);
+        if (proxyJson && (proxyJson.success || proxyResponse.ok)) {
           requestSucceeded = true;
         } else {
-          // If direct fetch returns an error or status issue, trigger fallback
-          throw new Error(rawData?.message || rawData?.error || `HTTP ${response.status}`);
+          failureReason = rawData?.message || proxyJson?.message || `HTTP ${proxyJson?.awsStatus || proxyResponse.status}`;
         }
-      } catch (browserFetchErr: any) {
-        // Fallback to server-side proxy in case of browser CORS restriction or network block
-        console.warn('%c[Direct Fetch Blocked / Error]:%c ' + (browserFetchErr?.message || 'CORS / Preflight failure'), 'color: #ea580c; font-weight: bold;', 'color: #475569;');
-        console.log('%c[2/2] Invoking via server-side proxy (/api/profile/sync-aws)...', 'color: #0284c7; font-weight: bold;');
-
-        const proxyResponse = await fetch('/api/profile/sync-aws', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: JSON.stringify({
-            ...payload,
-            endpoint: targetUrl,
-          }),
-        });
-
-        response = proxyResponse;
-        try {
-          const proxyJson = await proxyResponse.json();
-          rawData = proxyJson?.data || proxyJson;
-          console.log(`%c[Server Proxy Result]: AWS HTTP ${proxyJson?.awsStatus || proxyResponse.status}`, proxyJson?.success ? 'color: #10b981; font-weight: bold;' : 'color: #ef4444; font-weight: bold;', rawData);
-          if (proxyJson && (proxyJson.success || proxyResponse.ok)) {
-            requestSucceeded = true;
-          } else {
-            failureReason = rawData?.message || proxyJson?.message || `HTTP ${proxyJson?.awsStatus || proxyResponse.status}`;
-          }
-        } catch {
-          rawData = null;
-          if (proxyResponse.ok) {
-            requestSucceeded = true;
-          } else {
-            failureReason = `HTTP ${proxyResponse.status}`;
-          }
+      } catch {
+        rawData = null;
+        if (proxyResponse.ok) {
+          requestSucceeded = true;
+        } else {
+          failureReason = `HTTP ${proxyResponse.status}`;
         }
       }
-    } catch (err: any) {
-      requestSucceeded = false;
-      failureReason = err?.message || 'Network unreachable';
-      console.error('[Commit Updates Error]:', err);
-    } finally {
-      setIsSubmitting(false);
-      console.groupEnd();
     }
+  } catch (err) {
+    requestSucceeded = false;
+    failureReason = err?.message || 'Network unreachable';
+    console.error('[Commit Updates Error]:', err);
+  } finally {
+    setIsSubmitting(false);
+    console.groupEnd();
+  }
 
-    // 6. User feedback on success or failure
-    if (requestSucceeded) {
-      setIsSaved(true);
-      showToast('Enterprise details and billing profile committed successfully!');
-      setTimeout(() => setIsSaved(false), 3500);
-    } else {
-      showToast(`Failed to commit updates: ${failureReason || 'Endpoint unreachable'}`);
-    }
-  };
+  // 6. User feedback on success or failure
+  if (requestSucceeded) {
+    setIsSaved(true);
+    showToast('Enterprise details and billing profile committed successfully!');
+    setTimeout(() => setIsSaved(false), 3500);
+  } else {
+    showToast(`Failed to commit updates: ${failureReason || 'Endpoint unreachable'}`);
+  }
+};
 
 
 
