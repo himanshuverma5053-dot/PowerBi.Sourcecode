@@ -157,12 +157,12 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   // Handle Save / Commit Updates with API endpoint
   const handleSave = async () => {
     // 1. Collect values from required input fields matching exact keys
-    const uName = username.trim();
-    const cNumber = contactNumber.trim();
-    const eAddress = (emailAddress || userId || email).trim();
-    const gNum = (gstin || gstNumber).trim();
-    const wAddress = (workshopAddress || address).trim();
-    const logisticsHub = deliveryLocation.trim() || 'Central Magadh Hub';
+    const username = username.trim();
+    const contactnumber = contactNumber.trim();
+    const emailsddress = (emailAddress || userId || email).trim();
+    const gstin = (gstin || gstNumber).trim();
+    const workshopaddress = (workshopAddress || address).trim();
+    const deliverylocation = deliveryLocation.trim() || 'Central Magadh Hub';
     const customerId = (userId || currentUserEmail || `cust_${uName.toLowerCase().replace(/\s+/g, '_')}`).trim();
 
     // 2. Validation: none of the fields should be empty
