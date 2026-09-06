@@ -26,8 +26,9 @@ export function createApp(): Express {
   // Request logger
   app.use(requestLogger);
 
-  // Mount API routes under /api
+  // Mount API routes under /api and root (for /DataAPI)
   app.use('/api', apiRouter);
+  app.use('/', apiRouter);
 
   // Centralized Error Handling Middleware
   app.use(errorHandler);

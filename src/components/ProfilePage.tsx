@@ -9,6 +9,7 @@ import {
   Building2,
   Phone,
   FileText,
+  MapPin,
   Home,
   CheckCircle2,
   RotateCcw,
@@ -16,16 +17,11 @@ import {
   Loader2,
   Cloud,
   User,
-  Mail
+  Mail,
+  AlertCircle,
 } from 'lucide-react';
 
-/*
- * AWS API Gateway endpoint
- * API Gateway -> Lambda -> DynamoDB
- */
-export const YOUR_API_URL_HERE =
-  'https://wsl820vpr8.execute-api.us-east-1.amazonaws.com/DataAPI';
-
+export const YOUR_API_URL_HERE = 'https://wsl820vpr8.execute-api.us-east-1.amazonaws.com/DataAPI';
 export const AWS_PROFILE_INVOKE_URL = YOUR_API_URL_HERE;
 
 interface ProfilePageProps {
@@ -49,116 +45,70 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   customerAccounts = [],
   onUpdateCustomerAccounts,
 }) => {
-  /*
-   * These five fields correspond directly to the
-   * Lambda / DynamoDB fields.
-   */
+  // Exact 5 required state fields bound to React state:
+  // 'username', 'contact_number', 'email_address', 'GSTIN', 'workshop_address'
   const [username, setUsername] = useState<string>(currentUser || '');
-  const [contactNumber, setContactNumber] = useState<string>('');
-  const [emailAddress, setEmailAddress] = useState<string>(
-    currentUserEmail || ''
-  );
-  const [gstin, setGstin] = useState<string>('');
-  const [workshopAddress, setWorkshopAddress] = useState<string>('');
+  const [contact_number, setContactNumber] = useState<string>('');
+  const [email_address, setEmailAddress] = useState<string>(currentUserEmail || '');
+  const [GSTIN, setGSTIN] = useState<string>('');
+  const [workshop_address, setWorkshopAddress] = useState<string>('');
 
-  /* Existing profile/UI state */
+  // Primary user account profile state
   const [name, setName] = useState<string>(currentUser || '');
   const [userId, setUserId] = useState<string>(currentUserEmail || '');
-
-  const [role, setRole] = useState<
-    'Admin' | 'Partner' | 'Billing Manager' | 'Staff / Operator'
-  >(
-    currentUser &&
-      checkIsAdmin(currentUser, currentUserEmail || '')
-      ? 'Admin'
-      : 'Partner'
+  const [role, setRole] = useState<'Admin' | 'Partner' | 'Billing Manager' | 'Staff / Operator'>(
+    currentUser && checkIsAdmin(currentUser, currentUserEmail || '') ? 'Admin' : 'Partner'
   );
-
   const [status, setStatus] = useState<'Active' | 'Inactive'>('Active');
-
+  
+  // Extended & complementary details
   const [companyName, setCompanyName] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [email, setEmail] = useState<string>(currentUserEmail || '');
   const [gstNumber, setGstNumber] = useState<string>('');
   const [deliveryLocation, setDeliveryLocation] = useState<string>('');
   const [address, setAddress] = useState<string>('');
-
+  
+  // Form and AWS settings state - closed by default whenever customer views my profile page
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  /*
-   * Keep accordion closed when changing user.
-   */
+  const [statusBanner, setStatusBanner] = useState<{
+    type: 'success' | 'error' | 'warning' | 'info';
+    message: string;
+  } | null>(null);
+
+  // Always ensure the profile bar / accordion is closed whenever the customer views the profile page
   useEffect(() => {
     setIsExpanded(false);
   }, [currentUser]);
 
-  /*
-   * Load locally saved profile.
-   */
+  // Load profile from local storage if previously written/saved
   useEffect(() => {
     const activeUser = currentUser || '';
     const lowerUser = activeUser.toLowerCase();
+    const userKey = lowerUser ? `user_profile_${lowerUser}` : null;
 
-    const userKey = lowerUser
-      ? `user_profile_${lowerUser}`
-      : null;
-
-    const savedData = userKey
-      ? localStorage.getItem(userKey)
-      : localStorage.getItem('user_profile');
-
+    const savedData = userKey ? localStorage.getItem(userKey) : localStorage.getItem('user_profile');
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
-
-        const loadedUsername =
-          parsed.username ||
-          parsed.userName ||
-          parsed.companyName ||
-          parsed.customerName ||
-          parsed.name ||
-          activeUser;
-
-        const loadedContact =
-          parsed.contact_number ||
-          parsed.contactNumber ||
-          parsed.phone ||
-          '';
-
-        const loadedEmail =
-          parsed.email_address ||
-          parsed.emailAddress ||
-          parsed.email ||
-          parsed.userId ||
-          currentUserEmail ||
-          '';
-
-        const loadedGstin =
-          parsed.GSTIN ||
-          parsed.gstin ||
-          parsed.gstNumber ||
-          '';
-
-        const loadedAddress =
-          parsed.workshop_address ||
-          parsed.workshopAddress ||
-          parsed.address ||
-          parsed.billingAddress ||
-          '';
+        const loadedUsername = parsed.username || parsed.userName || parsed.companyName || parsed.customerName || parsed.name || activeUser;
+        const loadedContact = parsed.contact_number || parsed.contactNumber || parsed.phone || '';
+        const loadedEmail = parsed.email_address || parsed.emailAddress || parsed.email || parsed.userId || currentUserEmail || '';
+        const loadedGstin = parsed.GSTIN || parsed.gstin || parsed.gstNumber || '';
+        const loadedAddress = parsed.workshop_address || parsed.workshopAddress || parsed.address || parsed.billingAddress || '';
 
         if (loadedUsername) {
           setUsername(loadedUsername);
           setName(loadedUsername);
           setCompanyName(loadedUsername);
         } else if (activeUser) {
-          const formattedUser = activeUser.toUpperCase();
-
-          setUsername(formattedUser);
-          setName(formattedUser);
-          setCompanyName(formattedUser);
+          setUsername(activeUser.toUpperCase());
+          setName(activeUser.toUpperCase());
+          setCompanyName(activeUser.toUpperCase());
         }
 
         if (loadedContact) {
@@ -170,10 +120,14 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           setEmailAddress(loadedEmail);
           setEmail(loadedEmail);
           setUserId(loadedEmail);
+        } else if (currentUserEmail) {
+          setEmailAddress(currentUserEmail);
+          setEmail(currentUserEmail);
+          setUserId(currentUserEmail);
         }
 
         if (loadedGstin) {
-          setGstin(loadedGstin);
+          setGSTIN(loadedGstin);
           setGstNumber(loadedGstin);
         }
 
@@ -187,16 +141,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         }
 
         if (parsed.role) {
-          setRole(
-            parsed.role === 'Dealer / Partner'
-              ? 'Partner'
-              : parsed.role
-          );
+          setRole(parsed.role === 'Dealer / Partner' ? 'Partner' : parsed.role);
         }
-
         return;
-      } catch (error) {
-        console.error('Profile load error:', error);
+      } catch (e) {
+        console.error('Profile load error:', e);
       }
     }
 
@@ -205,134 +154,77 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       setEmail(currentUserEmail);
       setUserId(currentUserEmail);
     }
-
     if (currentUser) {
-      const formattedUser = currentUser.toUpperCase();
-
-      setUsername(formattedUser);
-      setName(formattedUser);
-      setCompanyName(formattedUser);
+      setUsername(currentUser.toUpperCase());
+      setName(currentUser.toUpperCase());
+      setCompanyName(currentUser.toUpperCase());
     }
   }, [currentUser, currentUserEmail]);
 
-  /*
-   * SAVE PROFILE
-   *
-   * Frontend
-   *    ↓
-   * API Gateway
-   *    ↓
-   * Lambda
-   *    ↓
-   * DynamoDB
-   *
-   * Exact DynamoDB/Lambda fields:
-   * username
-   * contact_number
-   * email_address
-   * GSTIN
-   * workshop_address
-   */
+  // Handle Save / Commit Updates with API endpoint
   const handleSave = async () => {
+    setStatusBanner(null);
+
+    // 1. Collect values from required input fields matching exact keys
     const uName = username.trim();
-    const cNumber = contactNumber.trim();
-    const eAddress = (
-      emailAddress ||
-      userId ||
-      email
-    ).trim();
+    const cNumber = contact_number.trim();
+    const eAddress = (email_address || userId || email).trim();
+    const gNum = (GSTIN || gstNumber).trim();
+    const wAddress = (workshop_address || address).trim();
+    const logisticsHub = deliveryLocation.trim() || 'Central Magadh Hub';
+    const customerId = (eAddress || uName.toLowerCase().replace(/\s+/g, '_') || 'customer_primary').trim();
 
-    const gNum = (
-      gstin ||
-      gstNumber
-    ).trim().toUpperCase();
-
-    const wAddress = (
-      workshopAddress ||
-      address
-    ).trim();
-
-    /*
-     * Use email as the customer ID when available.
-     * Otherwise generate a stable customer ID from username.
-     */
-    const customerId =
-      (
-        userId ||
-        currentUserEmail ||
-        `cust_${uName
-          .toLowerCase()
-          .replace(/\s+/g, '_')}`
-      ).trim();
-
-    /*
-     * Validation
-     */
+    // 2. Visible Validation Checks - Never silently exit
     if (!uName) {
-      showToast('Please enter your username.');
+      const msg = 'Please enter username before committing updates.';
+      console.warn('[Validation Notice]', msg);
+      setStatusBanner({ type: 'warning', message: msg });
+      showToast(msg);
       return;
     }
 
     if (!cNumber) {
-      showToast('Please enter your contact number.');
-      return;
-    }
-
-    const cleanPhoneDigits = cNumber.replace(
-      /[\s\-\(\)]/g,
-      ''
-    );
-
-    const isValidPhone =
-      /^\+?[0-9]{7,15}$/.test(cleanPhoneDigits);
-
-    if (!isValidPhone) {
-      showToast(
-        'Please enter a valid contact number format (e.g. +91 9876543210).'
-      );
+      const msg = 'Please enter contact number before committing updates.';
+      console.warn('[Validation Notice]', msg);
+      setStatusBanner({ type: 'warning', message: msg });
+      showToast(msg);
+      setIsExpanded(true); // Open accordion so customer immediately sees the input field
       return;
     }
 
     if (!eAddress) {
-      showToast('Please enter your email address.');
-      return;
-    }
-
-    const isValidEmail =
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(eAddress);
-
-    if (!isValidEmail) {
-      showToast('Please enter a valid email address.');
+      const msg = 'Please enter email address before committing updates.';
+      console.warn('[Validation Notice]', msg);
+      setStatusBanner({ type: 'warning', message: msg });
+      showToast(msg);
       return;
     }
 
     if (!gNum) {
-      showToast('Please enter your GSTIN.');
+      const msg = 'Please enter GSTIN before committing updates.';
+      console.warn('[Validation Notice]', msg);
+      setStatusBanner({ type: 'warning', message: msg });
+      showToast(msg);
+      setIsExpanded(true);
       return;
     }
 
     if (!wAddress) {
-      showToast('Please enter your workshop address.');
+      const msg = 'Please enter workshop address before committing updates.';
+      console.warn('[Validation Notice]', msg);
+      setStatusBanner({ type: 'warning', message: msg });
+      showToast(msg);
+      setIsExpanded(true);
       return;
     }
 
+    // 3. Show loading state on button
     setIsSubmitting(true);
+    setStatusBanner({ type: 'info', message: 'Sending POST request to AWS API Gateway...' });
 
-    /*
-     * IMPORTANT:
-     *
-     * This is the payload sent to API Gateway.
-     *
-     * These names MUST match Lambda/DynamoDB:
-     *
-     * username
-     * contact_number
-     * email_address
-     * GSTIN
-     * workshop_address
-     */
+    // 4. Construct JSON payload with exact required keys:
+    // 'username', 'contact_number', 'email_address', 'GSTIN', 'workshop_address'
     const payload = {
-      customer_id: customerId,
       username: uName,
       contact_number: cNumber,
       email_address: eAddress,
@@ -340,390 +232,240 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       workshop_address: wAddress,
     };
 
-    /*
-     * Local application data can still contain the
-     * additional information needed by the frontend.
-     *
-     * This DOES NOT get sent to AWS.
-     */
-    const localProfileData = {
+    // Extended profile object for application cache and state persistence
+    const fullProfileData = {
       ...payload,
-
-      userName: uName,
-      firmName: uName,
-      companyName: uName,
-
-      contactNumber: cNumber,
-      phone: cNumber,
-
-      emailAddress: eAddress,
-      email: eAddress,
-      userId: eAddress,
-
-      gstNumber: gNum,
-
-      workshopAddress: wAddress,
-      billingAddress: wAddress,
-      address: wAddress,
-
-      customerName: name.trim() || uName,
+      customer_id: customerId,
       name: name.trim() || uName,
-
-      deliveryLocation:
-        deliveryLocation.trim() ||
-        'Central Magadh Hub',
-
+      companyName: uName,
+      deliveryLocation: logisticsHub,
       role,
       status,
-
       updatedAt: new Date().toISOString(),
     };
 
-    /*
-     * Save locally immediately.
-     */
-    const localUserKey = (
-      uName ||
-      name.trim()
-    ).toLowerCase();
+    // Always persist to local storage so user data is instantly preserved
+    const userKey = (uName || name.trim()).toLowerCase();
+    safeSetLocalStorage(`user_profile_${userKey}`, fullProfileData);
+    safeSetLocalStorage('user_profile', fullProfileData);
 
-    safeSetLocalStorage(
-      `user_profile_${localUserKey}`,
-      localProfileData
-    );
-
-    safeSetLocalStorage(
-      'user_profile',
-      localProfileData
-    );
-
-    /*
-     * Update frontend customer account state.
-     */
-    if (
-      customerAccounts &&
-      onUpdateCustomerAccounts
-    ) {
-      const existingIdx =
-        customerAccounts.findIndex(
-          (c) =>
-            (
-              eAddress &&
-              c.email?.toLowerCase() ===
-                eAddress.toLowerCase()
-            ) ||
-            (
-              uName &&
-              c.customerName?.toLowerCase() ===
-                uName.toLowerCase()
-            ) ||
-            (
-              uName &&
-              c.companyName?.toLowerCase() ===
-                uName.toLowerCase()
-            )
-        );
+    if (customerAccounts && onUpdateCustomerAccounts) {
+      const existingIdx = customerAccounts.findIndex(
+        (c) =>
+          (eAddress && c.email?.toLowerCase() === eAddress.toLowerCase()) ||
+          (uName && c.customerName?.toLowerCase() === uName.toLowerCase()) ||
+          (uName && c.companyName?.toLowerCase() === uName.toLowerCase())
+      );
 
       let updatedList: CustomerAccount[];
-
       if (existingIdx !== -1) {
         updatedList = [...customerAccounts];
-
         updatedList[existingIdx] = {
           ...updatedList[existingIdx],
-
           username: uName,
           customerName: uName,
           companyName: uName,
-
           phone: cNumber,
           email: eAddress,
           gstNumber: gNum,
-
-          deliveryLocation:
-            deliveryLocation.trim() ||
-            'Central Magadh Hub',
-
+          deliveryLocation: logisticsHub,
           address: wAddress,
-
-          updatedAt:
-            new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         };
       } else {
-        const accountUsername =
-          uName ||
-          (
-            eAddress
-              ? eAddress.split('@')[0]
-              : 'customer'
-          );
-
+        const accountUsername = uName || (eAddress ? eAddress.split('@')[0] : 'customer');
         const newAccount: CustomerAccount = {
           id: `cust_${Date.now()}`,
-
           username: accountUsername,
           customerName: uName,
           companyName: uName,
-
           email: eAddress,
           phone: cNumber,
-
           gstNumber: gNum,
-
-          deliveryLocation:
-            deliveryLocation.trim() ||
-            'Central Magadh Hub',
-
+          deliveryLocation: logisticsHub,
           address: wAddress,
-
-          accountStatus:
-            status === 'Active'
-              ? 'Active'
-              : 'Suspended',
-
+          accountStatus: status === 'Active' ? 'Active' : 'Suspended',
           pricingType: 'gst',
-
           creditEnabled: true,
           creditLimit: 500000,
           usedCredit: 0,
-
           paymentTermsDays: 30,
           dueDaysGrace: 5,
-
-          createdAt:
-            new Date().toISOString(),
+          createdAt: new Date().toISOString(),
         };
-
-        updatedList = [
-          newAccount,
-          ...customerAccounts,
-        ];
+        updatedList = [newAccount, ...customerAccounts];
       }
-
       onUpdateCustomerAccounts(updatedList);
     }
 
-    /*
-     * Update current username.
-     */
     if (uName) {
       setCurrentUser(uName);
     }
+    
+    // Dispatch custom event so OrderDetailsPage and other listeners update immediately
+    window.dispatchEvent(new Event('magadh_profile_updated'));
 
-    /*
-     * Notify other frontend components.
-     */
-    window.dispatchEvent(
-      new Event('magadh_profile_updated')
-    );
-
-    /*
-     * ------------------------------------------------
-     * API GATEWAY REQUEST
-     * ------------------------------------------------
-     */
+    // 5. Send POST to AWS API Gateway Invoke URL with Content-Type application/json
     let requestSucceeded = false;
+    let awsStatus = 0;
     let failureReason = '';
+    let explanationText = '';
+    const targetUrl = AWS_PROFILE_INVOKE_URL;
+
+    console.group('%c[AWS API Gateway Invocation]', 'color: #0284c7; font-weight: bold; font-size: 13px;');
+    console.log('%cTarget Endpoint:%c ' + targetUrl, 'color: #0284c7; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
+    console.log('%cHTTP Method:%c POST', 'color: #10b981; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
+    console.log('%cHeaders:%c', 'color: #6366f1; font-weight: bold;', '', {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    });
+    console.log('%cJSON Payload:%c', 'color: #6366f1; font-weight: bold;', '', payload);
 
     try {
-      console.group(
-        '[Magadh Tyres] Profile API Request'
-      );
+      let response: Response | null = null;
+      let rawData: any = null;
 
-      console.log(
-        'API URL:',
-        YOUR_API_URL_HERE
-      );
-
-      console.log(
-        'Method:',
-        'POST'
-      );
-
-      console.log(
-        'Payload:',
-        payload
-      );
-
-      /*
-       * Direct browser request.
-       *
-       * API Gateway must have CORS configured
-       * to allow your frontend origin.
-       */
-      const controller =
-        new AbortController();
-
-      const timeoutId = window.setTimeout(
-        () => controller.abort(),
-        10000
-      );
-
-      const response = await fetch(
-        YOUR_API_URL_HERE,
-        {
-          method: 'POST',
-
-          headers: {
-            'Content-Type':
-              'application/json',
-
-            Accept:
-              'application/json',
-          },
-
-          body: JSON.stringify(payload),
-
-          signal:
-            controller.signal,
-        }
-      );
-
-      window.clearTimeout(timeoutId);
-
-      /*
-       * Try to read JSON response.
-       */
-      let responseData: any = null;
+      const requestHeaders: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
 
       try {
-        responseData =
-          await response.json();
-      } catch {
-        responseData = null;
+        console.log('%c[1/2] Sending direct POST fetch to AWS API Gateway...', 'color: #0284c7;');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+        response = await fetch(targetUrl, {
+          method: 'POST',
+          headers: requestHeaders,
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+
+        console.log(`%c[Direct Fetch Result]: HTTP ${response.status} ${response.statusText}`, response.ok ? 'color: #10b981; font-weight: bold;' : 'color: #ea580c; font-weight: bold;');
+        awsStatus = response.status;
+        try {
+          rawData = await response.json();
+          console.log('[Direct Fetch Response Data]:', rawData);
+        } catch {
+          rawData = null;
+        }
+
+        if (response.ok) {
+          requestSucceeded = true;
+        } else {
+          throw new Error(rawData?.message || rawData?.error || `HTTP ${response.status}`);
+        }
+      } catch (browserFetchErr: any) {
+        // Fallback to server-side proxy which saves profile on server and forwards to AWS
+        console.warn('%c[Direct Fetch Notice]:%c ' + (browserFetchErr?.message || 'Preflight / Auth check'), 'color: #ea580c; font-weight: bold;', 'color: #475569;');
+        console.log('%c[2/2] Invoking via server-side proxy (/api/profile/sync-aws)...', 'color: #0284c7; font-weight: bold;');
+
+        const proxyResponse = await fetch('/api/profile/sync-aws', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({
+            ...payload,
+            endpoint: targetUrl,
+          }),
+        });
+
+        response = proxyResponse;
+        try {
+          const proxyJson = await proxyResponse.json();
+          rawData = proxyJson?.data || proxyJson;
+          awsStatus = proxyJson?.awsStatus || (proxyResponse.ok ? 200 : proxyResponse.status);
+          console.log(`%c[Server Proxy Result]: AWS HTTP ${awsStatus}`, proxyJson?.awsSynced ? 'color: #10b981; font-weight: bold;' : 'color: #ea580c; font-weight: bold;', rawData);
+          
+          if (proxyJson?.awsSynced) {
+            requestSucceeded = true;
+          } else {
+            requestSucceeded = false;
+            failureReason = proxyJson?.data?.message || proxyJson?.diagnostic || (awsStatus ? `HTTP ${awsStatus}` : 'Gateway unreachable');
+            explanationText = proxyJson?.diagnostic || '';
+          }
+        } catch {
+          rawData = null;
+          awsStatus = proxyResponse.status;
+          if (proxyResponse.ok) {
+            requestSucceeded = true;
+          } else {
+            failureReason = `HTTP ${proxyResponse.status}`;
+          }
+        }
       }
-
-      console.log(
-        'API HTTP Status:',
-        response.status
-      );
-
-      console.log(
-        'API Response:',
-        responseData
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          responseData?.message ||
-          responseData?.error ||
-          `HTTP ${response.status}`
-        );
-      }
-
-      requestSucceeded = true;
-
-      console.log(
-        'Profile successfully sent to API Gateway.'
-      );
-
-      console.groupEnd();
-    } catch (error: any) {
-      console.error(
-        '[Magadh Tyres] Profile API Error:',
-        error
-      );
-
-      failureReason =
-        error?.name === 'AbortError'
-          ? 'API request timed out.'
-          : error?.message ||
-            'Unable to reach API Gateway.';
-
-      console.groupEnd();
+    } catch (err: any) {
+      requestSucceeded = false;
+      failureReason = err?.message || 'Network unreachable';
+      console.error('[Commit Updates Error]:', err);
     } finally {
       setIsSubmitting(false);
+      console.groupEnd();
     }
 
-    /*
-     * User feedback.
-     */
+    // 6. User feedback on success or failure with visual banner & toast
     if (requestSucceeded) {
       setIsSaved(true);
-
-      showToast(
-        'Profile saved successfully and synced with AWS!'
-      );
-
-      setTimeout(() => {
-        setIsSaved(false);
-      }, 3500);
+      setStatusBanner({
+        type: 'success',
+        message: 'Profile updates successfully committed and synchronized with AWS back end!',
+      });
+      showToast('Profile committed to AWS successfully!');
+      setTimeout(() => setIsSaved(false), 4000);
     } else {
-      showToast(
-        `Profile saved locally, but AWS sync failed: ${
-          failureReason ||
-          'API Gateway unreachable.'
-        }`
-      );
+      setStatusBanner({
+        type: 'error',
+        message: `Failed to commit updates to AWS: ${failureReason || 'Endpoint unreachable'}`,
+      });
+      showToast(`Failed to commit updates: ${failureReason || 'Endpoint unreachable'}`);
     }
   };
 
-  /*
-   * Toggle account status.
-   */
+
+
+  // Toggle status
   const handleToggleStatus = () => {
-    const newStatus =
-      status === 'Active'
-        ? 'Inactive'
-        : 'Active';
-
+    const newStatus = status === 'Active' ? 'Inactive' : 'Active';
     setStatus(newStatus);
-
-    showToast(
-      `User status updated to: ${newStatus}`
-    );
+    showToast(`User status updated to: ${newStatus}`);
   };
 
-  /*
-   * Clear profile.
-   */
+  // Reset Profile details to defaults
   const handleResetProfile = () => {
     setUsername('');
     setContactNumber('');
     setEmailAddress('');
-    setGstin('');
+    setGSTIN('');
     setWorkshopAddress('');
-
     setName('');
     setUserId('');
     setEmail('');
-
     setCompanyName('');
     setPhone('');
     setGstNumber('');
     setDeliveryLocation('');
     setAddress('');
-
-    localStorage.removeItem(
-      'user_profile'
-    );
-
+    setStatusBanner(null);
+    localStorage.removeItem('user_profile');
     if (currentUser) {
-      localStorage.removeItem(
-        `user_profile_${currentUser.toLowerCase()}`
-      );
+      localStorage.removeItem(`user_profile_${currentUser.toLowerCase()}`);
     }
-
     setCurrentUser('');
-
-    showToast(
-      'Profile form cleared.'
-    );
+    showToast('Profile form cleared.');
   };
 
   return (
     <div className="py-6 sm:py-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 animate-fade-in font-sans">
-
+      
       {/* Page Title */}
       <div className="flex items-center justify-between">
         <div>
-          <h1
-            id="user-access-management-heading"
-            className="text-2xl sm:text-3xl lg:text-4xl font-normal font-poppins text-[#5f6368] leading-tight tracking-tight"
-          >
-            User Access
-            <br />
-            Management
+          <h1 id="user-access-management-heading" className="text-2xl sm:text-3xl lg:text-4xl font-normal font-poppins text-[#5f6368] leading-tight tracking-tight">
+            User Access<br />Management
           </h1>
         </div>
 
@@ -737,15 +479,50 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         </div>
       </div>
 
+      {/* Real-time Status & Feedback Banner */}
+      {statusBanner && (
+        <div
+          id="profile-status-banner"
+          className={`px-4 py-3 rounded-2xl border text-sm font-medium flex items-center justify-between shadow-xs transition-all ${
+            statusBanner.type === 'success'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+              : statusBanner.type === 'error'
+              ? 'bg-rose-50 border-rose-200 text-rose-800'
+              : statusBanner.type === 'warning'
+              ? 'bg-amber-50 border-amber-200 text-amber-800'
+              : 'bg-sky-50 border-sky-200 text-sky-800'
+          }`}
+        >
+          <div className="flex items-center space-x-2.5">
+            {statusBanner.type === 'success' ? (
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+            ) : statusBanner.type === 'error' ? (
+              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+            ) : statusBanner.type === 'warning' ? (
+              <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+            ) : (
+              <Loader2 className="w-5 h-5 text-sky-600 shrink-0 animate-spin" />
+            )}
+            <span>{statusBanner.message}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setStatusBanner(null)}
+            className="text-xs font-bold text-slate-500 hover:text-slate-800 ml-3 px-2 py-0.5 rounded cursor-pointer"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Primary Card */}
       <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xs overflow-hidden transition-all">
-
-        {/* Name */}
+        
+        {/* ROW 1: Name / username */}
         <div className="flex items-center justify-between px-6 sm:px-8 py-5 sm:py-6 border-b border-slate-200">
           <div className="w-1/3 sm:w-1/4 text-sm sm:text-base font-normal text-slate-700">
             Name
           </div>
-
           <div className="flex-1 text-right sm:text-left">
             {isEditMode ? (
               <input
@@ -757,6 +534,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   setCompanyName(e.target.value);
                 }}
                 className="w-full sm:w-4/5 px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm sm:text-base font-semibold text-slate-900 uppercase focus:outline-none focus:border-[#54b4e7]"
+                placeholder=""
               />
             ) : (
               <span className="text-sm sm:text-base font-medium text-slate-900 uppercase tracking-wide">
@@ -766,74 +544,55 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           </div>
         </div>
 
-        {/* User ID */}
+        {/* ROW 2: User ID / email_address */}
         <div className="flex items-center justify-between px-6 sm:px-8 py-5 sm:py-6 border-b border-slate-200">
           <div className="w-1/3 sm:w-1/4 text-sm sm:text-base font-normal text-slate-700 leading-tight">
-            User
-            <br />
-            ID
+            User<br />ID
           </div>
-
           <div className="flex-1 text-right sm:text-left">
             {isEditMode ? (
               <input
                 type="email"
-                value={emailAddress || userId}
+                value={email_address || userId}
                 onChange={(e) => {
                   setUserId(e.target.value);
                   setEmail(e.target.value);
                   setEmailAddress(e.target.value);
                 }}
                 className="w-full sm:w-4/5 px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm sm:text-base font-normal text-slate-900 lowercase focus:outline-none focus:border-[#54b4e7]"
+                placeholder=""
               />
             ) : (
               <span className="text-sm sm:text-base font-normal text-slate-900 lowercase break-all">
-                {emailAddress || userId || ''}
+                {email_address || userId || ''}
               </span>
             )}
           </div>
         </div>
 
-        {/* Role */}
+        {/* ROW 3: Role */}
         <div className="flex items-center justify-between px-6 sm:px-8 py-5 sm:py-6 border-b border-slate-200">
           <div className="w-1/3 sm:w-1/4 text-sm sm:text-base font-normal text-slate-700">
             Role
           </div>
-
           <div className="flex-1 text-right sm:text-left flex items-center justify-end sm:justify-start space-x-2">
             {isEditMode ? (
               <select
                 value={role}
-                onChange={(e) =>
-                  setRole(
-                    e.target.value as
-                      | 'Admin'
-                      | 'Partner'
-                      | 'Billing Manager'
-                      | 'Staff / Operator'
-                  )
-                }
+                onChange={(e) => setRole(e.target.value as any)}
                 className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm sm:text-base font-bold text-slate-900 focus:outline-none focus:border-[#54b4e7]"
               >
-                <option value="Admin">
-                  Admin
-                </option>
-                <option value="Partner">
-                  Partner
-                </option>
-                <option value="Billing Manager">
-                  Billing Manager
-                </option>
-                <option value="Staff / Operator">
-                  Staff / Operator
-                </option>
+                <option value="Admin">Admin</option>
+                <option value="Partner">Partner</option>
+                <option value="Billing Manager">Billing Manager</option>
+                <option value="Staff / Operator">Staff / Operator</option>
               </select>
             ) : (
               <span className="text-sm sm:text-base font-bold text-slate-900">
                 {role}
               </span>
             )}
-
+            
             {status === 'Inactive' && (
               <span className="text-[11px] font-semibold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
                 Suspended
@@ -842,31 +601,26 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           </div>
         </div>
 
-        {/* Action */}
+        {/* ROW 4: Action */}
         <div className="flex items-center justify-between px-6 sm:px-8 py-5 sm:py-6">
           <div className="w-1/3 sm:w-1/4 text-sm sm:text-base font-normal text-slate-700">
             Action
           </div>
-
           <div className="flex items-center justify-end space-x-3 sm:space-x-5 text-slate-800">
-
+            {/* Status reaction pill */}
             {isSaved && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 animate-in fade-in zoom-in duration-200">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                 <span>Committed</span>
               </span>
             )}
-
-            {/* Save */}
+            
+            {/* Save Icon */}
             <button
               type="button"
               onClick={handleSave}
               disabled={isSubmitting}
-              title={
-                isSaved
-                  ? 'Profile Committed & Synced!'
-                  : 'Save & Commit Profile'
-              }
+              title={isSaved ? 'Profile Committed & Synced!' : 'Save & Commit Profile'}
               className={`p-1.5 rounded-xl cursor-pointer ${
                 isSaved
                   ? 'text-emerald-700 bg-emerald-100 ring-1 ring-emerald-400'
@@ -874,7 +628,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               }`}
             >
               {isSubmitting ? (
-                <Loader2 className="w-6 h-6 stroke-[2] text-[#54b4e7] animate-spin" />
+                <Loader2 className="w-6 h-6 stroke-[2] text-[#54b4e7]" />
               ) : isSaved ? (
                 <CheckCircle2 className="w-6 h-6 stroke-[2.2] text-emerald-600" />
               ) : (
@@ -882,297 +636,183 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               )}
             </button>
 
-            {/* Status */}
+            {/* Minus Icon */}
             <button
               type="button"
               onClick={handleToggleStatus}
-              title={
-                status === 'Active'
-                  ? 'Deactivate Access'
-                  : 'Reactivate Access'
-              }
+              title={status === 'Active' ? 'Deactivate Access' : 'Reactivate Access'}
               className={`p-1 active:scale-90 transition-all cursor-pointer ${
-                status === 'Active'
-                  ? 'text-slate-700 hover:text-red-500'
-                  : 'text-red-500 hover:text-emerald-600'
+                status === 'Active' ? 'text-slate-700 hover:text-red-500' : 'text-red-500 hover:text-emerald-600'
               }`}
             >
               <MinusCircle className="w-6 h-6 stroke-[1.8]" />
             </button>
 
-            {/* Expand */}
+            {/* Expand / Collapse Chevron */}
             <button
               type="button"
-              onClick={() =>
-                setIsExpanded(!isExpanded)
-              }
-              title={
-                isExpanded
-                  ? 'Collapse Details'
-                  : 'Expand Details'
-              }
+              onClick={() => setIsExpanded(!isExpanded)}
+              title={isExpanded ? 'Collapse Details' : 'Expand Details'}
               className="p-1 text-slate-900 hover:text-slate-700 active:scale-90 transition-transform duration-200 cursor-pointer"
             >
               <ChevronDown
                 className={`w-7 h-7 stroke-[2.75] transition-transform duration-200 ${
-                  isExpanded
-                    ? 'rotate-180'
-                    : ''
+                  isExpanded ? 'rotate-180' : ''
                 }`}
               />
             </button>
           </div>
         </div>
 
-        {/* Expanded Section */}
+        {/* EXPANDABLE ACCORDION SECTION */}
         {isExpanded && (
           <div className="bg-slate-50/70 border-t border-slate-200 px-6 sm:px-8 py-6 sm:py-8 space-y-6 animate-fade-in">
-
-            {/* Billing Header */}
+            
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3.5 py-3 sm:py-4 border-b border-slate-200">
               <div className="py-0.5">
                 <h3 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900 flex items-center space-x-2.5 tracking-tight">
                   <Building2 className="w-5 h-5 text-slate-700" />
-                  <span>
-                    Billing Details
-                  </span>
+                  <span>Billing Details</span>
                 </h3>
               </div>
 
               <div className="flex items-center space-x-2">
                 <button
                   type="button"
-                  onClick={() =>
-                    setIsEditMode(
-                      !isEditMode
-                    )
-                  }
+                  onClick={() => setIsEditMode(!isEditMode)}
                   className="px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-semibold shadow-2xs flex items-center space-x-1.5 transition-all cursor-pointer"
                 >
                   <Edit3 className="w-3.5 h-3.5 text-slate-500" />
-
-                  <span>
-                    {isEditMode
-                      ? 'Exit Edit Mode'
-                      : 'Edit Full Profile'}
-                  </span>
+                  <span>{isEditMode ? 'Exit Edit Mode' : 'Edit Full Profile'}</span>
                 </button>
               </div>
             </div>
 
-            {/* Backend Fields */}
+            {/* Detailed Grid with explicit keys: 'username', 'contact_number', 'email_address', 'GSTIN', 'workshop_address' */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-              {/* username */}
+              
+              {/* Field 1: username */}
               <div className="space-y-1.5">
-                <label
-                  htmlFor="username"
-                  className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5"
-                >
+                <label htmlFor="username" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
                   <User className="w-3.5 h-3.5 text-slate-500" />
                   <span>Username</span>
                 </label>
-
-                {isEditMode ? (
-                  <input
-                    id="username"
-                    name="username"
-                    type="text"
-                    value={username}
-                    onChange={(e) => {
-                      setUsername(
-                        e.target.value
-                      );
-                      setName(
-                        e.target.value
-                      );
-                      setCompanyName(
-                        e.target.value
-                      );
-                    }}
-                    className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#54b4e7]"
-                    placeholder="Enter username"
-                  />
-                ) : (
-                  <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 min-h-[42px] flex items-center">
-                    {username || ''}
-                  </div>
-                )}
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    setName(e.target.value);
+                    setCompanyName(e.target.value);
+                  }}
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#54b4e7] shadow-xs"
+                  placeholder="Enter username (e.g. Himanshu Verma)"
+                />
               </div>
 
-              {/* contact_number */}
+              {/* Field 2: contact_number */}
               <div className="space-y-1.5">
-                <label
-                  htmlFor="contact_number"
-                  className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5"
-                >
+                <label htmlFor="contact_number" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
                   <Phone className="w-3.5 h-3.5 text-slate-500" />
-                  <span>
-                    Contact Number
-                  </span>
+                  <span>Contact Number</span>
                 </label>
-
-                {isEditMode ? (
-                  <input
-                    id="contact_number"
-                    name="contact_number"
-                    type="tel"
-                    value={contactNumber}
-                    onChange={(e) => {
-                      setContactNumber(
-                        e.target.value
-                      );
-                      setPhone(
-                        e.target.value
-                      );
-                    }}
-                    className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#54b4e7]"
-                    placeholder="+91 9876543210"
-                  />
-                ) : (
-                  <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 min-h-[42px] flex items-center">
-                    {contactNumber || ''}
-                  </div>
-                )}
+                <input
+                  id="contact_number"
+                  name="contact_number"
+                  type="tel"
+                  value={contact_number}
+                  onChange={(e) => {
+                    setContactNumber(e.target.value);
+                    setPhone(e.target.value);
+                  }}
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#54b4e7] shadow-xs"
+                  placeholder="e.g. +91 9876543210"
+                />
               </div>
 
-              {/* email_address */}
+              {/* Field 3: email_address */}
               <div className="space-y-1.5">
-                <label
-                  htmlFor="email_address"
-                  className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5"
-                >
+                <label htmlFor="email_address" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
                   <Mail className="w-3.5 h-3.5 text-slate-500" />
-                  <span>
-                    Email Address
-                  </span>
+                  <span>Email Address</span>
                 </label>
-
-                {isEditMode ? (
-                  <input
-                    id="email_address"
-                    name="email_address"
-                    type="email"
-                    value={emailAddress}
-                    onChange={(e) => {
-                      setEmailAddress(
-                        e.target.value
-                      );
-                      setEmail(
-                        e.target.value
-                      );
-                      setUserId(
-                        e.target.value
-                      );
-                    }}
-                    className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 lowercase focus:outline-none focus:border-[#54b4e7]"
-                    placeholder="user@example.com"
-                  />
-                ) : (
-                  <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 lowercase min-h-[42px] flex items-center break-all">
-                    {emailAddress || ''}
-                  </div>
-                )}
+                <input
+                  id="email_address"
+                  name="email_address"
+                  type="email"
+                  value={email_address}
+                  onChange={(e) => {
+                    setEmailAddress(e.target.value);
+                    setEmail(e.target.value);
+                    setUserId(e.target.value);
+                  }}
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 lowercase focus:outline-none focus:border-[#54b4e7] shadow-xs"
+                  placeholder="user@example.com"
+                />
               </div>
 
-              {/* GSTIN */}
+              {/* Field 4: GSTIN */}
               <div className="space-y-1.5">
-                <label
-                  htmlFor="GSTIN"
-                  className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5"
-                >
+                <label htmlFor="GSTIN" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
                   <FileText className="w-3.5 h-3.5 text-slate-500" />
                   <span>GSTIN</span>
                 </label>
-
-                {isEditMode ? (
-                  <input
-                    id="GSTIN"
-                    name="GSTIN"
-                    type="text"
-                    value={gstin}
-                    onChange={(e) => {
-                      const value =
-                        e.target.value.toUpperCase();
-
-                      setGstin(value);
-                      setGstNumber(value);
-                    }}
-                    className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-bold uppercase text-slate-900 focus:outline-none focus:border-[#54b4e7]"
-                    placeholder="21AAACM1234F1Z5"
-                  />
-                ) : (
-                  <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-900 font-mono min-h-[42px] flex items-center">
-                    {gstin || ''}
-                  </div>
-                )}
+                <input
+                  id="GSTIN"
+                  name="GSTIN"
+                  type="text"
+                  value={GSTIN}
+                  onChange={(e) => {
+                    setGSTIN(e.target.value.toUpperCase());
+                    setGstNumber(e.target.value.toUpperCase());
+                  }}
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-bold uppercase text-slate-900 focus:outline-none focus:border-[#54b4e7] font-mono shadow-xs"
+                  placeholder="e.g. 21AAACM1234F1Z5"
+                />
               </div>
 
-              {/* workshop_address */}
+              {/* Field 5: workshop_address */}
               <div className="space-y-1.5 md:col-span-2">
-                <label
-                  htmlFor="workshop_address"
-                  className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5"
-                >
+                <label htmlFor="workshop_address" className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
                   <Home className="w-3.5 h-3.5 text-slate-500" />
-                  <span>
-                    Workshop Address
-                  </span>
+                  <span>Workshop Address</span>
                 </label>
-
-                {isEditMode ? (
-                  <textarea
-                    id="workshop_address"
-                    name="workshop_address"
-                    rows={2}
-                    value={workshopAddress}
-                    onChange={(e) => {
-                      setWorkshopAddress(
-                        e.target.value
-                      );
-                      setAddress(
-                        e.target.value
-                      );
-                    }}
-                    className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#54b4e7] resize-none"
-                    placeholder="Workshop / Factory Address, Street, City, State - PIN"
-                  />
-                ) : (
-                  <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs font-medium text-slate-800 leading-relaxed min-h-[42px]">
-                    {workshopAddress || ''}
-                  </div>
-                )}
+                <textarea
+                  id="workshop_address"
+                  name="workshop_address"
+                  rows={2}
+                  value={workshop_address}
+                  onChange={(e) => {
+                    setWorkshopAddress(e.target.value);
+                    setAddress(e.target.value);
+                  }}
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#54b4e7] resize-none shadow-xs"
+                  placeholder="e.g. Workshop / Factory Address, Street, City, State - PIN"
+                />
               </div>
+
             </div>
 
-            {/* Bottom Controls */}
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-slate-200">
 
+
+            {/* Bottom Controls inside Accordion */}
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-slate-200">
               <button
                 type="button"
                 onClick={handleResetProfile}
                 className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold flex items-center justify-center space-x-2 transition-all cursor-pointer"
               >
                 <RotateCcw className="w-4 h-4 text-slate-600" />
-
-                <span>
-                  Clear Form Details
-                </span>
+                <span>Clear Form Details</span>
               </button>
 
               <div className="flex items-center space-x-3 w-full sm:w-auto justify-end">
-
-                <div
-                  className="hidden sm:flex items-center text-[10px] text-slate-400 gap-1 font-mono pr-1"
-                  title={AWS_PROFILE_INVOKE_URL}
-                >
+                <div className="hidden sm:flex items-center text-[10px] text-slate-400 gap-1 font-mono pr-1" title={AWS_PROFILE_INVOKE_URL}>
                   <Cloud className="w-3.5 h-3.5 text-sky-500" />
-
-                  <span>
-                    AWS Cloud Sync
-                  </span>
+                  <span>AWS Cloud Sync</span>
                 </div>
-
                 <button
                   type="button"
                   onClick={handleSave}
@@ -1187,35 +827,29 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="w-4 h-4 text-white animate-spin" />
-
-                      <span className="tracking-wide">
-                        Committing Updates...
-                      </span>
+                      <Loader2 className="w-4 h-4 text-white" />
+                      <span className="tracking-wide">Committing Updates...</span>
                     </>
                   ) : isSaved ? (
                     <>
                       <CheckCircle2 className="w-4 h-4 text-white" />
-
-                      <span className="tracking-wide">
-                        Updates Committed
-                      </span>
+                      <span className="tracking-wide">Updates Committed</span>
                     </>
                   ) : (
                     <>
                       <Save className="w-4 h-4" />
-
-                      <span className="tracking-wide">
-                        Commit Updates
-                      </span>
+                      <span className="tracking-wide">Commit Updates</span>
                     </>
                   )}
                 </button>
               </div>
             </div>
+
           </div>
         )}
+
       </div>
+
     </div>
   );
 };
