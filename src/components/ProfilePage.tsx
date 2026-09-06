@@ -217,14 +217,26 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     setIsSubmitting(true);
     setStatusBanner({ type: 'info', message: 'Sending updates to AWS API Gateway...' });
 
-    // 4. Construct JSON payload with the exact 5 required fields:
-    // username, contact_number, email_address, gstin, workshop_address
-    const payload = {
+    // 4. Construct JSON payload with the 5 required fields:
+    // username, contact_number, email_address, gstin, workshop_address,
+    // plus Lambda body compatibility for event['body'] and spaced keys
+    const baseFields = {
       username: uName,
       contact_number: cNumber,
+      'contact number': cNumber,
       email_address: eAddress,
+      'email address': eAddress,
       gstin: gNum,
+      GSTIN: gNum,
       workshop_address: wAddress,
+      'workshop address': wAddress,
+    };
+
+    const payload = {
+      ...baseFields,
+      body: {
+        ...baseFields,
+      },
     };
 
     // Keep state updated in UI and storage

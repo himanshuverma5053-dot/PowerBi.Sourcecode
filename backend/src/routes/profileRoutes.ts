@@ -152,23 +152,38 @@ router.post('/profile/sync-aws', async (req: Request, res: Response) => {
     const { endpoint, apiKey: _k, ...cleanPayload } = rawBody;
     const gstinValue = cleanPayload.gstin || cleanPayload.GSTIN || latestProfile.GSTIN;
 
-    const payloadToSend = {
-      username: cleanPayload.username || latestProfile.username,
-      contact_number: cleanPayload.contact_number || latestProfile.contact_number,
-      email_address: cleanPayload.email_address || latestProfile.email_address,
+    const usernameVal = cleanPayload.username || latestProfile.username;
+    const contactVal = cleanPayload.contact_number || cleanPayload['contact number'] || latestProfile.contact_number;
+    const emailVal = cleanPayload.email_address || cleanPayload['email address'] || latestProfile.email_address;
+    const addressVal = cleanPayload.workshop_address || cleanPayload['workshop address'] || latestProfile.workshop_address;
+
+    const baseFields = {
+      username: usernameVal,
+      contact_number: contactVal,
+      'contact number': contactVal,
+      email_address: emailVal,
+      'email address': emailVal,
       gstin: gstinValue,
       GSTIN: gstinValue,
-      workshop_address: cleanPayload.workshop_address || latestProfile.workshop_address,
+      workshop_address: addressVal,
+      'workshop address': addressVal,
+    };
+
+    const payloadToSend = {
+      ...baseFields,
+      body: {
+        ...baseFields,
+      },
     };
 
     // Always update server-side store so profile is reliably preserved
     if (cleanPayload.username || cleanPayload.email_address) {
       latestProfile = {
-        username: payloadToSend.username,
-        contact_number: payloadToSend.contact_number,
-        email_address: payloadToSend.email_address,
-        GSTIN: payloadToSend.GSTIN,
-        workshop_address: payloadToSend.workshop_address,
+        username: usernameVal,
+        contact_number: contactVal,
+        email_address: emailVal,
+        GSTIN: gstinValue,
+        workshop_address: addressVal,
         updatedAt: new Date().toISOString(),
       };
     }
