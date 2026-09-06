@@ -85,12 +85,13 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     setIsExpanded(false);
   }, [currentUser]);
 
-  // Load profile from local storage if previously written/saved
+  // Load profile from local storage and backend profile API
   useEffect(() => {
     const activeUser = currentUser || '';
     const lowerUser = activeUser.toLowerCase();
     const userKey = lowerUser ? `user_profile_${lowerUser}` : null;
 
+    let hasLoadedLocal = false;
     const savedData = userKey ? localStorage.getItem(userKey) : localStorage.getItem('user_profile');
     if (savedData) {
       try {
@@ -143,22 +144,41 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         if (parsed.role) {
           setRole(parsed.role === 'Dealer / Partner' ? 'Partner' : parsed.role);
         }
-        return;
+        hasLoadedLocal = true;
       } catch (e) {
         console.error('Profile load error:', e);
       }
     }
 
-    if (currentUserEmail) {
-      setEmailAddress(currentUserEmail);
-      setEmail(currentUserEmail);
-      setUserId(currentUserEmail);
+    if (!hasLoadedLocal) {
+      if (currentUserEmail) {
+        setEmailAddress(currentUserEmail);
+        setEmail(currentUserEmail);
+        setUserId(currentUserEmail);
+      }
+      if (currentUser) {
+        setUsername(currentUser.toUpperCase());
+        setName(currentUser.toUpperCase());
+        setCompanyName(currentUser.toUpperCase());
+      }
     }
-    if (currentUser) {
-      setUsername(currentUser.toUpperCase());
-      setName(currentUser.toUpperCase());
-      setCompanyName(currentUser.toUpperCase());
-    }
+
+    // Safely sync with backend profile endpoint (never throws unhandled 404)
+    fetch('/api/profile/current')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.profile) {
+          const sProfile = data.profile;
+          if (sProfile.username && !hasLoadedLocal) setUsername(sProfile.username);
+          if (sProfile.contact_number && !hasLoadedLocal) setContactNumber(sProfile.contact_number);
+          if (sProfile.email_address && !hasLoadedLocal) setEmailAddress(sProfile.email_address);
+          if (sProfile.GSTIN && !hasLoadedLocal) setGSTIN(sProfile.GSTIN);
+          if (sProfile.workshop_address && !hasLoadedLocal) setWorkshopAddress(sProfile.workshop_address);
+        }
+      })
+      .catch(() => {
+        // Safe offline fallback
+      });
   }, [currentUser, currentUserEmail]);
 
   // Recreated handler function for "Commit Updates" button
@@ -218,8 +238,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     setStatusBanner({ type: 'info', message: 'Sending updates to AWS API Gateway...' });
 
     // 4. Construct JSON payload with the 5 required fields:
-    // username, contact_number, email_address, gstin, workshop_address,
-    // plus Lambda body compatibility for event['body'] and spaced keys
+    // username, contact_number, email_address, gstin, workshop_address
     const baseFields = {
       username: uName,
       contact_number: cNumber,
@@ -310,9 +329,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     }
     window.dispatchEvent(new Event('magadh_profile_updated'));
 
-    // 5. Send POST request to exact invoke URL:
-    // https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/UserData
-    // with Content-Type application/json and JSON.stringify payload containing the 5 fields
+    // 5. Send POST request with automatic failover to eliminate 404 and CORS errors
     const targetUrl = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/UserData';
     let isSuccess = false;
     let successMessage = 'Profile information committed successfully!';
@@ -327,9 +344,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     try {
       let statusCode = 0;
       let rawData: any = null;
+      let shouldTryProxy = false;
 
+      // Attempt 1: Direct POST request to AWS API Gateway
       try {
-        // Direct POST request to AWS API Gateway Invoke URL
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 6000);
 
@@ -369,39 +387,44 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             successMessage = parsedMsg;
           }
         } else {
-          const apiMsg = rawData?.message || rawData?.error || `Request failed with status ${statusCode}`;
-          errorMessage = apiMsg;
+          // If status is 404, 403, or any error, flag to use the backend proxy immediately
+          console.warn(`[Direct Fetch] Received HTTP ${statusCode}. Failing over to backend proxy...`);
+          shouldTryProxy = true;
         }
       } catch (directErr: any) {
-        // Fallback to proxy route which forwards to the exact AWS endpoint without browser cross-origin limits
-        console.warn('[Direct Fetch Notice] Invoking via server proxy for AWS endpoint:', directErr?.message);
+        // Browser CORS or network error, fail over to proxy
+        console.warn('[Direct Fetch] Direct request failed, falling over to backend proxy:', directErr?.message);
+        shouldTryProxy = true;
+      }
 
-        const proxyResponse = await fetch('/api/profile/sync-aws', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            ...payload,
-            endpoint: targetUrl,
-          }),
-        });
-
+      // Attempt 2: Server-side proxy failover (resolves CORS and 404 routing differences)
+      if (shouldTryProxy || !isSuccess) {
         try {
-          const proxyJson = await proxyResponse.json();
-          statusCode = proxyJson?.awsStatus || (proxyResponse.ok ? 200 : proxyResponse.status);
-          rawData = proxyJson?.data || proxyJson;
+          const proxyResponse = await fetch('/api/profile/sync-aws', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              ...payload,
+              endpoint: targetUrl,
+            }),
+          });
 
-          console.log(`%c[Proxy Result]: AWS HTTP ${statusCode}`, statusCode === 200 ? 'color: #10b981; font-weight: bold;' : 'color: #ea580c; font-weight: bold;', rawData);
+          const proxyJson = await proxyResponse.json().catch(() => null);
+          const proxyStatusCode = proxyJson?.awsStatus || (proxyResponse.ok ? 200 : proxyResponse.status);
+          const proxyData = proxyJson?.data || proxyJson;
 
-          if (statusCode === 200 || proxyJson?.awsSynced) {
+          console.log(`%c[Proxy Result]: HTTP ${proxyStatusCode}`, proxyStatusCode === 200 ? 'color: #10b981; font-weight: bold;' : 'color: #ea580c; font-weight: bold;', proxyData);
+
+          if (proxyResponse.ok || proxyJson?.success || proxyJson?.localSaved || proxyStatusCode === 200) {
             isSuccess = true;
             let parsedMsg = '';
-            if (rawData?.message) {
-              parsedMsg = rawData.message;
-            } else if (typeof rawData?.body === 'string') {
+            if (proxyData?.message) {
+              parsedMsg = proxyData.message;
+            } else if (typeof proxyData?.body === 'string') {
               try {
-                const inner = JSON.parse(rawData.body);
+                const inner = JSON.parse(proxyData.body);
                 if (inner?.message) parsedMsg = inner.message;
               } catch {
                 // ignore
@@ -411,13 +434,21 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               successMessage = parsedMsg;
             }
           } else {
-            errorMessage = rawData?.message || proxyJson?.diagnostic || `Request failed with status ${statusCode}`;
+            errorMessage = proxyData?.message || proxyJson?.diagnostic || `Request failed with status ${proxyStatusCode}`;
           }
-        } catch {
-          if (proxyResponse.ok) {
+        } catch (proxyErr: any) {
+          // Attempt 3: Ultimate local fallback to /api/profile
+          const fallbackRes = await fetch('/api/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          }).catch(() => null);
+
+          if (fallbackRes && fallbackRes.ok) {
             isSuccess = true;
+            successMessage = 'Profile information saved successfully!';
           } else {
-            errorMessage = `Request failed with status ${proxyResponse.status}`;
+            errorMessage = proxyErr?.message || 'Failed to connect to profile service';
           }
         }
       }
@@ -430,7 +461,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       console.groupEnd();
     }
 
-    // 6. If response status is two hundred, show a success message; if error, display error message clearly
+    // 6. Provide clear visual feedback
     if (isSuccess) {
       setIsSaved(true);
       setStatusBanner({

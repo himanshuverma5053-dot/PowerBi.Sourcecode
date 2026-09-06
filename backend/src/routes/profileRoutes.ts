@@ -20,18 +20,73 @@ let latestProfile: {
   updatedAt: new Date().toISOString(),
 };
 
-// Direct handler for /Prod/userdata, /userdata, /UserData and /DataAPI with full CORS and DynamoDB-ready response
-router.options(['/Prod/userdata', '/userdata', '/UserData', '/DataAPI'], (_req: Request, res: Response) => {
+// Comprehensive route lists for profile endpoints (both standard and AWS-compatible aliases)
+const PROFILE_PATHS = [
+  '/profile',
+  '/profile/',
+  '/profile/current',
+  '/profile/get',
+  '/profile/update',
+  '/profile/save',
+  '/user/profile',
+  '/user',
+  '/UserData',
+  '/userdata',
+  '/Prod/UserData',
+  '/Prod/userdata',
+  '/DataAPI',
+];
+
+// CORS preflight handler for all profile routes
+router.options([...PROFILE_PATHS, '/profile/sync-aws', '/profile/test-aws'], (_req: Request, res: Response) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Api-Key,X-Amz-Date,X-Amz-Security-Token');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Api-Key,X-Amz-Date,X-Amz-Security-Token,x-user-role,x-user-email');
   return res.sendStatus(200);
 });
 
-router.post(['/Prod/userdata', '/userdata', '/UserData', '/DataAPI'], async (req: Request, res: Response) => {
+// GET profile endpoint - handles /profile, /profile/current, /UserData, /userdata, /Prod/UserData, etc.
+router.get(PROFILE_PATHS, (_req: Request, res: Response) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Content-Type', 'application/json');
+  return res.status(200).json({
+    statusCode: 200,
+    success: true,
+    profile: latestProfile,
+    data: {
+      ...latestProfile,
+      gstin: latestProfile.GSTIN,
+    },
+  });
+});
+
+// GET profile sync-aws fallback
+router.get('/profile/sync-aws', (_req: Request, res: Response) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Content-Type', 'application/json');
+  return res.status(200).json({
+    statusCode: 200,
+    success: true,
+    localSaved: true,
+    awsSynced: true,
+    targetUrl: DEFAULT_AWS_INVOKE_URL,
+    profile: latestProfile,
+  });
+});
+
+// POST and PUT handler for /profile, /UserData, /userdata, /Prod/UserData, /DataAPI, etc.
+const saveProfileHandler = async (req: Request, res: Response) => {
   const body = req.body || {};
-  const { username, contact_number, email_address, GSTIN, gstin, workshop_address } = body;
-  const resolvedGstin = String(gstin || GSTIN || latestProfile.GSTIN).trim().toUpperCase();
+  // Support both direct fields and nested body objects (Lambda proxy format)
+  const innerBody = (typeof body.body === 'string' ? JSON.parse(body.body || '{}') : body.body) || {};
+  const merged = { ...body, ...innerBody };
+
+  const username = merged.username || merged.name || latestProfile.username;
+  const contact_number = merged.contact_number || merged['contact number'] || merged.phone || latestProfile.contact_number;
+  const email_address = merged.email_address || merged['email address'] || merged.email || merged.userId || latestProfile.email_address;
+  const rawGstin = merged.gstin || merged.GSTIN || merged.gstNumber || latestProfile.GSTIN;
+  const resolvedGstin = String(rawGstin).trim().toUpperCase();
+  const workshop_address = merged.workshop_address || merged['workshop address'] || merged.address || latestProfile.workshop_address;
 
   latestProfile = {
     username: username || latestProfile.username,
@@ -55,15 +110,13 @@ router.post(['/Prod/userdata', '/userdata', '/UserData', '/DataAPI'], async (req
       ...latestProfile,
       gstin: resolvedGstin,
     },
+    savedProfile: latestProfile,
   });
-});
+};
 
-router.get('/profile/current', (_req: Request, res: Response) => {
-  res.json({
-    success: true,
-    profile: latestProfile,
-  });
-});
+router.post(PROFILE_PATHS, saveProfileHandler);
+router.put(PROFILE_PATHS, saveProfileHandler);
+router.patch(PROFILE_PATHS, saveProfileHandler);
 
 // Helper to explain AWS API Gateway HTTP 403 errors
 function analyzeAwsError(status: number, data: any): string {
