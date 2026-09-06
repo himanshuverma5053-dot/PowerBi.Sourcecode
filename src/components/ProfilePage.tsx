@@ -161,11 +161,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     }
   }, [currentUser, currentUserEmail]);
 
-  // Handle Save / Commit Updates with API endpoint
+  // Recreated handler function for "Commit Updates" button
   const handleSave = async () => {
     setStatusBanner(null);
 
-    // 1. Collect values from required input fields matching exact keys
+    // 1. Collect form field values
     const uName = username.trim();
     const cNumber = contact_number.trim();
     const eAddress = (email_address || userId || email).trim();
@@ -174,10 +174,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     const logisticsHub = deliveryLocation.trim() || 'Central Magadh Hub';
     const customerId = (eAddress || uName.toLowerCase().replace(/\s+/g, '_') || 'customer_primary').trim();
 
-    // 2. Visible Validation Checks - Never silently exit
+    // 2. Visible Validation
     if (!uName) {
       const msg = 'Please enter username before committing updates.';
-      console.warn('[Validation Notice]', msg);
       setStatusBanner({ type: 'warning', message: msg });
       showToast(msg);
       return;
@@ -185,16 +184,14 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
     if (!cNumber) {
       const msg = 'Please enter contact number before committing updates.';
-      console.warn('[Validation Notice]', msg);
       setStatusBanner({ type: 'warning', message: msg });
       showToast(msg);
-      setIsExpanded(true); // Open accordion so customer immediately sees the input field
+      setIsExpanded(true);
       return;
     }
 
     if (!eAddress) {
       const msg = 'Please enter email address before committing updates.';
-      console.warn('[Validation Notice]', msg);
       setStatusBanner({ type: 'warning', message: msg });
       showToast(msg);
       return;
@@ -202,7 +199,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
     if (!gNum) {
       const msg = 'Please enter GSTIN before committing updates.';
-      console.warn('[Validation Notice]', msg);
       setStatusBanner({ type: 'warning', message: msg });
       showToast(msg);
       setIsExpanded(true);
@@ -211,31 +207,30 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
     if (!wAddress) {
       const msg = 'Please enter workshop address before committing updates.';
-      console.warn('[Validation Notice]', msg);
       setStatusBanner({ type: 'warning', message: msg });
       showToast(msg);
       setIsExpanded(true);
       return;
     }
 
-    // 3. Show loading state on button
+    // 3. Indicate loading state
     setIsSubmitting(true);
-    setStatusBanner({ type: 'info', message: 'Sending POST request to AWS API Gateway...' });
+    setStatusBanner({ type: 'info', message: 'Sending updates to AWS API Gateway...' });
 
-    // 4. Construct JSON payload with exact required keys:
-    // 'username', 'contact_number', 'email_address', 'gstin' / 'GSTIN', 'workshop_address'
+    // 4. Construct JSON payload with the exact 5 required fields:
+    // username, contact_number, email_address, gstin, workshop_address
     const payload = {
       username: uName,
       contact_number: cNumber,
       email_address: eAddress,
       gstin: gNum,
-      GSTIN: gNum,
       workshop_address: wAddress,
     };
 
-    // Extended profile object for application cache and state persistence
+    // Keep state updated in UI and storage
     const fullProfileData = {
       ...payload,
+      GSTIN: gNum,
       customer_id: customerId,
       name: name.trim() || uName,
       companyName: uName,
@@ -245,7 +240,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       updatedAt: new Date().toISOString(),
     };
 
-    // Always persist to local storage so user data is instantly preserved
     const userKey = (uName || name.trim()).toLowerCase();
     safeSetLocalStorage(`user_profile_${userKey}`, fullProfileData);
     safeSetLocalStorage('user_profile', fullProfileData);
@@ -302,31 +296,28 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     if (uName) {
       setCurrentUser(uName);
     }
-    
-    // Dispatch custom event so OrderDetailsPage and other listeners update immediately
     window.dispatchEvent(new Event('magadh_profile_updated'));
 
-    // 5. Send POST to AWS API Gateway Invoke URL with Content-Type application/json
-    let requestSucceeded = false;
-    let successMessage = 'Profile information committed successfully and stored in CustomersInfo table!';
-    let failureReason = '';
-    const targetUrl = AWS_PROFILE_INVOKE_URL;
+    // 5. Send POST request to exact invoke URL:
+    // https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/UserData
+    // with Content-Type application/json and JSON.stringify payload containing the 5 fields
+    const targetUrl = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/UserData';
+    let isSuccess = false;
+    let successMessage = 'Profile information committed successfully!';
+    let errorMessage = '';
 
     console.group('%c[AWS API Gateway Invocation]', 'color: #0284c7; font-weight: bold; font-size: 13px;');
-    console.log('%cTarget Endpoint:%c ' + targetUrl, 'color: #0284c7; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
+    console.log('%cInvoke URL:%c ' + targetUrl, 'color: #0284c7; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
     console.log('%cHTTP Method:%c POST', 'color: #10b981; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
-    console.log('%cHeaders:%c', 'color: #6366f1; font-weight: bold;', '', {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    });
-    console.log('%cJSON Payload:%c', 'color: #6366f1; font-weight: bold;', '', payload);
+    console.log('%cHeaders:%c { "Content-Type": "application/json" }', 'color: #6366f1; font-weight: bold;', '');
+    console.log('%cPayload (5 fields):%c', 'color: #6366f1; font-weight: bold;', '', payload);
 
     try {
-      let rawData: any = null;
       let statusCode = 0;
+      let rawData: any = null;
 
       try {
-        console.log('%c[1/2] Sending direct POST fetch to AWS API Gateway Invoke URL...', 'color: #0284c7;');
+        // Direct POST request to AWS API Gateway Invoke URL
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 6000);
 
@@ -334,7 +325,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json',
           },
           body: JSON.stringify(payload),
           signal: controller.signal,
@@ -350,25 +340,34 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
         console.log(`%c[Direct Fetch Result]: HTTP ${statusCode}`, response.ok ? 'color: #10b981; font-weight: bold;' : 'color: #ea580c; font-weight: bold;', rawData);
 
-        if (response.ok && (statusCode === 200 || statusCode === 201 || rawData?.statusCode === 200)) {
-          requestSucceeded = true;
+        if (statusCode === 200) {
+          isSuccess = true;
+          let parsedMsg = '';
           if (rawData?.message) {
-            successMessage = rawData.message;
+            parsedMsg = rawData.message;
+          } else if (typeof rawData?.body === 'string') {
+            try {
+              const inner = JSON.parse(rawData.body);
+              if (inner?.message) parsedMsg = inner.message;
+            } catch {
+              // ignore
+            }
+          }
+          if (parsedMsg) {
+            successMessage = parsedMsg;
           }
         } else {
-          const apiMsg = rawData?.message || rawData?.error || `HTTP ${statusCode}`;
-          throw new Error(apiMsg);
+          const apiMsg = rawData?.message || rawData?.error || `Request failed with status ${statusCode}`;
+          errorMessage = apiMsg;
         }
-      } catch (browserFetchErr: any) {
-        // Fallback to server-side proxy which forwards to AWS API Gateway without browser CORS limitations
-        console.warn('%c[Direct Fetch Notice]:%c ' + (browserFetchErr?.message || 'Preflight / Auth check'), 'color: #ea580c; font-weight: bold;', 'color: #475569;');
-        console.log('%c[2/2] Invoking via server-side proxy (/api/profile/sync-aws)...', 'color: #0284c7; font-weight: bold;');
+      } catch (directErr: any) {
+        // Fallback to proxy route which forwards to the exact AWS endpoint without browser cross-origin limits
+        console.warn('[Direct Fetch Notice] Invoking via server proxy for AWS endpoint:', directErr?.message);
 
         const proxyResponse = await fetch('/api/profile/sync-aws', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json',
           },
           body: JSON.stringify({
             ...payload,
@@ -380,36 +379,47 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           const proxyJson = await proxyResponse.json();
           statusCode = proxyJson?.awsStatus || (proxyResponse.ok ? 200 : proxyResponse.status);
           rawData = proxyJson?.data || proxyJson;
-          console.log(`%c[Server Proxy Result]: AWS HTTP ${statusCode}`, proxyJson?.awsSynced ? 'color: #10b981; font-weight: bold;' : 'color: #ea580c; font-weight: bold;', rawData);
 
-          if (proxyJson?.awsSynced || (proxyResponse.ok && (statusCode === 200 || proxyJson?.statusCode === 200))) {
-            requestSucceeded = true;
+          console.log(`%c[Proxy Result]: AWS HTTP ${statusCode}`, statusCode === 200 ? 'color: #10b981; font-weight: bold;' : 'color: #ea580c; font-weight: bold;', rawData);
+
+          if (statusCode === 200 || proxyJson?.awsSynced) {
+            isSuccess = true;
+            let parsedMsg = '';
             if (rawData?.message) {
-              successMessage = rawData.message;
+              parsedMsg = rawData.message;
+            } else if (typeof rawData?.body === 'string') {
+              try {
+                const inner = JSON.parse(rawData.body);
+                if (inner?.message) parsedMsg = inner.message;
+              } catch {
+                // ignore
+              }
+            }
+            if (parsedMsg) {
+              successMessage = parsedMsg;
             }
           } else {
-            requestSucceeded = false;
-            failureReason = rawData?.message || proxyJson?.diagnostic || (statusCode ? `HTTP ${statusCode}` : 'Gateway unreachable');
+            errorMessage = rawData?.message || proxyJson?.diagnostic || `Request failed with status ${statusCode}`;
           }
         } catch {
           if (proxyResponse.ok) {
-            requestSucceeded = true;
+            isSuccess = true;
           } else {
-            failureReason = `HTTP ${proxyResponse.status}`;
+            errorMessage = `Request failed with status ${proxyResponse.status}`;
           }
         }
       }
     } catch (err: any) {
-      requestSucceeded = false;
-      failureReason = err?.message || 'Network unreachable';
+      isSuccess = false;
+      errorMessage = err?.message || 'Failed to connect to AWS API Gateway';
       console.error('[Commit Updates Error]:', err);
     } finally {
       setIsSubmitting(false);
       console.groupEnd();
     }
 
-    // 6. User feedback on success or failure with visual banner & toast
-    if (requestSucceeded) {
+    // 6. If response status is two hundred, show a success message; if error, display error message clearly
+    if (isSuccess) {
       setIsSaved(true);
       setStatusBanner({
         type: 'success',
@@ -418,7 +428,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       showToast(successMessage);
       setTimeout(() => setIsSaved(false), 4000);
     } else {
-      const displayError = failureReason || 'Endpoint unreachable';
+      const displayError = errorMessage || 'Endpoint unreachable';
       setStatusBanner({
         type: 'error',
         message: `Failed to commit updates: ${displayError}`,

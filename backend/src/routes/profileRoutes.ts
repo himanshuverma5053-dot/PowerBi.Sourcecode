@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 
 const router = Router();
-export const DEFAULT_AWS_INVOKE_URL = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/userdata';
+export const DEFAULT_AWS_INVOKE_URL = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/UserData';
 
 // In-memory server-side profile store
 let latestProfile: {
