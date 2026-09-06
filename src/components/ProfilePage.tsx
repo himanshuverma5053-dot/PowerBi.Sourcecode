@@ -21,7 +21,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 
-export const YOUR_API_URL_HERE = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/userdata';
+export const YOUR_API_URL_HERE = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod';
 export const AWS_PROFILE_INVOKE_URL = YOUR_API_URL_HERE;
 
 interface ProfilePageProps {
