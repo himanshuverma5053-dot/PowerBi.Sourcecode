@@ -19,7 +19,7 @@ const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, PutCommand } = require("@aws-sdk/lib-dynamodb");
 
 const REGION = process.env.AWS_REGION || "us-east-1";
-const TABLE_NAME = process.env.CUSTOMER_PROFILES_TABLE || process.env.TABLE_NAME || "magadh_tyres_customers";
+const TABLE_NAME = process.env.CUSTOMER_PROFILES_TABLE || process.env.TABLE_NAME || "CustomersInfo";
 
 const client = new DynamoDBClient({ region: REGION });
 const docClient = DynamoDBDocumentClient.from(client);
@@ -40,7 +40,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers: CORS_HEADERS,
-      body: JSON.stringify({ message: "CORS preflight OK" })
+      body: JSON.stringify({ statusCode: 200, message: "CORS preflight OK" })
     };
   }
 
@@ -49,14 +49,18 @@ exports.handler = async (event) => {
     return {
       statusCode: 405,
       headers: CORS_HEADERS,
-      body: JSON.stringify({ error: `Method ${event.httpMethod} Not Allowed. Expected POST.` })
+      body: JSON.stringify({ statusCode: 405, error: `Method ${event.httpMethod} Not Allowed. Expected POST.` })
     };
   }
 
   try {
     let body = {};
     if (typeof event.body === "string") {
-      body = JSON.parse(event.body);
+      try {
+        body = JSON.parse(event.body);
+      } catch {
+        body = {};
+      }
     } else if (event.body) {
       body = event.body;
     } else {
@@ -69,14 +73,17 @@ exports.handler = async (event) => {
       contact_number = "",
       email_address = "",
       GSTIN = "",
+      gstin = "",
       workshop_address = ""
     } = body;
+
+    const resolvedGstin = String(gstin || GSTIN || "").trim().toUpperCase();
 
     console.log("Extracted profile details:", {
       username,
       contact_number,
       email_address,
-      GSTIN,
+      gstin: resolvedGstin,
       workshop_address
     });
 
@@ -90,12 +97,13 @@ exports.handler = async (event) => {
       username: String(username).trim(),
       contact_number: String(contact_number).trim(),
       email_address: String(email_address).trim(),
-      GSTIN: String(GSTIN).trim().toUpperCase(),
+      gstin: resolvedGstin,
+      GSTIN: resolvedGstin,
       workshop_address: String(workshop_address).trim(),
       updatedAt: timestamp
     };
 
-    // Persist to DynamoDB
+    // Persist to DynamoDB CustomersInfo table
     await docClient.send(new PutCommand({
       TableName: TABLE_NAME,
       Item: dynamoItem
@@ -107,8 +115,9 @@ exports.handler = async (event) => {
       statusCode: 200,
       headers: CORS_HEADERS,
       body: JSON.stringify({
+        statusCode: 200,
         success: true,
-        message: "Profile updated and persisted successfully to DynamoDB!",
+        message: "Profile updated and stored in CustomersInfo table successfully!",
         data: dynamoItem
       })
     };
@@ -118,9 +127,10 @@ exports.handler = async (event) => {
       statusCode: 500,
       headers: CORS_HEADERS,
       body: JSON.stringify({
+        statusCode: 500,
         success: false,
         error: "Internal Server Error",
-        message: error.message || "Failed to save profile to DynamoDB"
+        message: error.message || "Failed to save profile to DynamoDB CustomersInfo table"
       })
     };
   }

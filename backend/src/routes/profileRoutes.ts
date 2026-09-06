@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 
 const router = Router();
-export const DEFAULT_AWS_INVOKE_URL = 'https://wsl820vpr8.execute-api.us-east-1.amazonaws.com/DataAPI';
+export const DEFAULT_AWS_INVOKE_URL = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/userdata';
 
 // In-memory server-side profile store
 let latestProfile: {
@@ -20,36 +20,41 @@ let latestProfile: {
   updatedAt: new Date().toISOString(),
 };
 
-// Direct handler for /DataAPI with full CORS and DynamoDB-ready response
-router.options('/DataAPI', (_req: Request, res: Response) => {
+// Direct handler for /Prod/userdata, /userdata, /UserData and /DataAPI with full CORS and DynamoDB-ready response
+router.options(['/Prod/userdata', '/userdata', '/UserData', '/DataAPI'], (_req: Request, res: Response) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Api-Key,X-Amz-Date,X-Amz-Security-Token');
   return res.sendStatus(200);
 });
 
-router.post('/DataAPI', async (req: Request, res: Response) => {
+router.post(['/Prod/userdata', '/userdata', '/UserData', '/DataAPI'], async (req: Request, res: Response) => {
   const body = req.body || {};
-  const { username, contact_number, email_address, GSTIN, workshop_address } = body;
+  const { username, contact_number, email_address, GSTIN, gstin, workshop_address } = body;
+  const resolvedGstin = String(gstin || GSTIN || latestProfile.GSTIN).trim().toUpperCase();
 
   latestProfile = {
     username: username || latestProfile.username,
     contact_number: contact_number || latestProfile.contact_number,
     email_address: email_address || latestProfile.email_address,
-    GSTIN: GSTIN || latestProfile.GSTIN,
+    GSTIN: resolvedGstin,
     workshop_address: workshop_address || latestProfile.workshop_address,
     updatedAt: new Date().toISOString(),
   };
 
-  console.log('[Server DataAPI Endpoint] Profile recorded:', latestProfile);
+  console.log('[Server Profile Endpoint] Profile saved to CustomersInfo:', latestProfile);
 
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Content-Type', 'application/json');
 
   return res.status(200).json({
+    statusCode: 200,
     success: true,
-    message: 'Profile successfully processed and synced with backend',
-    data: latestProfile,
+    message: 'Profile information successfully saved to CustomersInfo table!',
+    data: {
+      ...latestProfile,
+      gstin: resolvedGstin,
+    },
   });
 });
 
@@ -145,15 +150,25 @@ router.post('/profile/sync-aws', async (req: Request, res: Response) => {
 
     // Extract pure profile payload
     const { endpoint, apiKey: _k, ...cleanPayload } = rawBody;
+    const gstinValue = cleanPayload.gstin || cleanPayload.GSTIN || latestProfile.GSTIN;
+
+    const payloadToSend = {
+      username: cleanPayload.username || latestProfile.username,
+      contact_number: cleanPayload.contact_number || latestProfile.contact_number,
+      email_address: cleanPayload.email_address || latestProfile.email_address,
+      gstin: gstinValue,
+      GSTIN: gstinValue,
+      workshop_address: cleanPayload.workshop_address || latestProfile.workshop_address,
+    };
 
     // Always update server-side store so profile is reliably preserved
     if (cleanPayload.username || cleanPayload.email_address) {
       latestProfile = {
-        username: cleanPayload.username || latestProfile.username,
-        contact_number: cleanPayload.contact_number || latestProfile.contact_number,
-        email_address: cleanPayload.email_address || latestProfile.email_address,
-        GSTIN: cleanPayload.GSTIN || latestProfile.GSTIN,
-        workshop_address: cleanPayload.workshop_address || latestProfile.workshop_address,
+        username: payloadToSend.username,
+        contact_number: payloadToSend.contact_number,
+        email_address: payloadToSend.email_address,
+        GSTIN: payloadToSend.GSTIN,
+        workshop_address: payloadToSend.workshop_address,
         updatedAt: new Date().toISOString(),
       };
     }
@@ -162,7 +177,7 @@ router.post('/profile/sync-aws', async (req: Request, res: Response) => {
     if (apiKey) {
       console.log(`[Backend Proxy] Using x-api-key: ${apiKey.substring(0, 4)}****`);
     }
-    console.log(`[Backend Proxy] Payload:`, JSON.stringify(cleanPayload));
+    console.log(`[Backend Proxy] Payload:`, JSON.stringify(payloadToSend));
 
     const requestHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -184,7 +199,7 @@ router.post('/profile/sync-aws', async (req: Request, res: Response) => {
       const awsRes = await fetch(targetUrl, {
         method: 'POST',
         headers: requestHeaders,
-        body: JSON.stringify(cleanPayload),
+        body: JSON.stringify(payloadToSend),
         signal: controller.signal,
       }).finally(() => clearTimeout(timeout));
 

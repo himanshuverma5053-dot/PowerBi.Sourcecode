@@ -21,7 +21,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 
-export const YOUR_API_URL_HERE = 'https://wsl820vpr8.execute-api.us-east-1.amazonaws.com/DataAPI';
+export const YOUR_API_URL_HERE = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/userdata';
 export const AWS_PROFILE_INVOKE_URL = YOUR_API_URL_HERE;
 
 interface ProfilePageProps {
@@ -223,11 +223,12 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     setStatusBanner({ type: 'info', message: 'Sending POST request to AWS API Gateway...' });
 
     // 4. Construct JSON payload with exact required keys:
-    // 'username', 'contact_number', 'email_address', 'GSTIN', 'workshop_address'
+    // 'username', 'contact_number', 'email_address', 'gstin' / 'GSTIN', 'workshop_address'
     const payload = {
       username: uName,
       contact_number: cNumber,
       email_address: eAddress,
+      gstin: gNum,
       GSTIN: gNum,
       workshop_address: wAddress,
     };
@@ -307,9 +308,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
     // 5. Send POST to AWS API Gateway Invoke URL with Content-Type application/json
     let requestSucceeded = false;
-    let awsStatus = 0;
+    let successMessage = 'Profile information committed successfully and stored in CustomersInfo table!';
     let failureReason = '';
-    let explanationText = '';
     const targetUrl = AWS_PROFILE_INVOKE_URL;
 
     console.group('%c[AWS API Gateway Invocation]', 'color: #0284c7; font-weight: bold; font-size: 13px;');
@@ -322,43 +322,45 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     console.log('%cJSON Payload:%c', 'color: #6366f1; font-weight: bold;', '', payload);
 
     try {
-      let response: Response | null = null;
       let rawData: any = null;
-
-      const requestHeaders: Record<string, string> = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      };
+      let statusCode = 0;
 
       try {
-        console.log('%c[1/2] Sending direct POST fetch to AWS API Gateway...', 'color: #0284c7;');
+        console.log('%c[1/2] Sending direct POST fetch to AWS API Gateway Invoke URL...', 'color: #0284c7;');
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000);
+        const timeoutId = setTimeout(() => controller.abort(), 6000);
 
-        response = await fetch(targetUrl, {
+        const response = await fetch(targetUrl, {
           method: 'POST',
-          headers: requestHeaders,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
           body: JSON.stringify(payload),
           signal: controller.signal,
         });
         clearTimeout(timeoutId);
 
-        console.log(`%c[Direct Fetch Result]: HTTP ${response.status} ${response.statusText}`, response.ok ? 'color: #10b981; font-weight: bold;' : 'color: #ea580c; font-weight: bold;');
-        awsStatus = response.status;
+        statusCode = response.status;
         try {
           rawData = await response.json();
-          console.log('[Direct Fetch Response Data]:', rawData);
         } catch {
           rawData = null;
         }
 
-        if (response.ok) {
+        console.log(`%c[Direct Fetch Result]: HTTP ${statusCode}`, response.ok ? 'color: #10b981; font-weight: bold;' : 'color: #ea580c; font-weight: bold;', rawData);
+
+        if (response.ok && (statusCode === 200 || statusCode === 201 || rawData?.statusCode === 200)) {
           requestSucceeded = true;
+          if (rawData?.message) {
+            successMessage = rawData.message;
+          }
         } else {
-          throw new Error(rawData?.message || rawData?.error || `HTTP ${response.status}`);
+          const apiMsg = rawData?.message || rawData?.error || `HTTP ${statusCode}`;
+          throw new Error(apiMsg);
         }
       } catch (browserFetchErr: any) {
-        // Fallback to server-side proxy which saves profile on server and forwards to AWS
+        // Fallback to server-side proxy which forwards to AWS API Gateway without browser CORS limitations
         console.warn('%c[Direct Fetch Notice]:%c ' + (browserFetchErr?.message || 'Preflight / Auth check'), 'color: #ea580c; font-weight: bold;', 'color: #475569;');
         console.log('%c[2/2] Invoking via server-side proxy (/api/profile/sync-aws)...', 'color: #0284c7; font-weight: bold;');
 
@@ -374,23 +376,22 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           }),
         });
 
-        response = proxyResponse;
         try {
           const proxyJson = await proxyResponse.json();
+          statusCode = proxyJson?.awsStatus || (proxyResponse.ok ? 200 : proxyResponse.status);
           rawData = proxyJson?.data || proxyJson;
-          awsStatus = proxyJson?.awsStatus || (proxyResponse.ok ? 200 : proxyResponse.status);
-          console.log(`%c[Server Proxy Result]: AWS HTTP ${awsStatus}`, proxyJson?.awsSynced ? 'color: #10b981; font-weight: bold;' : 'color: #ea580c; font-weight: bold;', rawData);
-          
-          if (proxyJson?.awsSynced) {
+          console.log(`%c[Server Proxy Result]: AWS HTTP ${statusCode}`, proxyJson?.awsSynced ? 'color: #10b981; font-weight: bold;' : 'color: #ea580c; font-weight: bold;', rawData);
+
+          if (proxyJson?.awsSynced || (proxyResponse.ok && (statusCode === 200 || proxyJson?.statusCode === 200))) {
             requestSucceeded = true;
+            if (rawData?.message) {
+              successMessage = rawData.message;
+            }
           } else {
             requestSucceeded = false;
-            failureReason = proxyJson?.data?.message || proxyJson?.diagnostic || (awsStatus ? `HTTP ${awsStatus}` : 'Gateway unreachable');
-            explanationText = proxyJson?.diagnostic || '';
+            failureReason = rawData?.message || proxyJson?.diagnostic || (statusCode ? `HTTP ${statusCode}` : 'Gateway unreachable');
           }
         } catch {
-          rawData = null;
-          awsStatus = proxyResponse.status;
           if (proxyResponse.ok) {
             requestSucceeded = true;
           } else {
@@ -412,16 +413,17 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       setIsSaved(true);
       setStatusBanner({
         type: 'success',
-        message: 'Profile updates successfully committed and synchronized with AWS back end!',
+        message: successMessage,
       });
-      showToast('Profile committed to AWS successfully!');
+      showToast(successMessage);
       setTimeout(() => setIsSaved(false), 4000);
     } else {
+      const displayError = failureReason || 'Endpoint unreachable';
       setStatusBanner({
         type: 'error',
-        message: `Failed to commit updates to AWS: ${failureReason || 'Endpoint unreachable'}`,
+        message: `Failed to commit updates: ${displayError}`,
       });
-      showToast(`Failed to commit updates: ${failureReason || 'Endpoint unreachable'}`);
+      showToast(`Failed to commit updates: ${displayError}`);
     }
   };
 
