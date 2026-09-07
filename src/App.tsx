@@ -35,6 +35,7 @@ import { safeSetLocalStorage, safeGetLocalStorage } from './utils/storage';
 import { calculateCustomerFinancials } from './utils/customerFinancials';
 import { MOCK_TYRES } from './data/mockData';
 import apolloEnduBannerImg from './assets/images/regenerated_image_1787248277167.png';
+import { DeviceScreenRestriction } from './components/DeviceScreenRestriction';
 
 import {
   ShieldCheck, SlidersHorizontal, CheckCircle2,
@@ -543,7 +544,8 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7] text-slate-900 font-sans flex flex-col selection:bg-slate-900 selection:text-white overflow-x-hidden w-full max-w-full">
+    <DeviceScreenRestriction>
+      <div className="min-h-screen bg-[#F7F7F7] text-slate-900 font-sans flex flex-col selection:bg-slate-900 selection:text-white overflow-x-hidden w-full max-w-full">
       
       {/* Main Dynamic View Content */}
       {interfaceMode === 'admin' ? (
@@ -897,5 +899,6 @@ export default function App() {
         }}
       />
     </div>
+    </DeviceScreenRestriction>
   );
 }
