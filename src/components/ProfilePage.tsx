@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Order, CustomerAccount } from '../types';
 import { safeSetLocalStorage } from '../utils/storage';
 import { checkIsAdmin } from '../utils/admin';
@@ -74,6 +74,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const isSubmittingRef = useRef<boolean>(false);
 
   const [statusBanner, setStatusBanner] = useState<{
     type: 'success' | 'error' | 'warning' | 'info';
@@ -166,9 +167,15 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
   // Recreated handler function for "Commit Updates" button - calls ONLY the AWS API Gateway endpoint
   const handleSave = async () => {
+    // 1. Immediately disable button and lock execution on first click to prevent duplicate submissions
+    if (isSubmittingRef.current || isSubmitting) {
+      return;
+    }
+    isSubmittingRef.current = true;
+    setIsSubmitting(true);
     setStatusBanner(null);
 
-    // 1. Collect form field values
+    // 2. Collect form field values
     const uName = username.trim();
     const cNumber = (contact_number || phone).trim();
     const eAddress = (email_address || userId || email).trim();
@@ -179,9 +186,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     const logisticsHub = deliveryLocation.trim() || 'Central Magadh Hub';
     const customerId = (eAddress || uName.toLowerCase().replace(/\s+/g, '_') || 'customer_primary').trim();
 
-    // 2. Form Validation
+    // 3. Form Validation (unlock immediately if invalid)
     if (!uName) {
       const msg = 'Please enter username before committing updates.';
+      isSubmittingRef.current = false;
+      setIsSubmitting(false);
       setStatusBanner({ type: 'warning', message: msg });
       showToast(msg);
       return;
@@ -189,6 +198,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
     if (!cNumber) {
       const msg = 'Please enter contact number before committing updates.';
+      isSubmittingRef.current = false;
+      setIsSubmitting(false);
       setStatusBanner({ type: 'warning', message: msg });
       showToast(msg);
       setIsExpanded(true);
@@ -197,6 +208,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
     if (!eAddress) {
       const msg = 'Please enter email address before committing updates.';
+      isSubmittingRef.current = false;
+      setIsSubmitting(false);
       setStatusBanner({ type: 'warning', message: msg });
       showToast(msg);
       return;
@@ -204,6 +217,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
     if (!gNum) {
       const msg = 'Please enter GSTIN before committing updates.';
+      isSubmittingRef.current = false;
+      setIsSubmitting(false);
       setStatusBanner({ type: 'warning', message: msg });
       showToast(msg);
       setIsExpanded(true);
@@ -212,17 +227,22 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
     if (!wAddress) {
       const msg = 'Please enter workshop address before committing updates.';
+      isSubmittingRef.current = false;
+      setIsSubmitting(false);
       setStatusBanner({ type: 'warning', message: msg });
       showToast(msg);
       setIsExpanded(true);
       return;
     }
 
-    // 3. Indicate loading state
-    setIsSubmitting(true);
+    // 4. Generate a unique idempotency key for this request to prevent duplicate backend submissions
+    const idempotencyKey = typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `ik_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+
     setStatusBanner({ type: 'info', message: 'Sending updates to AWS API Gateway...' });
 
-    // 4. Construct JSON payload with all required fields (direct and body mapping)
+    // 5. Construct JSON payload with all required fields including idempotency key
     const rawFields = {
       username: uName,
       contact_number: cNumber,
@@ -234,11 +254,15 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       workshop_address: wAddress,
       office_address: wAddress,
       'office address': wAddress,
+      idempotency_key: idempotencyKey,
+      idempotencyKey: idempotencyKey,
     };
 
     const payload = {
       ...rawFields,
       body: rawFields,
+      idempotency_key: idempotencyKey,
+      idempotencyKey: idempotencyKey,
     };
 
     // Maintain profile in client-side state & storage
@@ -320,7 +344,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     console.group('%c[AWS API Gateway Invocation]', 'color: #0284c7; font-weight: bold; font-size: 13px;');
     console.log('%cInvoke URL:%c ' + targetUrl, 'color: #0284c7; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
     console.log('%cHTTP Method:%c POST', 'color: #10b981; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
-    console.log('%cHeaders:%c { "Content-Type": "application/json", "Accept": "application/json" }', 'color: #6366f1; font-weight: bold;', '');
+    console.log('%cIdempotency-Key:%c ' + idempotencyKey, 'color: #8b5cf6; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
+    console.log('%cHeaders:%c { "Content-Type": "application/json", "Accept": "application/json", "Idempotency-Key": "' + idempotencyKey + '" }', 'color: #6366f1; font-weight: bold;', '');
     console.log('%cPayload:%c', 'color: #6366f1; font-weight: bold;', '', payload);
 
     try {
@@ -333,6 +358,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
+            "Idempotency-Key": idempotencyKey,
+            "X-Idempotency-Key": idempotencyKey,
           },
           body: JSON.stringify(payload),
           signal: controller.signal,
@@ -389,6 +416,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     } catch (err: any) {
       console.warn('[Commit Updates Notice]:', err?.message || err);
     } finally {
+      isSubmittingRef.current = false;
       setIsSubmitting(false);
       console.groupEnd();
     }
@@ -794,18 +822,22 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 <button
                   type="button"
                   onClick={handleSave}
-                  disabled={isSubmitting}
-                  className={`w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-bold shadow-sm flex items-center justify-center space-x-2 select-none cursor-pointer ${
+                  disabled={isSubmitting || isSaved}
+                  className={`w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-bold shadow-sm flex items-center justify-center space-x-2 select-none ${
+                    isSubmitting || isSaved
+                      ? 'cursor-not-allowed pointer-events-none opacity-75'
+                      : 'cursor-pointer'
+                  } ${
                     isSaved
                       ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                       : isSubmitting
-                      ? 'bg-sky-600 text-white opacity-80 cursor-wait'
+                      ? 'bg-sky-600 text-white cursor-wait'
                       : 'bg-[#54b4e7] hover:bg-[#3ea5dc] text-white'
                   }`}
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="w-4 h-4 text-white" />
+                      <Loader2 className="w-4 h-4 text-white animate-spin" />
                       <span className="tracking-wide">Committing Updates...</span>
                     </>
                   ) : isSaved ? (
