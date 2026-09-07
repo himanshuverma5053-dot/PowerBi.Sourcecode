@@ -170,10 +170,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
     // 1. Collect form field values
     const uName = username.trim();
-    const cNumber = (contact number).trim();
-    const eAddress = (email address).trim();
+    const cNumber = (contact_number).trim();
+    const eAddress = (email_address).trim();
     const gNum = (gstin).trim();
-    const wAddress = (office address).trim();
+    const wAddress = (office_address).trim();
     const customerId = (eAddress || uName.toLowerCase().replace(/\s+/g, '_') || 'customer_primary').trim();
 
     // 2. Form Validation
