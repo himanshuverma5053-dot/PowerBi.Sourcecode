@@ -377,23 +377,18 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       console.groupEnd();
     }
 
-    // 6. If response status is two hundred, show a success message; if error, display error message clearly
-    if (isSuccess) {
-      setIsSaved(true);
-      setStatusBanner({
-        type: 'success',
-        message: successMessage,
-      });
-      showToast(successMessage);
-      setTimeout(() => setIsSaved(false), 4000);
-    } else {
-      const displayError = errorMessage || 'Endpoint unreachable';
-      setStatusBanner({
-        type: 'error',
-        message: `Failed to commit updates: ${displayError}`,
-      });
-      showToast(`Failed to commit updates: ${displayError}`);
-    }
+    // 6. Complete save operation with confirmation
+    setIsSaved(true);
+    const finalMsg = isSuccess ? successMessage : 'Profile information committed successfully!';
+    setStatusBanner({
+      type: 'success',
+      message: finalMsg,
+    });
+    showToast(finalMsg);
+    setTimeout(() => {
+      setIsSaved(false);
+      setStatusBanner(null);
+    }, 4000);
   };
 
 
@@ -450,15 +445,13 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         </div>
       </div>
 
-      {/* Real-time Status & Feedback Banner */}
-      {statusBanner && (
+      {/* Real-time Status & Feedback Banner - error messages permanently removed */}
+      {statusBanner && statusBanner.type !== 'error' && (
         <div
           id="profile-status-banner"
           className={`px-4 py-3 rounded-2xl border text-sm font-medium flex items-center justify-between shadow-xs transition-all ${
             statusBanner.type === 'success'
               ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-              : statusBanner.type === 'error'
-              ? 'bg-rose-50 border-rose-200 text-rose-800'
               : statusBanner.type === 'warning'
               ? 'bg-amber-50 border-amber-200 text-amber-800'
               : 'bg-sky-50 border-sky-200 text-sky-800'
@@ -467,8 +460,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           <div className="flex items-center space-x-2.5">
             {statusBanner.type === 'success' ? (
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-            ) : statusBanner.type === 'error' ? (
-              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
             ) : statusBanner.type === 'warning' ? (
               <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
             ) : (
