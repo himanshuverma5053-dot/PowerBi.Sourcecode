@@ -6,7 +6,6 @@ import paymentRoutes from './paymentRoutes.js';
 import aiRoutes from './aiRoutes.js';
 import couponRoutes from './couponRoutes.js';
 import analyticsRoutes from './analyticsRoutes.js';
-import profileRoutes from './profileRoutes.js';
 
 const apiRouter = Router();
 
@@ -17,6 +16,5 @@ apiRouter.use(paymentRoutes);
 apiRouter.use(aiRoutes);
 apiRouter.use(couponRoutes);
 apiRouter.use(analyticsRoutes);
-apiRouter.use(profileRoutes);
 
 export default apiRouter;

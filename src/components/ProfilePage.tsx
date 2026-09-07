@@ -312,8 +312,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     window.dispatchEvent(new Event('magadh_profile_updated'));
 
     // 5. Send POST request ONLY to the exact AWS API Gateway invoke URL:
-    // https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/UserData
-    const targetUrl = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/UserData';
+    // https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/prod/UserData
+    const targetUrl = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/prod/UserData';
     let isSuccess = false;
     let successMessage = 'Profile information committed successfully!';
 
@@ -328,7 +328,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       const timeoutId = setTimeout(() => controller.abort(), 12000);
 
       try {
-        const response = await fetch("https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/UserData", {
+        const response = await fetch("https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/prod/UserData", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -371,7 +371,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         const isCorsOrNetwork = fetchErr instanceof TypeError || String(fetchErr?.message || '').toLowerCase().includes('failed to fetch');
         if (isCorsOrNetwork) {
           try {
-            await fetch("https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/UserData", {
+            await fetch("https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/prod/UserData", {
               method: "POST",
               mode: "no-cors",
               headers: {
