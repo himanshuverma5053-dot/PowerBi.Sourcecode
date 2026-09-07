@@ -190,7 +190,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     <>
       <header
         ref={headerRef}
-        className={`fixed top-0 left-1/2 -translate-x-1/2 z-[100010] bg-white transition-all duration-200 w-full max-w-[430px] overflow-x-clip ${
+        className={`fixed top-0 left-0 right-0 z-[100010] bg-white transition-all duration-200 w-full max-w-full overflow-x-clip ${
           isScrolled
             ? 'shadow-sm'
             : 'shadow-2xs'
@@ -382,10 +382,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                 transition={{ type: 'spring', damping: 28, stiffness: 280 }}
                 style={{
                   top: `${headerHeight}px`,
-                  height: `calc(100dvh - ${headerHeight}px)`,
-                  left: 'max(0px, calc(50% - 215px))'
+                  height: `calc(100dvh - ${headerHeight}px)`
                 }}
-                className="fixed z-[99995] w-[88vw] max-w-[340px] sm:max-w-[360px] bg-white shadow-2xl flex flex-col overflow-hidden border-r border-slate-200 font-sans"
+                className="fixed left-0 z-[99995] w-[88vw] max-w-[360px] sm:max-w-[400px] bg-white shadow-2xl flex flex-col overflow-hidden border-r border-slate-200 font-sans"
               >
                 {/* Scrollable Drawer Body with Full Menu Page Content */}
                 <div className="flex-1 overflow-y-auto">

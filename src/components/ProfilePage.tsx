@@ -170,12 +170,12 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
     // 1. Collect form field values
     const uName = username.trim();
-    const cNumber = (contact number).trim();
-    const eAddress = (email address).trim();
-    const gNum = (gstin).trim();
-    const wAddress = (office address).trim();
-    const gstin = gNum;
-    const office_address = wAddress;
+    const cNumber = (contact_number || phone).trim();
+    const eAddress = (email_address || userId || email).trim();
+    const gNum = (GSTIN || gstNumber).trim();
+    const wAddress = (workshop_address || address).trim();
+    const gstinValue = gNum;
+    const officeAddressValue = wAddress;
     const logisticsHub = deliveryLocation.trim() || 'Central Magadh Hub';
     const customerId = (eAddress || uName.toLowerCase().replace(/\s+/g, '_') || 'customer_primary').trim();
 

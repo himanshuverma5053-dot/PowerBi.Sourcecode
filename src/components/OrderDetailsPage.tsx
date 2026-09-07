@@ -425,7 +425,7 @@ export const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({
       </main>
 
       {/* 7. FIXED FLOATING BOTTOM BAR */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50 bg-white border-t border-slate-200 shadow-2xl">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 shadow-2xl">
 
         {/* Bottom CTA Row */}
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
