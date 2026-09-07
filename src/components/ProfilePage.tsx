@@ -162,26 +162,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         setCompanyName(currentUser.toUpperCase());
       }
     }
-
-    // Safely sync with backend profile endpoint (never throws unhandled 404)
-    fetch('/api/profile/current')
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.profile) {
-          const sProfile = data.profile;
-          if (sProfile.username && !hasLoadedLocal) setUsername(sProfile.username);
-          if (sProfile.contact_number && !hasLoadedLocal) setContactNumber(sProfile.contact_number);
-          if (sProfile.email_address && !hasLoadedLocal) setEmailAddress(sProfile.email_address);
-          if (sProfile.GSTIN && !hasLoadedLocal) setGSTIN(sProfile.GSTIN);
-          if (sProfile.workshop_address && !hasLoadedLocal) setWorkshopAddress(sProfile.workshop_address);
-        }
-      })
-      .catch(() => {
-        // Safe offline fallback
-      });
   }, [currentUser, currentUserEmail]);
 
-  // Recreated handler function for "Commit Updates" button
+  // Recreated handler function for "Commit Updates" button - calls ONLY the AWS API Gateway endpoint
   const handleSave = async () => {
     setStatusBanner(null);
 
@@ -194,7 +177,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     const logisticsHub = deliveryLocation.trim() || 'Central Magadh Hub';
     const customerId = (eAddress || uName.toLowerCase().replace(/\s+/g, '_') || 'customer_primary').trim();
 
-    // 2. Visible Validation
+    // 2. Form Validation
     if (!uName) {
       const msg = 'Please enter username before committing updates.';
       setStatusBanner({ type: 'warning', message: msg });
@@ -237,31 +220,20 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     setIsSubmitting(true);
     setStatusBanner({ type: 'info', message: 'Sending updates to AWS API Gateway...' });
 
-    // 4. Construct JSON payload with the 5 required fields:
-    // username, contact_number, email_address, gstin, workshop_address
-    const baseFields = {
+    // 4. Construct JSON payload with the exact 5 required fields:
+    // username, contact_number, email_address, GSTIN, workshop_address
+    const payload = {
       username: uName,
       contact_number: cNumber,
-      'contact number': cNumber,
       email_address: eAddress,
-      'email address': eAddress,
-      gstin: gNum,
       GSTIN: gNum,
       workshop_address: wAddress,
-      'workshop address': wAddress,
     };
 
-    const payload = {
-      ...baseFields,
-      body: {
-        ...baseFields,
-      },
-    };
-
-    // Keep state updated in UI and storage
+    // Maintain profile in client-side state & storage
     const fullProfileData = {
       ...payload,
-      GSTIN: gNum,
+      gstin: gNum,
       customer_id: customerId,
       name: name.trim() || uName,
       companyName: uName,
@@ -329,7 +301,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     }
     window.dispatchEvent(new Event('magadh_profile_updated'));
 
-    // 5. Send POST request with automatic failover to eliminate 404 and CORS errors
+    // 5. Send POST request ONLY to the exact AWS API Gateway invoke URL:
+    // https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/UserData
     const targetUrl = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/UserData';
     let isSuccess = false;
     let successMessage = 'Profile information committed successfully!';
@@ -338,130 +311,73 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     console.group('%c[AWS API Gateway Invocation]', 'color: #0284c7; font-weight: bold; font-size: 13px;');
     console.log('%cInvoke URL:%c ' + targetUrl, 'color: #0284c7; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
     console.log('%cHTTP Method:%c POST', 'color: #10b981; font-weight: bold;', 'color: #0f172a; font-weight: normal;');
-    console.log('%cHeaders:%c { "Content-Type": "application/json" }', 'color: #6366f1; font-weight: bold;', '');
+    console.log('%cHeaders:%c { "Content-Type": "application/json", "Accept": "application/json" }', 'color: #6366f1; font-weight: bold;', '');
     console.log('%cPayload (5 fields):%c', 'color: #6366f1; font-weight: bold;', '', payload);
 
     try {
-      let statusCode = 0;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+      const response = await fetch("https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/UserData", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      const statusCode = response.status;
       let rawData: any = null;
-      let shouldTryProxy = false;
-
-      // Attempt 1: Direct POST request to AWS API Gateway
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000);
-
-        const response = await fetch(targetUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-
-        statusCode = response.status;
-        try {
-          rawData = await response.json();
-        } catch {
-          rawData = null;
-        }
-
-        console.log(`%c[Direct Fetch Result]: HTTP ${statusCode}`, response.ok ? 'color: #10b981; font-weight: bold;' : 'color: #ea580c; font-weight: bold;', rawData);
-
-        if (statusCode === 200) {
-          isSuccess = true;
-          let parsedMsg = '';
-          if (rawData?.message) {
-            parsedMsg = rawData.message;
-          } else if (typeof rawData?.body === 'string') {
-            try {
-              const inner = JSON.parse(rawData.body);
-              if (inner?.message) parsedMsg = inner.message;
-            } catch {
-              // ignore
-            }
-          }
-          if (parsedMsg) {
-            successMessage = parsedMsg;
-          }
-        } else {
-          // If status is 404, 403, or any error, flag to use the backend proxy immediately
-          console.warn(`[Direct Fetch] Received HTTP ${statusCode}. Failing over to backend proxy...`);
-          shouldTryProxy = true;
-        }
-      } catch (directErr: any) {
-        // Browser CORS or network error, fail over to proxy
-        console.warn('[Direct Fetch] Direct request failed, falling over to backend proxy:', directErr?.message);
-        shouldTryProxy = true;
+        rawData = await response.json();
+      } catch {
+        rawData = null;
       }
 
-      // Attempt 2: Server-side proxy failover (resolves CORS and 404 routing differences)
-      if (shouldTryProxy || !isSuccess) {
-        try {
-          const proxyResponse = await fetch('/api/profile/sync-aws', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              ...payload,
-              endpoint: targetUrl,
-            }),
-          });
+      console.log(`%c[AWS Response]: HTTP ${statusCode}`, response.ok ? 'color: #10b981; font-weight: bold;' : 'color: #ea580c; font-weight: bold;', rawData);
 
-          const proxyJson = await proxyResponse.json().catch(() => null);
-          const proxyStatusCode = proxyJson?.awsStatus || (proxyResponse.ok ? 200 : proxyResponse.status);
-          const proxyData = proxyJson?.data || proxyJson;
-
-          console.log(`%c[Proxy Result]: HTTP ${proxyStatusCode}`, proxyStatusCode === 200 ? 'color: #10b981; font-weight: bold;' : 'color: #ea580c; font-weight: bold;', proxyData);
-
-          if (proxyResponse.ok || proxyJson?.success || proxyJson?.localSaved || proxyStatusCode === 200) {
-            isSuccess = true;
-            let parsedMsg = '';
-            if (proxyData?.message) {
-              parsedMsg = proxyData.message;
-            } else if (typeof proxyData?.body === 'string') {
-              try {
-                const inner = JSON.parse(proxyData.body);
-                if (inner?.message) parsedMsg = inner.message;
-              } catch {
-                // ignore
-              }
-            }
-            if (parsedMsg) {
-              successMessage = parsedMsg;
-            }
-          } else {
-            errorMessage = proxyData?.message || proxyJson?.diagnostic || `Request failed with status ${proxyStatusCode}`;
-          }
-        } catch (proxyErr: any) {
-          // Attempt 3: Ultimate local fallback to /api/profile
-          const fallbackRes = await fetch('/api/profile', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-          }).catch(() => null);
-
-          if (fallbackRes && fallbackRes.ok) {
-            isSuccess = true;
-            successMessage = 'Profile information saved successfully!';
-          } else {
-            errorMessage = proxyErr?.message || 'Failed to connect to profile service';
+      if (statusCode === 200) {
+        isSuccess = true;
+        let parsedMsg = '';
+        if (rawData?.message) {
+          parsedMsg = rawData.message;
+        } else if (typeof rawData?.body === 'string') {
+          try {
+            const inner = JSON.parse(rawData.body);
+            if (inner?.message) parsedMsg = inner.message;
+          } catch {
+            // ignore
           }
         }
+        if (parsedMsg) {
+          successMessage = parsedMsg;
+        }
+      } else {
+        const apiMsg = rawData?.message || rawData?.error || `Request failed with status ${statusCode}`;
+        errorMessage = apiMsg;
       }
     } catch (err: any) {
       isSuccess = false;
-      errorMessage = err?.message || 'Failed to connect to AWS API Gateway';
+      const isAbort = err?.name === 'AbortError';
+      const isCorsOrNetwork = err instanceof TypeError || String(err?.message || '').toLowerCase().includes('failed to fetch');
+
+      if (isAbort) {
+        errorMessage = 'Request timed out while reaching AWS API Gateway.';
+      } else if (isCorsOrNetwork) {
+        errorMessage = 'Network / CORS error: The browser request was blocked. Please ensure AWS API Gateway has CORS enabled (Access-Control-Allow-Origin: *) for the POST method on /Prod/UserData.';
+      } else {
+        errorMessage = err?.message || 'Failed to connect to AWS API Gateway';
+      }
       console.error('[Commit Updates Error]:', err);
     } finally {
       setIsSubmitting(false);
       console.groupEnd();
     }
 
-    // 6. Provide clear visual feedback
+    // 6. If response status is two hundred, show a success message; if error, display error message clearly
     if (isSuccess) {
       setIsSaved(true);
       setStatusBanner({
