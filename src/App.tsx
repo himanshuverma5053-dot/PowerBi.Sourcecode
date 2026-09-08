@@ -777,7 +777,6 @@ export default function App() {
                       currentCustomer={currentCustomerAccount}
                       isAdmin={isAdmin}
                       onInstantBuy={handleInstantBuy}
-                      onUpdateImage={handleUpdateProductImage}
                     />
                   ))}
                 </div>

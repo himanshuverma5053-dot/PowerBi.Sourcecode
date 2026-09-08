@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Loader2, X, Tag, Lightbulb, Disc, AlertCircle, ExternalLink, ArrowRight, ChevronRight } from 'lucide-react';
+import { Loader2, X, Tag, Lightbulb, ImageIcon, AlertCircle, ExternalLink, ArrowRight, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CustomSearchIcon } from './SearchIcon';
 import { TyreProduct } from '../types';
@@ -366,9 +366,9 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
                     >
                       {/* Left: Product Tyre Thumbnail Image */}
                       <div className="w-13 h-13 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-white border border-slate-100 flex items-center justify-center p-0.5 sm:p-1 flex-shrink-0 shadow-2xs group-hover:scale-105 transition-transform overflow-hidden">
-                        {product.image || product.images?.[0] ? (
+                        {product.image_url || product.image || product.images?.[0] ? (
                           <img
-                            src={product.image || product.images?.[0]}
+                            src={product.image_url || product.image || product.images?.[0]}
                             alt={product.name}
                             className="w-full h-full object-contain"
                             onError={(e) => {
@@ -376,7 +376,7 @@ export const HeaderSearchBar: React.FC<HeaderSearchBarProps> = ({
                             }}
                           />
                         ) : (
-                          <Disc className="w-7 h-7 sm:w-8 sm:h-8 text-slate-400 stroke-[1.5]" />
+                          <ImageIcon className="w-6 h-6 sm:w-7 sm:h-7 text-slate-300 stroke-[1.2]" />
                         )}
                       </div>
 

@@ -8,7 +8,6 @@ interface VerticalProductCardProps {
   currentCustomer?: CustomerAccount | null;
   isAdmin?: boolean;
   onInstantBuy?: (product: TyreProduct, quantity?: number) => void;
-  onUpdateImage?: (productId: string, imageUrl: string) => void;
 }
 
 export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
@@ -16,7 +15,6 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
   currentCustomer,
   isAdmin,
   onInstantBuy,
-  onUpdateImage,
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [imgError, setImgError] = useState(false);
@@ -116,11 +114,9 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
         <div className="relative w-40 h-40 sm:w-52 sm:h-52 flex items-center justify-center p-2 rounded-2xl bg-gradient-to-b from-slate-50/60 to-transparent transition-colors duration-200">
           {!productImage || imgError ? (
             <ProductImagePlaceholder 
+              id={`product-img-placeholder-${product.id}`}
               label={product.name} 
-              onImageSelected={(dataUrl) => {
-                setImgError(false);
-                onUpdateImage?.(product.id, dataUrl);
-              }}
+              size="lg"
             />
           ) : (
             <img
