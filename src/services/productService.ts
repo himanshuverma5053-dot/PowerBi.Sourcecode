@@ -124,33 +124,92 @@ export function normalizeProductRow(row: any): TyreProduct {
 }
 
 /**
- * Fetch all products from Backend REST API (with local cache fallback)
+ * AWS API Gateway Invoke URL to fetch products directly from DynamoDB and S3 bucket via Lambda
  */
-export async function fetchProductsFromBackend(): Promise<TyreProduct[]> {
+export const AWS_PRODUCT_INVOKE_URL = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/prod/productAPI';
+
+// Fetch products from Lambda function via API Gateway directly from DynamoDB and S3 bucket
+export async function fetchProducts(): Promise<TyreProduct[]> {
+  const invokeUrl = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/prod/productAPI'; // Your invoke URL
+
   try {
-    const res = await fetch('/api/products');
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+    const response = await fetch(invokeUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      signal: controller.signal
+    }).catch((fetchErr) => {
+      console.warn('[AWS Notice]: Direct DynamoDB/S3 productAPI fetch waiting on AWS CORS/permissions:', fetchErr?.message || fetchErr);
+      return null;
+    });
+    clearTimeout(timeoutId);
+
+    if (response && response.ok) {
+      const data = await response.json().catch(() => null);
+
+      if (data) {
+        // If Lambda returns API Gateway proxy format (body is a JSON string)
+        let rawList: any[] = [];
+        if (data.body) {
+          const parsed = typeof data.body === 'string' ? JSON.parse(data.body) : data.body;
+          rawList = Array.isArray(parsed) ? parsed : (parsed?.products || parsed?.items || parsed?.data || []);
+        } else if (Array.isArray(data.products)) {
+          rawList = data.products;
+        } else if (Array.isArray(data.items)) {
+          rawList = data.items;
+        } else if (Array.isArray(data.data)) {
+          rawList = data.data;
+        } else if (Array.isArray(data)) {
+          rawList = data;
+        }
+
+        if (rawList && rawList.length > 0) {
+          const products = rawList.map(normalizeProductRow);
+          safeSetLocalStorage('magadh_products_db', products);
+          safeSetLocalStorage('magadh_products', products);
+          return products;
+        }
+      }
+    }
+  } catch (error: any) {
+    console.warn('[AWS Notice]: productAPI fetch notice:', error?.message || error);
+  }
+
+  // Fallback 1: Query backend catalog API
+  try {
+    const apiRes = await fetch('/api/products').catch(() => null);
+    if (apiRes && apiRes.ok) {
+      const json = await apiRes.json().catch(() => null);
+      if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
         const normalized = json.data.map(normalizeProductRow);
         safeSetLocalStorage('magadh_products_db', normalized);
         return normalized;
       }
     }
   } catch (apiErr) {
-    console.warn('Backend API product fetch notice, checking local cache:', apiErr);
+    console.warn('Backend API product fetch notice:', apiErr);
   }
 
+  // Fallback 2: Local storage cached products or mock catalog
   try {
-    const cached = safeGetLocalStorage<TyreProduct[]>('magadh_products_db', []);
+    const cached = safeGetLocalStorage<TyreProduct[]>('magadh_products', [])
+      || safeGetLocalStorage<TyreProduct[]>('magadh_products_db', []);
     if (cached && cached.length > 0) {
       return cached.map(normalizeProductRow);
     }
-  } catch (err) {
-    console.warn('Cache lookup notice:', err);
+  } catch (cacheErr) {
+    console.warn('Cache lookup notice:', cacheErr);
   }
+
   return MOCK_TYRES;
 }
+
+// Alias to maintain compatibility with existing callers
+export const fetchProductsFromBackend = fetchProducts;
 
 /**
  * Insert or Update a product via Backend API

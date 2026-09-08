@@ -61,15 +61,15 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
   return (
     <div
       id={`vertical-product-card-${product.id}`}
-      className="bg-white rounded-[28px] p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between relative group"
+      className="product-card bg-white rounded-[28px] p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between relative group"
     >
       {/* Top Header: Title & Brand Logo */}
       <div>
         <div className="flex items-start justify-between gap-2">
           <div>
-            <h2 className="text-lg sm:text-xl font-bold font-display text-[#0972D3] tracking-tight uppercase">
+            <h3 className="text-lg sm:text-xl font-bold font-display text-[#0972D3] tracking-tight uppercase">
               {product.name}
-            </h2>
+            </h3>
           </div>
 
           {/* Brand Logo / Monogram */}
@@ -93,6 +93,16 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
             {sizeSpec}
           </span>
         </div>
+
+        {/* Description and Category */}
+        {product.description && (
+          <p className="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed">
+            {product.description}
+          </p>
+        )}
+        <p className="category text-[11px] font-semibold text-slate-400 mt-1">
+          Category: {product.category || 'N/A'}
+        </p>
       </div>
 
       {/* Product Image Center View */}
@@ -111,7 +121,7 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
           ) : (
             <img
               id={`product-card-img-${product.id}`}
-              src={product.image}
+              src={product.image_url || product.image}
               alt={product.name}
               onError={() => setImgError(true)}
               className="w-full h-full max-h-48 object-contain filter drop-shadow-xl select-none"
@@ -126,8 +136,11 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
       <div className="space-y-3.5">
         {/* Price tag */}
         <div className="text-left flex items-baseline justify-between">
-          <div className="text-xl sm:text-2xl font-black text-[#0972D3] tracking-tight">
-            {formattedPrice}
+          <div>
+            <p className="price text-xl sm:text-2xl font-black text-[#0972D3] tracking-tight">
+              Price: Rs. {product.price}
+            </p>
+            <span className="text-[11px] text-slate-400 font-medium">({formattedPrice})</span>
           </div>
           {product.bulkPrice && product.bulkPrice < effectivePrice && (
             <span className="text-[11px] font-bold text-slate-500">
@@ -136,7 +149,7 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
           )}
         </div>
 
-        {/* Quantity Bar and Buy Now button */}
+        {/* Quantity Bar and Add to Cart / Buy Now button */}
         <div className="flex items-center gap-2 sm:gap-2.5">
           {/* Quantity Stepper Bar */}
           <div className="flex items-center rounded-2xl bg-slate-100 overflow-hidden shadow-2xs h-11 shrink-0">
@@ -163,7 +176,7 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
             </button>
           </div>
 
-          {/* Buy Now Button */}
+          {/* Add to Cart / Buy Now Button */}
           <button
             type="button"
             id={`btn-buy-now-${product.id}`}
@@ -171,7 +184,7 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
             className="flex-1 h-11 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center space-x-1.5 transition-all duration-200 shadow-sm cursor-pointer active:scale-[0.98] bg-[#0972D3] hover:bg-[#075ea8] active:bg-[#064c87] text-white"
           >
             <Zap className="w-4 h-4 fill-white text-white" />
-            <span className="tracking-tight">Buy Now</span>
+            <span className="tracking-tight">Add to Cart</span>
           </button>
         </div>
       </div>

@@ -2,10 +2,35 @@ import { Request, Response } from 'express';
 import { memoryStore } from '../store/memoryStore.js';
 import { TyreProduct } from '../types/index.js';
 
-export function getAllProducts(req: Request, res: Response) {
+export async function getAllProducts(req: Request, res: Response) {
   const { category, brand, rimSize, search, terrain, evReady, tireType } = req.query;
 
   let products = memoryStore.getProducts();
+
+  // Query AWS Lambda / API Gateway endpoint server-side if accessible
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2000);
+    const awsRes = await fetch('https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/prod/productAPI', {
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal
+    }).catch(() => null);
+    clearTimeout(timeout);
+
+    if (awsRes && awsRes.ok) {
+      const data: any = await awsRes.json().catch(() => null);
+      if (data) {
+        const rawList = data.body
+          ? (typeof data.body === 'string' ? JSON.parse(data.body).products || JSON.parse(data.body) : data.body.products || data.body)
+          : (data.products || data.items || data.data || (Array.isArray(data) ? data : []));
+        if (Array.isArray(rawList) && rawList.length > 0) {
+          products = rawList;
+        }
+      }
+    }
+  } catch {
+    // Continue with in-memory store
+  }
 
   if (category && category !== 'All') {
     products = products.filter(p => p.category.toLowerCase() === String(category).toLowerCase());

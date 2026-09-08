@@ -30,6 +30,7 @@ export interface TyreProduct {
   bulkPrice: number; // For 4+ tyres / Dealer Price
   stock: number;
   image: string;
+  image_url?: string;
   terrain: TerrainType;
   warrantyYears: number;
   fuelEfficiency: 'A' | 'B' | 'C' | 'D';
