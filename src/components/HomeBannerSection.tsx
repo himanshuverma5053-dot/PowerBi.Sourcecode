@@ -51,7 +51,7 @@ export const HomeBannerSection: React.FC = () => {
   return (
     <div 
       id="home-featured-image-section" 
-      className="w-full px-0 mx-0 mt-6 sm:mt-8 select-none"
+      className="w-full px-0 mx-0 mt-2 sm:mt-3 select-none"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >

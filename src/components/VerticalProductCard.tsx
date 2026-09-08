@@ -59,7 +59,7 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
   return (
     <div
       id={`vertical-product-card-${product.id}`}
-      className="product-card bg-white rounded-xl px-2 sm:px-2.5 py-2.5 sm:py-3 border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all duration-200 flex flex-col justify-between relative group w-full max-w-[280px] sm:max-w-[295px] mx-auto"
+      className="product-card bg-white rounded-xl px-2.5 sm:px-3 py-3 border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all duration-200 flex flex-col justify-between relative group w-full max-w-[280px] sm:max-w-[295px] mx-auto"
     >
       {/* Top Header: Title & Brand */}
       <div>

@@ -584,6 +584,13 @@ export default function App() {
     showToast('Logged out successfully');
   };
 
+  const handleNavigateTab = (tab: string) => {
+    if (tab === 'catalogue') {
+      fetchProducts();
+    }
+    setActiveTab(tab);
+  };
+
   return (
     <div className="min-h-screen bg-[#F7F7F7] text-slate-900 font-sans flex flex-col selection:bg-slate-900 selection:text-white overflow-x-hidden w-full max-w-full">
       
@@ -609,7 +616,7 @@ export default function App() {
           {/* Navigation Bar */}
           <Navbar
             activeTab={activeTab}
-            setActiveTab={setActiveTab}
+            setActiveTab={handleNavigateTab}
             isAdmin={isAdmin}
             interfaceMode={interfaceMode}
             onSwitchMode={(mode) => setInterfaceMode(mode)}
@@ -630,7 +637,7 @@ export default function App() {
           <main className="flex-1 w-full max-w-full overflow-x-hidden">
         {/* TAB 1: HOMEPAGE */}
         {activeTab === 'home' && (
-          <div className="animate-fade-in py-4 space-y-2 sm:space-y-3">
+          <div className="animate-fade-in py-5 sm:py-7 space-y-6 sm:space-y-8 md:space-y-10">
             {/* Section 1: Static Overview 2x2 Summary Bar */}
             <HomeSummaryBar
               orders={orders}
@@ -705,18 +712,18 @@ export default function App() {
           const searchedProducts = displayProducts.filter(p => matchesSearchQuery(p, searchQuery));
 
           return (
-            <div id="products-container" className="max-w-[280px] sm:max-w-[295px] mx-auto px-1 sm:px-1.5 py-2 space-y-2">
+            <div id="products-container" className="max-w-[280px] sm:max-w-[295px] mx-auto px-1 sm:px-1.5 py-4 sm:py-6 space-y-10 sm:space-y-12">
               {/* Products Header Card */}
-              <div className="bg-white px-2 sm:px-2 py-2 sm:py-2.5 rounded-xl border border-slate-200/90 shadow-2xs space-y-1.5 w-full">
-                <div className="flex flex-col gap-1">
+              <div className="bg-white px-2.5 py-2.5 sm:px-3 sm:py-3 rounded-xl border border-slate-200/90 shadow-2xs space-y-2 w-full">
+                <div className="flex flex-col gap-1.5">
                   <div className="flex items-center justify-between">
                     <h1 className="text-sm sm:text-base font-black font-display text-slate-900 tracking-tight">
                       Products
                     </h1>
                     {isProductsLoading && (
-                      <span className="inline-flex items-center gap-1 text-[9px] text-[#0972D3] font-semibold bg-sky-50 px-1 py-0.5 rounded-full">
-                        <RefreshCw className="w-2.5 h-2.5 animate-spin" />
-                        <span>Syncing</span>
+                      <span className="inline-flex items-center gap-1.5 text-[9px] text-[#0972D3] font-semibold bg-sky-50 px-2 py-0.5 rounded-full">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#0972D3] animate-pulse" />
+                        <span>Updating...</span>
                       </span>
                     )}
                   </div>
@@ -728,44 +735,32 @@ export default function App() {
                       : 'No products available'}
                   </p>
 
-                  {/* Controls: Search Bar & Refresh from Cloud */}
-                  <div className="w-full flex items-center gap-1 mt-0.5">
-                    <div className="flex-1 relative flex items-center">
-                      <CustomSearchIcon className="w-3 h-3 text-slate-400 absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none" />
-                      <input
-                        type="text"
-                        placeholder="Search tyres..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-6 pr-5 py-0.5 h-7.5 sm:h-8 rounded-lg bg-white border border-slate-300 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#0066c0] transition-all shadow-2xs"
-                      />
-                      {searchQuery && (
-                        <button
-                          onClick={() => setSearchQuery('')}
-                          className="absolute right-1 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-900 rounded-full hover:bg-slate-200 transition-colors cursor-pointer"
-                          title="Clear search query"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => fetchProducts()}
-                      disabled={isProductsLoading}
-                      className="h-7.5 sm:h-8 px-1.5 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 transition-all cursor-pointer flex items-center gap-1 text-[11px] font-bold shrink-0 disabled:opacity-50"
-                      title="Fetch products directly from DynamoDB and S3 bucket via API Gateway"
-                    >
-                      <RefreshCw className={`w-3 h-3 ${isProductsLoading ? 'animate-spin text-[#0972D3]' : ''}`} />
-                      <span className="inline">Refresh</span>
-                    </button>
+                  {/* Controls: Search Bar */}
+                  <div className="w-full relative flex items-center mt-0.5">
+                    <CustomSearchIcon className="w-3 h-3 text-slate-400 absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      placeholder="Search tyres..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-6 pr-5 py-0.5 h-7.5 sm:h-8 rounded-lg bg-white border border-slate-300 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#0066c0] transition-all shadow-2xs"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-1 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-900 rounded-full hover:bg-slate-200 transition-colors cursor-pointer"
+                        title="Clear search query"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* Vertical Products List (Stacked Vertically & Compact) */}
               {searchedProducts.length > 0 ? (
-                <div className="flex flex-col items-center gap-2 sm:gap-2.5 w-full">
+                <div className="flex flex-col items-center gap-6 sm:gap-8 w-full">
                   {searchedProducts.map((product) => (
                     <VerticalProductCard
                       key={product.id}
