@@ -29,7 +29,7 @@ import { CustomSearchIcon } from './components/SearchIcon';
 import { checkIsAdmin, ADMIN_CONFIG } from './utils/admin';
 import { getCustomerEffectivePrice, isProductVisibleToCustomer } from './utils/customerPricing';
 import { fetchOrdersFromBackend, saveOrderToBackend, updateOrderStatusInBackend } from './services/orderService';
-import { fetchProducts, fetchProductsFromBackend, saveProductToBackend, deleteProductFromBackend, updateProductFieldInBackend } from './services/productService';
+import { fetchProducts, fetchProductsFromBackend, normalizeProductRow, saveProductToBackend, deleteProductFromBackend, updateProductFieldInBackend } from './services/productService';
 import { isRadialProduct, isNonRadialProduct } from './utils/productCategories';
 import { safeSetLocalStorage, safeGetLocalStorage } from './utils/storage';
 import { calculateCustomerFinancials } from './utils/customerFinancials';
@@ -91,24 +91,8 @@ export default function App() {
     safeSetLocalStorage('magadh_interface_mode', interfaceMode);
   }, [interfaceMode]);
 
-  // Helper to filter out removed products permanently
-  const isRemovedProduct = (p: TyreProduct): boolean => {
-    const text = `${p.name || ''} ${p.id || ''} ${p.pattern || ''} ${p.sku || ''}`.toUpperCase();
-    return (
-      text.includes('ENDUTRAX') ||
-      text.includes('INDOTRAX') ||
-      text.includes('ENDURACE') ||
-      text.includes('INDORACE') ||
-      text.includes('MD+') ||
-      text.includes('MA-D') ||
-      text.includes('LD-D') ||
-      text.includes('RAT-D') ||
-      text.includes('RA(T)')
-    );
-  };
-
   const initializeProducts = (rawList: TyreProduct[]): TyreProduct[] => {
-    return rawList.filter(p => !isRemovedProduct(p)).map(p => ({
+    return rawList.map(p => ({
       ...p,
       image: p.image || '',
       images: p.images || []
@@ -189,35 +173,76 @@ export default function App() {
     return false;
   }) || null;
 
-  // Fetch products from Lambda function via API Gateway directly from DynamoDB and S3 bucket
-  const loadProductsFromDb = async (showNotification = false) => {
+  // Display products on the products page
+  const displayProducts = (rawProducts: any[]) => {
+    if (!Array.isArray(rawProducts) || rawProducts.length === 0) return;
+    const normalized = rawProducts.map(normalizeProductRow);
+    setProducts(normalized);
+    safeSetLocalStorage('magadh_products', normalized);
+    safeSetLocalStorage('magadh_products_db', normalized);
+  };
+
+  // Fetch products from Lambda function via API Gateway
+  async function fetchProducts() {
+    const invokeUrl = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/ProductAPI'; // Your invoke URL
+    const stageUrl = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/prod/ProductAPI'; // Fallback stage URL
+
     setIsProductsLoading(true);
     try {
-      const dbProducts = await fetchProducts();
-      if (dbProducts && Array.isArray(dbProducts)) {
-        const filtered = dbProducts.filter(p => !isRemovedProduct(p));
-        setProducts(filtered);
-      } else {
-        setProducts(MOCK_TYRES);
+      let response: Response | null = null;
+      try {
+        response = await fetch(invokeUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+      } catch {
+        response = null;
       }
-    } catch (err) {
-      console.warn('[Products Load Notice]:', err);
-      setProducts(MOCK_TYRES);
+
+      // If invokeUrl returns non-ok (such as 403 on case-sensitive stage name), try stageUrl
+      if (!response || !response.ok) {
+        response = await fetch(stageUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+      }
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+
+      const data = await response.json();
+
+      // If Lambda returns API Gateway proxy format (body is a JSON string)
+      const products = data.body
+        ? (typeof data.body === 'string' ? JSON.parse(data.body).products : data.body.products)
+        : data.products;
+
+      displayProducts(products);
+    } catch (error) {
+      console.error('Error:', error);
+      const container = document.getElementById('products-container');
+      if (container && (!container.children || container.children.length === 0)) {
+        container.innerHTML = '<p>Error loading products</p>';
+      }
     } finally {
       setIsProductsLoading(false);
     }
-  };
+  }
 
   // Whenever the customer clicks on the "product page" (catalogue), fetch products directly from DynamoDB & S3 bucket
   useEffect(() => {
     if (activeTab === 'catalogue') {
-      loadProductsFromDb();
+      fetchProducts();
     }
   }, [activeTab]);
 
   useEffect(() => {
-    // Clear legacy cached demo products and all previous order and payment history
-    localStorage.removeItem('magadh_products');
+    // Clear legacy cached demo order and payment history
     localStorage.removeItem('magadh_orders');
     localStorage.removeItem('magadh_orders_db');
     localStorage.removeItem('magadh_payments');
@@ -229,7 +254,7 @@ export default function App() {
     setPayments([]);
     
     // Sync products from backend database (with local catalog fallback)
-    loadProductsFromDb();
+    fetchProducts();
 
     // Sync orders from backend database
     fetchOrdersFromBackend().then(dbOrders => {
@@ -607,7 +632,7 @@ export default function App() {
               isAdmin={isAdmin}
               setActiveTab={setActiveTab}
               onRefreshData={() => {
-                loadProductsFromDb(false);
+                fetchProducts();
                 fetchOrdersFromBackend().then(dbOrders => {
                   if (dbOrders && dbOrders.length > 0) {
                     setOrders(prev => {
@@ -721,7 +746,7 @@ export default function App() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => loadProductsFromDb(true)}
+                      onClick={() => fetchProducts()}
                       disabled={isProductsLoading}
                       className="px-3.5 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold shrink-0 disabled:opacity-50"
                       title="Fetch products directly from DynamoDB and S3 bucket via API Gateway"

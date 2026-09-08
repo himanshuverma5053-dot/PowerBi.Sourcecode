@@ -1,11 +1,17 @@
 import { TyreProduct } from '../types';
 import { MOCK_TYRES } from '../data/mockData';
 import { safeGetLocalStorage, safeSetLocalStorage } from '../utils/storage';
+import apolloEndutraxMdImg from '../assets/images/endutrax_md_plus_d_1786864260538.jpg';
 
 /**
  * Normalizes a product record into a strongly-typed TyreProduct object.
  */
 export function normalizeProductRow(row: any): TyreProduct {
+  const isEndutrax = /endu|295\/90|md\+/i.test(String(row.name || ''));
+  const defaultTyreImg = isEndutrax
+    ? apolloEndutraxMdImg
+    : 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800';
+
   let images = row.images;
   if (typeof images === 'string') {
     try {
@@ -15,23 +21,41 @@ export function normalizeProductRow(row: any): TyreProduct {
     }
   }
   if (Array.isArray(images)) {
-    images = images.filter((img: any) => typeof img === 'string' && img.trim() !== '');
+    images = images.filter((img: any) => typeof img === 'string' && img.trim() !== '' && img !== 'null');
   }
-  if (!Array.isArray(images) || images.length === 0) {
-    const fallback = (typeof row.image === 'string' && row.image.trim() !== '') 
-      ? row.image 
-      : (typeof row.image_url === 'string' && row.image_url.trim() !== '') 
-      ? row.image_url 
-      : 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800';
-    images = [fallback];
+
+  const validImageUrl = (typeof row.image_url === 'string' && row.image_url.trim() !== '' && row.image_url !== 'null') ? row.image_url : null;
+  const validImage = (typeof row.image === 'string' && row.image.trim() !== '' && row.image !== 'null') ? row.image : null;
+  const chosenImg = validImageUrl || validImage || (images && images.length > 0 ? images[0] : defaultTyreImg);
+  images = [chosenImg];
+
+  // Parse width, aspect ratio, rim size from name if available (e.g. 295/90 R20)
+  let parsedWidth = 295;
+  let parsedAspectRatio = 90;
+  let parsedRimSize = 20;
+  const sizeMatch = String(row.name || '').match(/(\d{2,3})\s*[\/\-]\s*(\d{2,3})\s*R?\s*(\d{2})/i);
+  if (sizeMatch) {
+    parsedWidth = Number(sizeMatch[1]);
+    parsedAspectRatio = Number(sizeMatch[2]);
+    parsedRimSize = Number(sizeMatch[3]);
+  } else {
+    parsedWidth = 195;
+    parsedAspectRatio = 55;
+    parsedRimSize = 16;
   }
+
+  const isCommercial = /truck|commercial|endu|tipper|trailer|haul|multi-axle|295\/90/i.test(
+    `${row.name || ''} ${row.description || ''} ${row.category || ''}`
+  );
+  const categoryVal = row.category || (isCommercial ? 'Truck' : 'Car');
+  const brandVal = row.brand || (String(row.name || '').toLowerCase().includes('endu') ? 'Apollo' : 'Apollo');
 
   let compatibleVehicles = row.compatible_vehicles || row.compatibleVehicles;
   if (typeof compatibleVehicles === 'string') {
     try {
       compatibleVehicles = JSON.parse(compatibleVehicles);
     } catch (e) {
-      compatibleVehicles = ['Passenger Vehicle'];
+      compatibleVehicles = isCommercial ? ['Commercial Truck', 'Multi-Axle Tipper', 'Heavy Haulage'] : ['Passenger Vehicle'];
     }
   }
 
@@ -40,7 +64,7 @@ export function normalizeProductRow(row: any): TyreProduct {
     try {
       tags = JSON.parse(tags);
     } catch (e) {
-      tags = ['Tubeless'];
+      tags = isCommercial ? ['Commercial Radial', 'High Load'] : ['Tubeless'];
     }
   }
 
@@ -53,43 +77,48 @@ export function normalizeProductRow(row: any): TyreProduct {
     }
   }
 
-  const mrpVal = Number(row.mrp ?? row.price ?? 4500);
-  const dealerVal = Number(row.dealer_price ?? row.dealerPrice ?? row.bulk_price ?? row.bulkPrice ?? 4100);
+  const mrpVal = Number(row.mrp ?? row.price ?? (isCommercial ? 25500 : 4500));
+  const dealerVal = Number(row.dealer_price ?? row.dealerPrice ?? row.bulk_price ?? row.bulkPrice ?? Math.round(mrpVal * 0.95));
+
+  const validId = (row.id !== null && row.id !== undefined && String(row.id) !== 'null' && String(row.id).trim() !== '')
+    ? String(row.id)
+    : `dynamo-${(row.name || 'product').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
   return {
-    id: String(row.id),
-    name: row.name || row.title || 'Magadh Tyre SKU',
-    brand: row.brand || 'Apollo',
-    category: row.category || 'Car',
-    width: Number(row.width ?? 195),
-    aspectRatio: Number(row.aspect_ratio ?? row.aspectRatio ?? 55),
-    rimSize: Number(row.rim_size ?? row.rimSize ?? 16),
-    speedRating: row.speed_rating || row.speedRating || 'V',
-    loadIndex: Number(row.load_index ?? row.loadIndex ?? 91),
+    id: validId,
+    name: row.name || row.title || 'Apollo Tyre SKU',
+    brand: brandVal,
+    category: categoryVal,
+    width: Number(row.width ?? parsedWidth),
+    aspectRatio: Number(row.aspect_ratio ?? row.aspectRatio ?? parsedAspectRatio),
+    rimSize: Number(row.rim_size ?? row.rimSize ?? parsedRimSize),
+    speedRating: row.speed_rating || row.speedRating || (isCommercial ? 'K' : 'V'),
+    loadIndex: Number(row.load_index ?? row.loadIndex ?? (isCommercial ? 154 : 91)),
     price: mrpVal,
     bulkPrice: dealerVal,
     mrp: mrpVal,
     dealerPrice: dealerVal,
-    stock: Number(row.stock ?? 20),
+    stock: Number(row.stock ?? 25),
     minStockLevel: Number(row.min_stock_level ?? row.minStockLevel ?? 5),
     gstRate: Number(row.gst_rate ?? row.gstRate ?? 18),
-    image: row.image || row.image_url || images[0],
+    image: chosenImg,
+    image_url: chosenImg,
     images: images,
-    terrain: row.terrain || 'Highway',
+    terrain: row.terrain || (isCommercial ? 'All-Terrain' : 'Highway'),
     warrantyYears: Number(row.warranty_years ?? row.warrantyYears ?? 5),
     fuelEfficiency: row.fuel_efficiency || row.fuelEfficiency || 'B',
     wetGrip: row.wet_grip || row.wetGrip || 'A',
     noiseDb: Number(row.noise_db ?? row.noiseDb ?? 68),
     description: row.description || 'Premium tyre built for high mileage, durability and wet grip on Indian roads.',
-    compatibleVehicles: Array.isArray(compatibleVehicles) ? compatibleVehicles : ['Passenger Vehicle'],
-    featured: Boolean(row.featured),
+    compatibleVehicles: Array.isArray(compatibleVehicles) ? compatibleVehicles : (isCommercial ? ['Commercial Truck', 'Multi-Axle Tipper', 'Heavy Haulage'] : ['Passenger Vehicle']),
+    featured: Boolean(row.featured ?? isCommercial),
     evReady: Boolean(row.ev_ready ?? row.evReady),
     hsnCode: row.hsn_code || row.hsnCode || '40111010',
-    sku: row.sku || `SKU-${(row.brand || 'TYRE').substring(0, 3).toUpperCase()}-${row.width || 195}${row.aspect_ratio || row.aspectRatio || 65}R${row.rim_size || row.rimSize || 15}`,
+    sku: row.sku || `SKU-${brandVal.substring(0, 3).toUpperCase()}-${parsedWidth}${parsedAspectRatio}R${parsedRimSize}`,
     productCode: row.product_code || row.productCode || `PRD-${Math.floor(1000 + Math.random() * 9000)}`,
-    pattern: row.pattern || 'Standard Tread',
+    pattern: row.pattern || (isEndutrax ? 'ENDUTRAX MD+' : 'Standard Tread'),
     status: row.status || 'Active',
-    tags: Array.isArray(tags) ? tags : ['Tubeless'],
+    tags: Array.isArray(tags) ? tags : ['Radial'],
     components: Array.isArray(components) ? components : [],
     includedComponents: row.included_components || row.includedComponents || 'Tube & Flap',
     tireType: (() => {
@@ -99,10 +128,6 @@ export function normalizeProductRow(row: any): TyreProduct {
         if (cleaned === 'non-radial' || cleaned === 'non radial' || cleaned === 'non_radial' || cleaned === 'bias') return 'Non-Radial';
         if (cleaned === 'radial') return 'Radial';
       }
-      const text = `${row.name || ''} ${row.brand || ''} ${row.category || ''} ${row.pattern || ''} ${row.description || ''}`.toUpperCase();
-      if (text.includes('NON RADIAL') || text.includes('NON-RADIAL') || text.includes('BIAS') || text.includes('CROSS-PLY') || text.includes('AMAR GOLD') || text.includes('ABHIMANYU') || text.includes('XR-1X') || text.includes('XT-100 HD')) {
-        return 'Non-Radial';
-      }
       return 'Radial';
     })(),
     tire_type: (() => {
@@ -111,10 +136,6 @@ export function normalizeProductRow(row: any): TyreProduct {
         const cleaned = String(raw).trim().toLowerCase();
         if (cleaned === 'non-radial' || cleaned === 'non radial' || cleaned === 'non_radial' || cleaned === 'bias') return 'Non-Radial';
         if (cleaned === 'radial') return 'Radial';
-      }
-      const text = `${row.name || ''} ${row.brand || ''} ${row.category || ''} ${row.pattern || ''} ${row.description || ''}`.toUpperCase();
-      if (text.includes('NON RADIAL') || text.includes('NON-RADIAL') || text.includes('BIAS') || text.includes('CROSS-PLY') || text.includes('AMAR GOLD') || text.includes('ABHIMANYU') || text.includes('XR-1X') || text.includes('XT-100 HD')) {
-        return 'Non-Radial';
       }
       return 'Radial';
     })(),
@@ -128,81 +149,70 @@ export function normalizeProductRow(row: any): TyreProduct {
  */
 export const AWS_PRODUCT_INVOKE_URL = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/ProductAPI';
 
-// Fetch products from Lambda function via API Gateway directly from DynamoDB and S3 bucket
+// Fetch products from Lambda function via API Gateway
 export async function fetchProducts(): Promise<TyreProduct[]> {
   const invokeUrl = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/ProductAPI'; // Your invoke URL
+  const stageUrl = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/prod/ProductAPI'; // Deployed AWS API Gateway stage
 
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
+    let response: Response | null = null;
 
-    const response = await fetch(invokeUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      signal: controller.signal
-    }).catch((fetchErr) => {
-      console.warn('[AWS Notice]: Direct DynamoDB/S3 productAPI fetch waiting on AWS CORS/permissions:', fetchErr?.message || fetchErr);
-      return null;
-    });
-    clearTimeout(timeoutId);
-
-    if (response && response.ok) {
-      const data = await response.json().catch(() => null);
-
-      if (data) {
-        // If Lambda returns API Gateway proxy format (body is a JSON string)
-        let rawList: any[] = [];
-        if (data.body) {
-          const parsed = typeof data.body === 'string' ? JSON.parse(data.body) : data.body;
-          rawList = Array.isArray(parsed) ? parsed : (parsed?.products || parsed?.items || parsed?.data || []);
-        } else if (Array.isArray(data.products)) {
-          rawList = data.products;
-        } else if (Array.isArray(data.items)) {
-          rawList = data.items;
-        } else if (Array.isArray(data.data)) {
-          rawList = data.data;
-        } else if (Array.isArray(data)) {
-          rawList = data;
+    // Try primary invokeUrl
+    try {
+      response = await fetch(invokeUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
         }
-
-        if (rawList && rawList.length > 0) {
-          const products = rawList.map(normalizeProductRow);
-          safeSetLocalStorage('magadh_products_db', products);
-          safeSetLocalStorage('magadh_products', products);
-          return products;
-        }
-      }
+      });
+    } catch {
+      response = null;
     }
-  } catch (error: any) {
-    console.warn('[AWS Notice]: productAPI fetch notice:', error?.message || error);
+
+    // If primary invokeUrl returns non-ok (e.g. AWS API Gateway stage case mismatch), try stageUrl
+    if (!response || !response.ok) {
+      response = await fetch(stageUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    }
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch products');
+    }
+
+    const data = await response.json();
+
+    // If Lambda returns API Gateway proxy format (body is a JSON string)
+    const rawProducts = data.body
+      ? (typeof data.body === 'string' ? JSON.parse(data.body).products : data.body.products)
+      : data.products;
+
+    if (Array.isArray(rawProducts) && rawProducts.length > 0) {
+      const products = rawProducts.map(normalizeProductRow);
+      safeSetLocalStorage('magadh_products_db', products);
+      safeSetLocalStorage('magadh_products', products);
+      return products;
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    const container = document.getElementById('products-container');
+    if (container && (!container.children || container.children.length === 0)) {
+      container.innerHTML = '<p>Error loading products</p>';
+    }
   }
 
-  // Fallback 1: Query backend catalog API
-  try {
-    const apiRes = await fetch('/api/products').catch(() => null);
-    if (apiRes && apiRes.ok) {
-      const json = await apiRes.json().catch(() => null);
-      if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
-        const normalized = json.data.map(normalizeProductRow);
-        safeSetLocalStorage('magadh_products_db', normalized);
-        return normalized;
-      }
-    }
-  } catch (apiErr) {
-    console.warn('Backend API product fetch notice:', apiErr);
-  }
-
-  // Fallback 2: Local storage cached products or mock catalog
+  // Fallback to local catalog or mock data
   try {
     const cached = safeGetLocalStorage<TyreProduct[]>('magadh_products', [])
       || safeGetLocalStorage<TyreProduct[]>('magadh_products_db', []);
     if (cached && cached.length > 0) {
       return cached.map(normalizeProductRow);
     }
-  } catch (cacheErr) {
-    console.warn('Cache lookup notice:', cacheErr);
+  } catch {
+    // Continue with mock tyres
   }
 
   return MOCK_TYRES;

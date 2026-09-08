@@ -9,13 +9,26 @@ export async function getAllProducts(req: Request, res: Response) {
 
   // Query AWS Lambda / API Gateway endpoint server-side if accessible
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 2000);
-    const awsRes = await fetch('https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/ProductAPI', {
-      headers: { 'Content-Type': 'application/json' },
-      signal: controller.signal
-    }).catch(() => null);
-    clearTimeout(timeout);
+    const urls = [
+      'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/ProductAPI',
+      'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/prod/ProductAPI'
+    ];
+    let awsRes: any = null;
+    for (const u of urls) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 2500);
+        const r = await fetch(u, {
+          headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal
+        });
+        clearTimeout(timeout);
+        if (r && r.ok) {
+          awsRes = r;
+          break;
+        }
+      } catch {}
+    }
 
     if (awsRes && awsRes.ok) {
       const data: any = await awsRes.json().catch(() => null);
@@ -24,7 +37,10 @@ export async function getAllProducts(req: Request, res: Response) {
           ? (typeof data.body === 'string' ? JSON.parse(data.body).products || JSON.parse(data.body) : data.body.products || data.body)
           : (data.products || data.items || data.data || (Array.isArray(data) ? data : []));
         if (Array.isArray(rawList) && rawList.length > 0) {
-          products = rawList;
+          products = rawList.map((item, idx) => ({
+            ...item,
+            id: item.id || `product-${idx + 1}`
+          }));
         }
       }
     }
