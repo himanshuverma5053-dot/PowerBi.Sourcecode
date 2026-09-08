@@ -15,15 +15,15 @@ export const ProductImagePlaceholder: React.FC<ProductImagePlaceholderProps> = (
 }) => {
   const iconSize =
     size === 'sm'
-      ? 'w-7 h-7'
+      ? 'w-5 h-5'
       : size === 'lg'
-      ? 'w-20 h-20 sm:w-24 sm:h-24'
-      : 'w-12 h-12 sm:w-14 sm:h-14';
+      ? 'w-10 h-10 sm:w-12 sm:h-12'
+      : 'w-7 h-7 sm:w-8 sm:h-8';
 
   return (
     <div
       id={id}
-      className={`w-full h-full flex items-center justify-center rounded-2xl bg-slate-50/60 text-slate-300 select-none ${className}`}
+      className={`w-full h-full flex items-center justify-center rounded-xl bg-slate-50/60 text-slate-300 select-none ${className}`}
       aria-label="No image available"
     >
       <div className="flex items-center justify-center">

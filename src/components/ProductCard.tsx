@@ -81,13 +81,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
       {/* Image Container */}
       <div
-        className="relative h-32 sm:h-36 w-full flex items-center justify-center p-3 overflow-hidden bg-slate-50/70 mt-1 select-none"
+        className="relative h-20 sm:h-24 w-full flex items-center justify-center p-1.5 overflow-hidden bg-slate-50/70 mt-1 select-none"
       >
         {product.image || product.image_url || product.images?.[0] ? (
           <img
             src={product.image_url || product.image || product.images?.[0]}
             alt={product.name}
-            className="max-h-28 sm:max-h-32 max-w-full object-contain"
+            className="max-h-18 sm:max-h-20 max-w-full object-contain"
             referrerPolicy="no-referrer"
           />
         ) : (
@@ -96,7 +96,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {/* Product Content Details */}
-      <div className="p-3.5 pt-0 flex-1 flex flex-col justify-between space-y-2.5 mt-2">
+      <div className="p-2.5 pt-0 flex-1 flex flex-col justify-between space-y-1.5 mt-1">
         <div>
           {/* Tyre Dimension Badge if present */}
           {product.width && product.aspectRatio && product.rimSize ? (
@@ -143,10 +143,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         ) : null}
 
         {/* Pricing & Quantity + Buy Now */}
-        <div className="pt-2 space-y-2">
+        <div className="pt-1.5 space-y-1.5 border-t border-slate-100">
           <div className="flex items-baseline justify-between">
             <div className="flex items-baseline space-x-1">
-              <span className="text-sm sm:text-base font-black text-slate-950 font-display">
+              <span className="text-sm font-black text-slate-950 font-display">
                 {formatCurrency(displayPrice)}
               </span>
               <span className="text-[9px] text-slate-500 font-medium">/ unit</span>
@@ -160,27 +160,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
           {/* Quantity Stepper & Buy Now Button */}
           <div className="flex items-center gap-1.5">
-            <div className="flex items-center rounded-xl bg-slate-100 h-8 shrink-0 shadow-2xs">
+            <div className="flex items-center rounded-lg bg-slate-100 h-7 shrink-0 shadow-2xs">
               <button
                 type="button"
                 onClick={handleDecrement}
                 disabled={quantity <= 1}
-                className="w-6 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-50 disabled:opacity-30 transition-colors cursor-pointer"
+                className="w-5 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-50 disabled:opacity-30 transition-colors cursor-pointer"
                 aria-label="Decrease quantity"
               >
-                <Minus className="w-3 h-3" />
+                <Minus className="w-2.5 h-2.5" />
               </button>
-              <span className="w-5 text-center text-xs font-black text-slate-900 select-none">
+              <span className="w-4 text-center text-[11px] font-black text-slate-900 select-none">
                 {quantity}
               </span>
               <button
                 type="button"
                 onClick={handleIncrement}
                 disabled={Boolean(product.stock && product.stock > 0 && quantity >= product.stock)}
-                className="w-6 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-50 disabled:opacity-30 transition-colors cursor-pointer"
+                className="w-5 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-50 disabled:opacity-30 transition-colors cursor-pointer"
                 aria-label="Increase quantity"
               >
-                <Plus className="w-3 h-3" />
+                <Plus className="w-2.5 h-2.5" />
               </button>
             </div>
 
@@ -188,7 +188,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               type="button"
               id={`btn-card-buy-now-${product.id}`}
               onClick={handleBuyNow}
-              className="flex-1 py-1.5 px-2 rounded-xl bg-[#0972D3] hover:bg-[#075ea8] active:bg-[#064c87] text-white text-[11px] font-black transition-all flex items-center justify-center space-x-1 cursor-pointer shadow-2xs active:scale-95"
+              className="flex-1 py-1 px-2 rounded-lg bg-[#0972D3] hover:bg-[#075ea8] active:bg-[#064c87] text-white text-[11px] font-black transition-all flex items-center justify-center space-x-1 cursor-pointer shadow-2xs active:scale-95"
             >
               <Zap className="w-3 h-3 fill-white text-white" />
               <span>Buy Now</span>
