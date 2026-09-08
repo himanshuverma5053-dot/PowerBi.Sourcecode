@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TyreProduct, CustomerAccount } from '../types';
-import { Eye, Minus, Plus, Zap } from 'lucide-react';
+import { Minus, Plus, Zap } from 'lucide-react';
 import { ProductImagePlaceholder } from './ProductImagePlaceholder';
-import { ApolloLogo } from './ApolloLogo';
 
 interface VerticalProductCardProps {
   product: TyreProduct;
@@ -24,7 +23,7 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
 
   useEffect(() => {
     setImgError(false);
-  }, [product.image]);
+  }, [product.image, product.image_url]);
 
   // Compute pricing
   const effectivePrice = currentCustomer && product.dealerPrice 
@@ -38,11 +37,10 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
     minimumFractionDigits: 2,
   }).format(effectivePrice);
 
-  // Size / spec formatted
-  const sizeSpec = `${product.width}/${product.aspectRatio} R${product.rimSize} ${product.loadIndex || '154'}${product.speedRating || 'K'} ${product.name} TL -D`;
-
-  // Brand logo lookup or clean text styling
-  const brandName = product.brand || 'Apollo';
+  const hasDimensions = Boolean(product.width && product.aspectRatio && product.rimSize);
+  const sizeSpec = hasDimensions
+    ? `${product.width}/${product.aspectRatio} R${product.rimSize}${product.loadIndex ? ` ${product.loadIndex}` : ''}${product.speedRating || ''}`
+    : '';
 
   const handleIncrement = () => {
     setQuantity((prev) => (product.stock && prev >= product.stock ? prev : prev + 1));
@@ -58,12 +56,14 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
     }
   };
 
+  const productImage = product.image_url || product.image;
+
   return (
     <div
       id={`vertical-product-card-${product.id}`}
       className="product-card bg-white rounded-[28px] p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between relative group"
     >
-      {/* Top Header: Title & Brand Logo */}
+      {/* Top Header: Title & Brand */}
       <div>
         <div className="flex items-start justify-between gap-2">
           <div>
@@ -72,37 +72,41 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
             </h3>
           </div>
 
-          {/* Brand Logo / Monogram */}
-          <div className="flex items-center text-right shrink-0">
-            {brandName.toLowerCase().includes('apollo') ? (
-              <ApolloLogo size="sm" className="opacity-95 hover:opacity-100 transition-opacity" />
-            ) : (
+          {/* Brand Tag if present in data */}
+          {product.brand && (
+            <div className="flex items-center text-right shrink-0">
               <span className="font-black text-xs text-slate-800 tracking-wider uppercase px-2 py-0.5 rounded-md bg-slate-100">
-                {brandName}
+                {product.brand}
               </span>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
-        {/* Pill Icon & Spec String */}
-        <div className="flex items-center space-x-2.5 mt-2.5">
-          <div className="w-5 h-5 rounded-md bg-[#0972D3] flex items-center justify-center shrink-0 shadow-2xs">
-            <div className="w-1.5 h-1.5 rounded-full bg-white" />
+        {/* Spec String if dimensions exist */}
+        {sizeSpec && (
+          <div className="flex items-center space-x-2.5 mt-2.5">
+            <div className="w-5 h-5 rounded-md bg-[#0972D3] flex items-center justify-center shrink-0 shadow-2xs">
+              <div className="w-1.5 h-1.5 rounded-full bg-white" />
+            </div>
+            <span className="text-xs sm:text-[13px] font-medium text-slate-800 leading-tight">
+              {sizeSpec}
+            </span>
           </div>
-          <span className="text-xs sm:text-[13px] font-medium text-slate-800 leading-tight">
-            {sizeSpec}
-          </span>
-        </div>
+        )}
 
-        {/* Description and Category */}
+        {/* Description */}
         {product.description && (
           <p className="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed">
             {product.description}
           </p>
         )}
-        <p className="category text-[11px] font-semibold text-slate-400 mt-1">
-          Category: {product.category || 'N/A'}
-        </p>
+
+        {/* Category if present in data */}
+        {product.category && (
+          <p className="category text-[11px] font-semibold text-slate-400 mt-1">
+            Category: {product.category}
+          </p>
+        )}
       </div>
 
       {/* Product Image Center View */}
@@ -110,7 +114,7 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
         className="my-5 sm:my-7 flex items-center justify-center relative select-none"
       >
         <div className="relative w-40 h-40 sm:w-52 sm:h-52 flex items-center justify-center p-2 rounded-2xl bg-gradient-to-b from-slate-50/60 to-transparent transition-colors duration-200">
-          {!product.image || imgError ? (
+          {!productImage || imgError ? (
             <ProductImagePlaceholder 
               label={product.name} 
               onImageSelected={(dataUrl) => {
@@ -121,7 +125,7 @@ export const VerticalProductCard: React.FC<VerticalProductCardProps> = ({
           ) : (
             <img
               id={`product-card-img-${product.id}`}
-              src={product.image_url || product.image}
+              src={productImage}
               alt={product.name}
               onError={() => setImgError(true)}
               className="w-full h-full max-h-48 object-contain filter drop-shadow-xl select-none"

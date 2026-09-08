@@ -73,7 +73,9 @@ export const ContinuousProductBar: React.FC<ContinuousProductBarProps> = ({
         >
           {displayItems.map((product, idx) => {
             const pricing = getCustomerEffectivePrice(product, currentCustomer);
-            const sizeString = `${product.width}/${product.aspectRatio} R${product.rimSize}`;
+            const sizeString = (product.width && product.aspectRatio && product.rimSize)
+              ? `${product.width}/${product.aspectRatio} R${product.rimSize}`
+              : '';
 
             return (
               <div
@@ -84,9 +86,9 @@ export const ContinuousProductBar: React.FC<ContinuousProductBarProps> = ({
                 <div
                   className="relative w-full h-20 sm:h-24 md:h-32 lg:h-24 rounded-lg md:rounded-xl bg-slate-100 overflow-hidden flex items-center justify-center p-1.5 md:p-2 mb-1.5 md:mb-2 select-none"
                 >
-                  {product.image || product.images?.[0] ? (
+                  {product.image || product.image_url || product.images?.[0] ? (
                     <img
-                      src={product.image || product.images?.[0]}
+                      src={product.image_url || product.image || product.images?.[0]}
                       alt={product.name}
                       className="max-h-full max-w-full object-contain group-hover/card:scale-105 transition-transform duration-300"
                       loading="lazy"
@@ -95,21 +97,27 @@ export const ContinuousProductBar: React.FC<ContinuousProductBarProps> = ({
                     <ProductImagePlaceholder label={product.name} size="sm" />
                   )}
                   {/* Brand Badge */}
-                  <span className="absolute top-1 left-1 bg-slate-950/80 backdrop-blur-xs text-white font-black text-[8px] md:text-[9px] px-1 md:px-1.5 py-0.5 rounded uppercase tracking-wider">
-                    {product.brand}
-                  </span>
+                  {product.brand && (
+                    <span className="absolute top-1 left-1 bg-slate-950/80 backdrop-blur-xs text-white font-black text-[8px] md:text-[9px] px-1 md:px-1.5 py-0.5 rounded uppercase tracking-wider">
+                      {product.brand}
+                    </span>
+                  )}
                   {/* Warranty Badge */}
-                  <span className="absolute bottom-1 right-1 bg-slate-900 text-amber-300 font-extrabold text-[8px] md:text-[9px] px-1 md:px-1.5 py-0.5 rounded shadow-2xs">
-                    {product.warrantyYears}Y
-                  </span>
+                  {Boolean(product.warrantyYears) && (
+                    <span className="absolute bottom-1 right-1 bg-slate-900 text-amber-300 font-extrabold text-[8px] md:text-[9px] px-1 md:px-1.5 py-0.5 rounded shadow-2xs">
+                      {product.warrantyYears}Y
+                    </span>
+                  )}
                 </div>
 
                 {/* Product Info */}
                 <div className="space-y-0.5 md:space-y-1 select-none">
-                  <div className="text-[9px] md:text-[10px] font-extrabold text-slate-700 uppercase tracking-wider flex items-center justify-between">
-                    <span>{sizeString}</span>
-                    <span className="text-[8px] md:text-[9px] text-slate-500 font-semibold">{product.category}</span>
-                  </div>
+                  {(sizeString || product.category) && (
+                    <div className="text-[9px] md:text-[10px] font-extrabold text-slate-700 uppercase tracking-wider flex items-center justify-between">
+                      {sizeString ? <span>{sizeString}</span> : <span />}
+                      {product.category && <span className="text-[8px] md:text-[9px] text-slate-500 font-semibold">{product.category}</span>}
+                    </div>
+                  )}
                   <h3 className="text-[11px] md:text-[13px] font-black text-slate-900 line-clamp-1 group-hover/card:text-slate-700 transition-colors">
                     {product.name}
                   </h3>

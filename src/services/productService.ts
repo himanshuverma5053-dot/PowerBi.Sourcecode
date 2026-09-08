@@ -1,146 +1,73 @@
 import { TyreProduct } from '../types';
 import { MOCK_TYRES } from '../data/mockData';
 import { safeGetLocalStorage, safeSetLocalStorage } from '../utils/storage';
-import apolloEndutraxMdImg from '../assets/images/endutrax_md_plus_d_1786864260538.jpg';
 
 /**
- * Normalizes a product record into a strongly-typed TyreProduct object.
+ * Normalizes a product record into a TyreProduct object without adding customizations.
+ * Preserves the exact data and images fetched from the backend.
  */
 export function normalizeProductRow(row: any): TyreProduct {
-  const isEndutrax = /endu|295\/90|md\+/i.test(String(row.name || ''));
-  const defaultTyreImg = isEndutrax
-    ? apolloEndutraxMdImg
-    : 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&q=80&w=800';
-
-  let images = row.images;
-  if (typeof images === 'string') {
-    try {
-      images = JSON.parse(images);
-    } catch (e) {
-      images = [row.image || row.image_url];
-    }
+  if (!row || typeof row !== 'object') {
+    return {
+      id: 'product-unknown',
+      name: 'Unknown Product',
+      price: 0,
+      image: '',
+      description: '',
+    };
   }
-  if (Array.isArray(images)) {
-    images = images.filter((img: any) => typeof img === 'string' && img.trim() !== '' && img !== 'null');
-  }
-
-  const validImageUrl = (typeof row.image_url === 'string' && row.image_url.trim() !== '' && row.image_url !== 'null') ? row.image_url : null;
-  const validImage = (typeof row.image === 'string' && row.image.trim() !== '' && row.image !== 'null') ? row.image : null;
-  const chosenImg = validImageUrl || validImage || (images && images.length > 0 ? images[0] : defaultTyreImg);
-  images = [chosenImg];
-
-  // Parse width, aspect ratio, rim size from name if available (e.g. 295/90 R20)
-  let parsedWidth = 295;
-  let parsedAspectRatio = 90;
-  let parsedRimSize = 20;
-  const sizeMatch = String(row.name || '').match(/(\d{2,3})\s*[\/\-]\s*(\d{2,3})\s*R?\s*(\d{2})/i);
-  if (sizeMatch) {
-    parsedWidth = Number(sizeMatch[1]);
-    parsedAspectRatio = Number(sizeMatch[2]);
-    parsedRimSize = Number(sizeMatch[3]);
-  } else {
-    parsedWidth = 195;
-    parsedAspectRatio = 55;
-    parsedRimSize = 16;
-  }
-
-  const isCommercial = /truck|commercial|endu|tipper|trailer|haul|multi-axle|295\/90/i.test(
-    `${row.name || ''} ${row.description || ''} ${row.category || ''}`
-  );
-  const categoryVal = row.category || (isCommercial ? 'Truck' : 'Car');
-  const brandVal = row.brand || (String(row.name || '').toLowerCase().includes('endu') ? 'Apollo' : 'Apollo');
-
-  let compatibleVehicles = row.compatible_vehicles || row.compatibleVehicles;
-  if (typeof compatibleVehicles === 'string') {
-    try {
-      compatibleVehicles = JSON.parse(compatibleVehicles);
-    } catch (e) {
-      compatibleVehicles = isCommercial ? ['Commercial Truck', 'Multi-Axle Tipper', 'Heavy Haulage'] : ['Passenger Vehicle'];
-    }
-  }
-
-  let tags = row.tags;
-  if (typeof tags === 'string') {
-    try {
-      tags = JSON.parse(tags);
-    } catch (e) {
-      tags = isCommercial ? ['Commercial Radial', 'High Load'] : ['Tubeless'];
-    }
-  }
-
-  let components = row.components;
-  if (typeof components === 'string') {
-    try {
-      components = JSON.parse(components);
-    } catch (e) {
-      components = [];
-    }
-  }
-
-  const mrpVal = Number(row.mrp ?? row.price ?? (isCommercial ? 25500 : 4500));
-  const dealerVal = Number(row.dealer_price ?? row.dealerPrice ?? row.bulk_price ?? row.bulkPrice ?? Math.round(mrpVal * 0.95));
 
   const validId = (row.id !== null && row.id !== undefined && String(row.id) !== 'null' && String(row.id).trim() !== '')
     ? String(row.id)
-    : `dynamo-${(row.name || 'product').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+    : (row.name ? `product-${String(row.name).toLowerCase().replace(/[^a-z0-9]+/g, '-')}` : 'product-1');
+
+  const imageUrl = (typeof row.image_url === 'string' && row.image_url.trim() !== '' && row.image_url !== 'null')
+    ? row.image_url
+    : (typeof row.image === 'string' && row.image.trim() !== '' && row.image !== 'null')
+    ? row.image
+    : '';
+
+  let imagesList: string[] = [];
+  if (Array.isArray(row.images)) {
+    imagesList = row.images.filter((img: any) => typeof img === 'string' && img.trim() !== '' && img !== 'null');
+  } else if (imageUrl) {
+    imagesList = [imageUrl];
+  }
+
+  const priceVal = Number(row.price ?? row.mrp ?? 0);
 
   return {
+    ...row,
     id: validId,
-    name: row.name || row.title || 'Apollo Tyre SKU',
-    brand: brandVal,
-    category: categoryVal,
-    width: Number(row.width ?? parsedWidth),
-    aspectRatio: Number(row.aspect_ratio ?? row.aspectRatio ?? parsedAspectRatio),
-    rimSize: Number(row.rim_size ?? row.rimSize ?? parsedRimSize),
-    speedRating: row.speed_rating || row.speedRating || (isCommercial ? 'K' : 'V'),
-    loadIndex: Number(row.load_index ?? row.loadIndex ?? (isCommercial ? 154 : 91)),
-    price: mrpVal,
-    bulkPrice: dealerVal,
-    mrp: mrpVal,
-    dealerPrice: dealerVal,
-    stock: Number(row.stock ?? 25),
-    minStockLevel: Number(row.min_stock_level ?? row.minStockLevel ?? 5),
-    gstRate: Number(row.gst_rate ?? row.gstRate ?? 18),
-    image: chosenImg,
-    image_url: chosenImg,
-    images: images,
-    terrain: row.terrain || (isCommercial ? 'All-Terrain' : 'Highway'),
-    warrantyYears: Number(row.warranty_years ?? row.warrantyYears ?? 5),
-    fuelEfficiency: row.fuel_efficiency || row.fuelEfficiency || 'B',
-    wetGrip: row.wet_grip || row.wetGrip || 'A',
-    noiseDb: Number(row.noise_db ?? row.noiseDb ?? 68),
-    description: row.description || 'Premium tyre built for high mileage, durability and wet grip on Indian roads.',
-    compatibleVehicles: Array.isArray(compatibleVehicles) ? compatibleVehicles : (isCommercial ? ['Commercial Truck', 'Multi-Axle Tipper', 'Heavy Haulage'] : ['Passenger Vehicle']),
-    featured: Boolean(row.featured ?? isCommercial),
-    evReady: Boolean(row.ev_ready ?? row.evReady),
-    hsnCode: row.hsn_code || row.hsnCode || '40111010',
-    sku: row.sku || `SKU-${brandVal.substring(0, 3).toUpperCase()}-${parsedWidth}${parsedAspectRatio}R${parsedRimSize}`,
-    productCode: row.product_code || row.productCode || `PRD-${Math.floor(1000 + Math.random() * 9000)}`,
-    pattern: row.pattern || (isEndutrax ? 'ENDUTRAX MD+' : 'Standard Tread'),
-    status: row.status || 'Active',
-    tags: Array.isArray(tags) ? tags : ['Radial'],
-    components: Array.isArray(components) ? components : [],
-    includedComponents: row.included_components || row.includedComponents || 'Tube & Flap',
-    tireType: (() => {
-      const raw = row.tire_type ?? row.tireType;
-      if (raw !== null && raw !== undefined && String(raw).trim() !== '') {
-        const cleaned = String(raw).trim().toLowerCase();
-        if (cleaned === 'non-radial' || cleaned === 'non radial' || cleaned === 'non_radial' || cleaned === 'bias') return 'Non-Radial';
-        if (cleaned === 'radial') return 'Radial';
-      }
-      return 'Radial';
-    })(),
-    tire_type: (() => {
-      const raw = row.tire_type ?? row.tireType;
-      if (raw !== null && raw !== undefined && String(raw).trim() !== '') {
-        const cleaned = String(raw).trim().toLowerCase();
-        if (cleaned === 'non-radial' || cleaned === 'non radial' || cleaned === 'non_radial' || cleaned === 'bias') return 'Non-Radial';
-        if (cleaned === 'radial') return 'Radial';
-      }
-      return 'Radial';
-    })(),
-    createdAt: row.created_at || row.createdAt || new Date().toISOString(),
-    updatedAt: row.updated_at || row.updatedAt || new Date().toISOString()
+    name: row.name || 'Product',
+    description: row.description || '',
+    price: priceVal,
+    mrp: row.mrp !== undefined ? Number(row.mrp) : priceVal,
+    dealerPrice: row.dealerPrice !== undefined ? Number(row.dealerPrice) : (row.dealer_price !== undefined ? Number(row.dealer_price) : undefined),
+    bulkPrice: row.bulkPrice !== undefined ? Number(row.bulkPrice) : (row.bulk_price !== undefined ? Number(row.bulk_price) : undefined),
+    image: imageUrl,
+    image_url: imageUrl || null,
+    images: imagesList,
+    brand: row.brand || undefined,
+    category: row.category || undefined,
+    stock: row.stock !== undefined && row.stock !== null ? Number(row.stock) : undefined,
+    width: row.width !== undefined ? Number(row.width) : undefined,
+    aspectRatio: (row.aspectRatio ?? row.aspect_ratio) !== undefined ? Number(row.aspectRatio ?? row.aspect_ratio) : undefined,
+    rimSize: (row.rimSize ?? row.rim_size) !== undefined ? Number(row.rimSize ?? row.rim_size) : undefined,
+    speedRating: row.speedRating || row.speed_rating || undefined,
+    loadIndex: (row.loadIndex ?? row.load_index) !== undefined ? Number(row.loadIndex ?? row.load_index) : undefined,
+    warrantyYears: (row.warrantyYears ?? row.warranty_years) !== undefined ? Number(row.warrantyYears ?? row.warranty_years) : undefined,
+    fuelEfficiency: row.fuelEfficiency || row.fuel_efficiency || undefined,
+    wetGrip: row.wetGrip || row.wet_grip || undefined,
+    noiseDb: (row.noiseDb ?? row.noise_db) !== undefined ? Number(row.noiseDb ?? row.noise_db) : undefined,
+    hsnCode: row.hsnCode || row.hsn_code || undefined,
+    sku: row.sku || undefined,
+    productCode: row.productCode || row.product_code || undefined,
+    pattern: row.pattern || undefined,
+    status: row.status || undefined,
+    tags: Array.isArray(row.tags) ? row.tags : undefined,
+    tireType: row.tireType || row.tire_type || undefined,
+    tire_type: row.tire_type || row.tireType || undefined,
   };
 }
 

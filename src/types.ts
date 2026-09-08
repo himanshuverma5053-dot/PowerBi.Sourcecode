@@ -19,28 +19,28 @@ export interface ProductComponentConfig {
 export interface TyreProduct {
   id: string;
   name: string;
-  brand: 'MRF' | 'Apollo' | 'CEAT' | 'Michelin' | 'Bridgestone' | 'Goodyear' | 'JK Tyre' | 'Pirelli' | string;
-  category: VehicleCategory;
-  width: number;
-  aspectRatio: number;
-  rimSize: number;
-  speedRating: string;
-  loadIndex: number;
+  brand?: 'MRF' | 'Apollo' | 'CEAT' | 'Michelin' | 'Bridgestone' | 'Goodyear' | 'JK Tyre' | 'Pirelli' | string;
+  category?: VehicleCategory | string;
+  width?: number;
+  aspectRatio?: number;
+  rimSize?: number;
+  speedRating?: string;
+  loadIndex?: number;
   price: number;
-  bulkPrice: number; // For 4+ tyres / Dealer Price
-  stock: number;
-  image: string;
-  image_url?: string;
-  terrain: TerrainType;
-  warrantyYears: number;
-  fuelEfficiency: 'A' | 'B' | 'C' | 'D';
-  wetGrip: 'A' | 'B' | 'C' | 'D';
-  noiseDb: number;
-  description: string;
-  compatibleVehicles: string[];
+  bulkPrice?: number; // For 4+ tyres / Dealer Price
+  stock?: number;
+  image?: string;
+  image_url?: string | null;
+  terrain?: TerrainType | string;
+  warrantyYears?: number;
+  fuelEfficiency?: 'A' | 'B' | 'C' | 'D' | string;
+  wetGrip?: 'A' | 'B' | 'C' | 'D' | string;
+  noiseDb?: number;
+  description?: string;
+  compatibleVehicles?: string[];
   featured?: boolean;
   evReady?: boolean;
-  hsnCode: string;
+  hsnCode?: string;
 
   // Dedicated Product Management fields
   sku?: string;
@@ -51,12 +51,12 @@ export interface TyreProduct {
   gstRate?: number; // default 18%
   minStockLevel?: number; // default 5
   images?: string[];
-  status?: 'Active' | 'Inactive' | 'Archived';
+  status?: 'Active' | 'Inactive' | 'Archived' | string;
   tags?: string[];
   components?: ProductComponentConfig[];
   includedComponents?: string;
-  tireType?: 'Radial' | 'Non-Radial';
-  tire_type?: 'Radial' | 'Non-Radial';
+  tireType?: 'Radial' | 'Non-Radial' | string;
+  tire_type?: 'Radial' | 'Non-Radial' | string;
   createdAt?: string;
   updatedAt?: string;
 }

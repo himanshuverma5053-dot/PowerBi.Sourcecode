@@ -91,21 +91,17 @@ export default function App() {
     safeSetLocalStorage('magadh_interface_mode', interfaceMode);
   }, [interfaceMode]);
 
-  const initializeProducts = (rawList: TyreProduct[]): TyreProduct[] => {
-    return rawList.map(p => ({
-      ...p,
-      image: p.image || '',
-      images: p.images || []
-    }));
-  };
-
-  // Shared Master State 1: Products (fetched live from backend or fallback)
+  // Shared Master State 1: Products (fetched live from backend)
   const [products, setProducts] = useState<TyreProduct[]>(() => {
+    const cachedDb = safeGetLocalStorage<TyreProduct[]>('magadh_products_db', []);
+    if (cachedDb && cachedDb.length > 0) {
+      return cachedDb.map(normalizeProductRow);
+    }
     const cached = safeGetLocalStorage<TyreProduct[]>('magadh_products', []);
     if (cached && cached.length > 0) {
-      return initializeProducts(cached);
+      return cached.map(normalizeProductRow);
     }
-    return initializeProducts(MOCK_TYRES);
+    return [];
   });
   const [isProductsLoading, setIsProductsLoading] = useState<boolean>(false);
 
@@ -203,26 +199,39 @@ export default function App() {
 
       // If invokeUrl returns non-ok (such as 403 on case-sensitive stage name), try stageUrl
       if (!response || !response.ok) {
-        response = await fetch(stageUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
+        try {
+          response = await fetch(stageUrl, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+        } catch {
+          response = null;
+        }
       }
 
-      if (!response.ok) {
+      // Fallback to local server proxy if direct CORS fails
+      if (!response || !response.ok) {
+        try {
+          response = await fetch('/api/products');
+        } catch {
+          // Ignore
+        }
+      }
+
+      if (!response || !response.ok) {
         throw new Error('Failed to fetch products');
       }
 
       const data = await response.json();
 
       // If Lambda returns API Gateway proxy format (body is a JSON string)
-      const products = data.body
-        ? (typeof data.body === 'string' ? JSON.parse(data.body).products : data.body.products)
-        : data.products;
+      const rawProducts = data.body
+        ? (typeof data.body === 'string' ? JSON.parse(data.body).products || JSON.parse(data.body) : data.body.products || data.body)
+        : (data.products || data.data || (Array.isArray(data) ? data : []));
 
-      displayProducts(products);
+      displayProducts(rawProducts);
     } catch (error) {
       console.error('Error:', error);
       const container = document.getElementById('products-container');

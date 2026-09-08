@@ -48,9 +48,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {/* Top Badges Overlay */}
       <div className="p-3 pb-0 flex justify-between items-start z-10 gap-1">
         <div className="flex flex-wrap gap-1 items-center">
-          <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-slate-900 text-white shadow-2xs">
-            {product.brand}
-          </span>
+          {product.brand && (
+            <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-slate-900 text-white shadow-2xs">
+              {product.brand}
+            </span>
+          )}
           {product.evReady && (
             <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-900 flex items-center">
               <Zap className="w-2.5 h-2.5 mr-0.5 text-emerald-700 fill-emerald-700" />
@@ -65,15 +67,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         <div className="text-right shrink-0">
-          {product.stock > 0 ? (
+          {(product.stock !== undefined && product.stock > 0) ? (
             <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-slate-100 text-slate-800">
               {product.stock} in Stock
             </span>
-          ) : (
+          ) : product.stock === 0 ? (
             <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-amber-100 text-amber-900">
               Pre-Order
             </span>
-          )}
+          ) : null}
         </div>
       </div>
 
@@ -81,9 +83,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       <div
         className="relative h-32 sm:h-36 w-full flex items-center justify-center p-3 overflow-hidden bg-slate-50/70 mt-1 select-none"
       >
-        {product.image || product.images?.[0] ? (
+        {product.image || product.image_url || product.images?.[0] ? (
           <img
-            src={product.image || product.images?.[0]}
+            src={product.image_url || product.image || product.images?.[0]}
             alt={product.name}
             className="max-h-28 sm:max-h-32 max-w-full object-contain"
             referrerPolicy="no-referrer"
@@ -96,10 +98,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {/* Product Content Details */}
       <div className="p-3.5 pt-0 flex-1 flex flex-col justify-between space-y-2.5 mt-2">
         <div>
-          {/* Tyre Dimension Badge */}
-          <div className="text-[10px] font-extrabold text-amber-900 tracking-wide uppercase bg-amber-100 inline-block px-2 py-0.5 rounded-md mb-1">
-            {product.width}/{product.aspectRatio} R{product.rimSize} | {product.speedRating}
-          </div>
+          {/* Tyre Dimension Badge if present */}
+          {product.width && product.aspectRatio && product.rimSize ? (
+            <div className="text-[10px] font-extrabold text-amber-900 tracking-wide uppercase bg-amber-100 inline-block px-2 py-0.5 rounded-md mb-1">
+              {product.width}/{product.aspectRatio} R{product.rimSize} {product.speedRating ? `| ${product.speedRating}` : ''}
+            </div>
+          ) : null}
 
           <h3
             className="text-xs sm:text-sm font-extrabold text-slate-900 line-clamp-1 font-display"
@@ -107,26 +111,36 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             {product.name}
           </h3>
 
-          <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
-            {product.description}
-          </p>
+          {product.description && (
+            <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
+              {product.description}
+            </p>
+          )}
         </div>
 
-        {/* Specs Pill Grid */}
-        <div className="grid grid-cols-3 gap-1 bg-slate-50 p-1.5 rounded-lg text-[10px] font-semibold text-slate-900">
-          <div className="text-center">
-            <span className="text-[8px] text-slate-500 block uppercase font-bold">Eff.</span>
-            <span className="text-slate-950 font-extrabold">{product.fuelEfficiency}</span>
+        {/* Specs Pill Grid if present */}
+        {(product.fuelEfficiency || product.wetGrip || product.noiseDb) ? (
+          <div className="grid grid-cols-3 gap-1 bg-slate-50 p-1.5 rounded-lg text-[10px] font-semibold text-slate-900">
+            {product.fuelEfficiency && (
+              <div className="text-center">
+                <span className="text-[8px] text-slate-500 block uppercase font-bold">Eff.</span>
+                <span className="text-slate-950 font-extrabold">{product.fuelEfficiency}</span>
+              </div>
+            )}
+            {product.wetGrip && (
+              <div className="text-center">
+                <span className="text-[8px] text-slate-500 block uppercase font-bold">Grip</span>
+                <span className="text-slate-950 font-extrabold">{product.wetGrip}</span>
+              </div>
+            )}
+            {product.noiseDb && (
+              <div className="text-center">
+                <span className="text-[8px] text-slate-500 block uppercase font-bold">Noise</span>
+                <span className="text-slate-950 font-extrabold">{product.noiseDb} dB</span>
+              </div>
+            )}
           </div>
-          <div className="text-center">
-            <span className="text-[8px] text-slate-500 block uppercase font-bold">Grip</span>
-            <span className="text-slate-950 font-extrabold">{product.wetGrip}</span>
-          </div>
-          <div className="text-center">
-            <span className="text-[8px] text-slate-500 block uppercase font-bold">Noise</span>
-            <span className="text-slate-950 font-extrabold">{product.noiseDb} dB</span>
-          </div>
-        </div>
+        ) : null}
 
         {/* Pricing & Quantity + Buy Now */}
         <div className="pt-2 space-y-2">
