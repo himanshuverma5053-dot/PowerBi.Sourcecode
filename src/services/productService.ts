@@ -126,11 +126,11 @@ export function normalizeProductRow(row: any): TyreProduct {
 /**
  * AWS API Gateway Invoke URL to fetch products directly from DynamoDB and S3 bucket via Lambda
  */
-export const AWS_PRODUCT_INVOKE_URL = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/prod/productAPI';
+export const AWS_PRODUCT_INVOKE_URL = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/ProductAPI';
 
 // Fetch products from Lambda function via API Gateway directly from DynamoDB and S3 bucket
 export async function fetchProducts(): Promise<TyreProduct[]> {
-  const invokeUrl = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/prod/productAPI'; // Your invoke URL
+  const invokeUrl = 'https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/ProductAPI'; // Your invoke URL
 
   try {
     const controller = new AbortController();

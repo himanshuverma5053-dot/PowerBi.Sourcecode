@@ -11,7 +11,7 @@ export async function getAllProducts(req: Request, res: Response) {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 2000);
-    const awsRes = await fetch('https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/prod/productAPI', {
+    const awsRes = await fetch('https://rauqc7kcx2.execute-api.us-east-1.amazonaws.com/Prod/ProductAPI', {
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal
     }).catch(() => null);
