@@ -33,6 +33,8 @@ interface ProfilePageProps {
   currentUserEmail?: string;
   customerAccounts?: CustomerAccount[];
   onUpdateCustomerAccounts?: (accounts: CustomerAccount[]) => void;
+  initialFocusSection?: string | null;
+  onClearFocusSection?: () => void;
 }
 
 export const ProfilePage: React.FC<ProfilePageProps> = ({
@@ -44,6 +46,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   currentUserEmail,
   customerAccounts = [],
   onUpdateCustomerAccounts,
+  initialFocusSection,
+  onClearFocusSection,
 }) => {
   // Exact 5 required state fields bound to React state:
   // 'username', 'contact_number', 'email_address', 'GSTIN', 'workshop_address'
@@ -69,22 +73,93 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [deliveryLocation, setDeliveryLocation] = useState<string>('');
   const [address, setAddress] = useState<string>('');
   
-  // Form and AWS settings state - closed by default whenever customer views my profile page
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  // Form and AWS settings state - automatically expanded if navigated with target focus
+  const [isExpanded, setIsExpanded] = useState<boolean>(() => {
+    if (Boolean(initialFocusSection)) return true;
+    if (typeof window !== 'undefined') {
+      try {
+        return Boolean(sessionStorage.getItem('profile_target_focus'));
+      } catch {
+        return false;
+      }
+    }
+    return false;
+  });
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const isSubmittingRef = useRef<boolean>(false);
+  const prevUserRef = useRef<string>(currentUser);
 
   const [statusBanner, setStatusBanner] = useState<{
     type: 'success' | 'error' | 'warning' | 'info';
     message: string;
   } | null>(null);
 
-  // Always ensure the profile bar / accordion is closed whenever the customer views the profile page
+  // Close accordion only when explicitly switching to a different user account
   useEffect(() => {
-    setIsExpanded(false);
-  }, [currentUser]);
+    if (prevUserRef.current !== currentUser) {
+      prevUserRef.current = currentUser;
+      const hasTarget = initialFocusSection || (typeof window !== 'undefined' ? sessionStorage.getItem('profile_target_focus') : null);
+      if (!hasTarget) {
+        setIsExpanded(false);
+      }
+    }
+  }, [currentUser, initialFocusSection]);
+
+  // Handle auto-expansion and navigation directly to the address, phone number, and name section without any opening requirement
+  useEffect(() => {
+    let target = initialFocusSection;
+    if (!target && typeof window !== 'undefined') {
+      try {
+        target = sessionStorage.getItem('profile_target_focus');
+      } catch {
+        target = null;
+      }
+    }
+
+    if (target) {
+      // Immediately open the details section where address, phone, and name are located
+      setIsExpanded(true);
+
+      const focusTimer = setTimeout(() => {
+        const fieldMap: Record<string, string> = {
+          workshop_address: 'workshop_address',
+          address: 'workshop_address',
+          phone: 'contact_number',
+          contact_number: 'contact_number',
+          name: 'username',
+          username: 'username',
+          GSTIN: 'GSTIN',
+          gstin: 'GSTIN',
+          gst: 'GSTIN',
+        };
+        const elementId = fieldMap[target] || target || 'workshop_address';
+        const el = document.getElementById(elementId) || document.getElementById('workshop_address');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          (el as HTMLElement).focus();
+        }
+      }, 100);
+
+      // Clean up target focus markers gracefully without collapsing the open section
+      const cleanupTimer = setTimeout(() => {
+        try {
+          sessionStorage.removeItem('profile_target_focus');
+        } catch {
+          // ignore
+        }
+        if (onClearFocusSection) {
+          onClearFocusSection();
+        }
+      }, 3000);
+
+      return () => {
+        clearTimeout(focusTimer);
+        clearTimeout(cleanupTimer);
+      };
+    }
+  }, [initialFocusSection]);
 
   // Load profile from local storage and backend profile API
   useEffect(() => {
@@ -97,46 +172,28 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
-        const loadedUsername = parsed.username || parsed.userName || parsed.companyName || parsed.customerName || parsed.name || activeUser;
-        const loadedContact = parsed.contact_number || parsed.contactNumber || parsed.phone || '';
-        const loadedEmail = parsed.email_address || parsed.emailAddress || parsed.email || parsed.userId || currentUserEmail || '';
-        const loadedGstin = parsed.GSTIN || parsed.gstin || parsed.gstNumber || '';
-        const loadedAddress = parsed.workshop_address || parsed.workshopAddress || parsed.address || parsed.billingAddress || '';
+        const loadedUsername = parsed.username !== undefined ? parsed.username : (parsed.customerName !== undefined ? parsed.customerName : (parsed.name || ''));
+        const loadedContact = parsed.contact_number !== undefined ? parsed.contact_number : (parsed.phone || '');
+        const loadedEmail = parsed.email_address !== undefined ? parsed.email_address : (parsed.email || parsed.userId || '');
+        const loadedGstin = parsed.GSTIN !== undefined ? parsed.GSTIN : (parsed.gstNumber || '');
+        const loadedAddress = parsed.workshop_address !== undefined ? parsed.workshop_address : (parsed.address || '');
 
-        if (loadedUsername) {
-          setUsername(loadedUsername);
-          setName(loadedUsername);
-          setCompanyName(loadedUsername);
-        } else if (activeUser) {
-          setUsername(activeUser.toUpperCase());
-          setName(activeUser.toUpperCase());
-          setCompanyName(activeUser.toUpperCase());
-        }
+        setUsername(loadedUsername || '');
+        setName(loadedUsername || '');
+        setCompanyName(loadedUsername || '');
 
-        if (loadedContact) {
-          setContactNumber(loadedContact);
-          setPhone(loadedContact);
-        }
+        setContactNumber(loadedContact || '');
+        setPhone(loadedContact || '');
 
-        if (loadedEmail) {
-          setEmailAddress(loadedEmail);
-          setEmail(loadedEmail);
-          setUserId(loadedEmail);
-        } else if (currentUserEmail) {
-          setEmailAddress(currentUserEmail);
-          setEmail(currentUserEmail);
-          setUserId(currentUserEmail);
-        }
+        setEmailAddress(loadedEmail || '');
+        setEmail(loadedEmail || '');
+        setUserId(loadedEmail || '');
 
-        if (loadedGstin) {
-          setGSTIN(loadedGstin);
-          setGstNumber(loadedGstin);
-        }
+        setGSTIN(loadedGstin || '');
+        setGstNumber(loadedGstin || '');
 
-        if (loadedAddress) {
-          setWorkshopAddress(loadedAddress);
-          setAddress(loadedAddress);
-        }
+        setWorkshopAddress(loadedAddress || '');
+        setAddress(loadedAddress || '');
 
         if (parsed.deliveryLocation) {
           setDeliveryLocation(parsed.deliveryLocation);
@@ -158,12 +215,37 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         setUserId(currentUserEmail);
       }
       if (currentUser) {
-        setUsername(currentUser.toUpperCase());
-        setName(currentUser.toUpperCase());
-        setCompanyName(currentUser.toUpperCase());
+        setUsername(currentUser);
+        setName(currentUser);
+        setCompanyName(currentUser);
       }
     }
   }, [currentUser, currentUserEmail]);
+
+  // Synchronize live draft changes to localStorage and notify applet components dynamically
+  const updateDraftProfile = (partial: Record<string, any>) => {
+    try {
+      const activeUser = currentUser || '';
+      const userKey = activeUser ? `user_profile_${activeUser.toLowerCase()}` : null;
+      let existing: any = {};
+      const raw = userKey ? localStorage.getItem(userKey) || localStorage.getItem('user_profile') : localStorage.getItem('user_profile');
+      if (raw) {
+        try {
+          existing = JSON.parse(raw);
+        } catch {
+          existing = {};
+        }
+      }
+      const updated = { ...existing, ...partial, updatedAt: new Date().toISOString() };
+      if (userKey) {
+        localStorage.setItem(userKey, JSON.stringify(updated));
+      }
+      localStorage.setItem('user_profile', JSON.stringify(updated));
+      window.dispatchEvent(new Event('magadh_profile_updated'));
+    } catch {
+      // ignore
+    }
+  };
 
   // Recreated handler function for "Commit Updates" button - calls ONLY the AWS API Gateway endpoint
   const handleSave = async () => {
@@ -709,9 +791,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   type="text"
                   value={username}
                   onChange={(e) => {
-                    setUsername(e.target.value);
-                    setName(e.target.value);
-                    setCompanyName(e.target.value);
+                    const val = e.target.value;
+                    setUsername(val);
+                    setName(val);
+                    setCompanyName(val);
+                    updateDraftProfile({ username: val, name: val, customerName: val, companyName: val });
                   }}
                   className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#54b4e7] shadow-xs"
                   placeholder="Enter username (e.g. Himanshu Verma)"
@@ -730,8 +814,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   type="tel"
                   value={contact_number}
                   onChange={(e) => {
-                    setContactNumber(e.target.value);
-                    setPhone(e.target.value);
+                    const val = e.target.value;
+                    setContactNumber(val);
+                    setPhone(val);
+                    updateDraftProfile({ contact_number: val, 'contact number': val, phone: val });
                   }}
                   className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#54b4e7] shadow-xs"
                   placeholder="e.g. +91 9876543210"
@@ -750,9 +836,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   type="email"
                   value={email_address}
                   onChange={(e) => {
-                    setEmailAddress(e.target.value);
-                    setEmail(e.target.value);
-                    setUserId(e.target.value);
+                    const val = e.target.value;
+                    setEmailAddress(val);
+                    setEmail(val);
+                    setUserId(val);
+                    updateDraftProfile({ email_address: val, 'email address': val, email: val, userId: val });
                   }}
                   className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 lowercase focus:outline-none focus:border-[#54b4e7] shadow-xs"
                   placeholder="user@example.com"
@@ -771,8 +859,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   type="text"
                   value={GSTIN}
                   onChange={(e) => {
-                    setGSTIN(e.target.value.toUpperCase());
-                    setGstNumber(e.target.value.toUpperCase());
+                    const upper = e.target.value.toUpperCase();
+                    setGSTIN(upper);
+                    setGstNumber(upper);
+                    updateDraftProfile({ GSTIN: upper, gstin: upper, gstNumber: upper });
                   }}
                   className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-bold uppercase text-slate-900 focus:outline-none focus:border-[#54b4e7] font-mono shadow-xs"
                   placeholder="e.g. 21AAACM1234F1Z5"
@@ -791,8 +881,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   rows={2}
                   value={workshop_address}
                   onChange={(e) => {
-                    setWorkshopAddress(e.target.value);
-                    setAddress(e.target.value);
+                    const val = e.target.value;
+                    setWorkshopAddress(val);
+                    setAddress(val);
+                    updateDraftProfile({ workshop_address: val, 'workshop address': val, workshopAddress: val, address: val });
                   }}
                   className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#54b4e7] resize-none shadow-xs"
                   placeholder="e.g. Workshop / Factory Address, Street, City, State - PIN"

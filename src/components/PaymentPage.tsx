@@ -262,7 +262,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                 onClick={() => {
                   if (onCancelPayment) onCancelPayment(activeOrder);
                 }}
-                className="p-1 -ml-1 text-slate-900 hover:text-blue-600 hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
+                className="p-1 -ml-1 text-slate-900 hover:text-[#8a18ca] hover:bg-purple-50 rounded-full transition-colors cursor-pointer"
                 aria-label="Go back to order details"
               >
                 <ArrowLeft className="w-5 h-5 text-slate-900 stroke-[2.5]" />
@@ -276,8 +276,8 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
             </div>
 
             {/* Right: 100% Secure Badge */}
-            <div className="flex items-center space-x-1 px-2.5 py-1 rounded-md bg-[#f1f3f6] text-slate-700 text-xs font-semibold">
-              <Lock className="w-3.5 h-3.5 text-slate-700 stroke-[2.2]" />
+            <div className="flex items-center space-x-1 px-2.5 py-1 rounded-full bg-purple-50 text-[#8a18ca] text-xs font-semibold">
+              <Lock className="w-3.5 h-3.5 text-[#8a18ca] stroke-[2.2]" />
               <span>100% Secure</span>
             </div>
 
@@ -287,85 +287,102 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
         {/* MAIN BODY CONTAINER */}
         <main className="max-w-2xl mx-auto px-4 pt-2.5 space-y-3">
           
-          {/* 2. TOTAL AMOUNT BANNER (COLLAPSIBLE / EXPANDABLE BREAKDOWN) */}
-          <div className="bg-[#edf5fd] rounded-2xl p-4 transition-all">
+          {/* 2. TOTAL AMOUNT BANNER (COLLAPSIBLE / EXPANDABLE BREAKDOWN) - STYLED EXACTLY LIKE PRODUCT SECTION */}
+          <div className="product-card bg-white rounded-2xl px-4 sm:px-4.5 py-5 sm:py-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all duration-200">
             <div
               onClick={() => setIsTotalDetailsOpen(!isTotalDetailsOpen)}
-              className="flex items-center justify-between cursor-pointer"
+              className="flex items-start justify-between gap-2 cursor-pointer"
             >
-              <div className="flex items-center space-x-1.5 text-slate-800 font-bold text-sm sm:text-[15px]">
-                <span className="text-[#1064ea]">Total Amount</span>
-                <ChevronDown className={`w-4 h-4 text-[#1064ea] transition-transform duration-200 ${isTotalDetailsOpen ? 'rotate-180' : ''}`} />
+              <div>
+                <div className="flex items-center space-x-1.5">
+                  <h3 className="text-[16px] sm:text-[17px] font-extrabold font-display text-[#8a18ca] tracking-tight uppercase leading-relaxed">
+                    Total Amount
+                  </h3>
+                  <ChevronDown className={`w-4 h-4 text-[#8a18ca] transition-transform duration-200 ${isTotalDetailsOpen ? 'rotate-180' : ''}`} />
+                </div>
+                <p className="text-[10.5px] sm:text-[11.5px] text-slate-500 mt-0.5 line-clamp-1 leading-snug">
+                  Tax inclusive invoice total for verified delivery
+                </p>
               </div>
-              <div className="text-lg sm:text-xl font-black text-[#1064ea]">
-                ₹{totalPayable.toLocaleString('en-IN')}
+
+              <div className="text-right shrink-0">
+                <p className="price text-[18px] sm:text-[20px] font-extrabold text-[#8a18ca] tracking-tight leading-tight font-display">
+                  ₹{totalPayable.toLocaleString('en-IN')}{totalPayable % 1 === 0 ? '.00' : ''}
+                </p>
+                <span className="font-extrabold text-[8.5px] sm:text-[9.5px] text-[#43006A] tracking-wider uppercase px-2 py-0.5 rounded bg-purple-50 inline-block mt-0.5">
+                  Verified Total
+                </span>
               </div>
             </div>
 
             {/* Expandable Breakdown Details */}
             {isTotalDetailsOpen && (
-              <div className="mt-3 pt-3 border-t border-blue-200/60 text-xs text-slate-700 space-y-1.5 animate-fade-in">
+              <div className="mt-3.5 pt-3 border-t border-slate-100 text-xs text-slate-700 space-y-1.5 animate-fade-in">
                 <div className="flex justify-between">
-                  <span>Base Price / Subtotal:</span>
-                  <span className="font-semibold">₹{baseExcludingGst.toLocaleString('en-IN')}</span>
+                  <span className="text-slate-500">Base Price / Subtotal:</span>
+                  <span className="font-semibold text-slate-800">₹{baseExcludingGst.toLocaleString('en-IN')}.00</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>GST (18% Included):</span>
-                  <span className="font-semibold">₹{gstAmount.toLocaleString('en-IN')}</span>
+                  <span className="text-slate-500">GST (18% Included):</span>
+                  <span className="font-semibold text-slate-800">₹{gstAmount.toLocaleString('en-IN')}.00</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Protect Promise / Logistics:</span>
+                  <span className="text-slate-500">Protect Promise / Logistics:</span>
                   <span className="font-semibold text-emerald-700">Included</span>
                 </div>
-                <div className="flex justify-between font-bold pt-1 border-t border-blue-200/40 text-slate-900">
+                <div className="flex justify-between font-bold pt-2 border-t border-slate-100 text-slate-900 text-sm">
                   <span>Final Payable Amount:</span>
-                  <span className="text-[#1064ea]">₹{totalPayable.toLocaleString('en-IN')}</span>
+                  <span className="font-extrabold font-display text-[#8a18ca]">₹{totalPayable.toLocaleString('en-IN')}{totalPayable % 1 === 0 ? '.00' : ''}</span>
                 </div>
               </div>
             )}
           </div>
 
-          {/* 3. PAYMENT ACCORDIONS LIST (ON PURE WHITE WITH CRISP FLIPKART BORDERS) */}
-          <div className="divide-y divide-slate-100 border-t border-b border-slate-100">
+          {/* 3. PAYMENT ACCORDIONS LIST (ON PURE WHITE WITH PRODUCTS PAGE THEMED ACCENTS) */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden divide-y divide-slate-100 p-4 sm:p-5">
 
-            {/* SECTION A: RECOMMENDED FOR YOU (Instant UPI Option) */}
-            <div className="py-3.5">
+            {/* SECTION A: RECOMMENDED FOR YOU (Instant UPI Option) - STYLED AS PRODUCT SECTION */}
+            <div className="pb-4">
               <button
                 type="button"
                 onClick={() => toggleSection('recommended')}
-                className="w-full flex items-center justify-between text-left cursor-pointer group"
+                className="w-full flex items-start justify-between text-left cursor-pointer group gap-2"
               >
-                <div className="flex items-center space-x-3">
-                  <ThumbsUp className="w-5 h-5 text-slate-900 shrink-0 stroke-[2.2]" />
-                  <div>
-                    <span className="text-sm sm:text-[15px] font-bold text-slate-900 block">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <h3 className="text-[16px] sm:text-[17px] font-extrabold font-display text-[#8a18ca] tracking-tight uppercase leading-relaxed">
                       Recommended for You
-                    </span>
-                    <span className="text-[11px] font-bold text-emerald-600">
-                      Fastest & Zero Fee • Instant UPI
+                    </h3>
+                    <span className="font-extrabold text-[8.5px] sm:text-[9.5px] text-[#43006A] tracking-wider uppercase px-2 py-0.5 rounded bg-purple-50">
+                      Fastest
                     </span>
                   </div>
+                  <p className="text-[10.5px] sm:text-[11.5px] text-slate-500 mt-0.5 line-clamp-1 leading-snug">
+                    Zero convenience fee • Instant verified UPI settlement
+                  </p>
                 </div>
-                {expandedSection === 'recommended' ? (
-                  <ChevronUp className="w-5 h-5 text-slate-600" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-slate-600" />
-                )}
+                <div className="p-1 rounded-lg text-slate-400 group-hover:text-slate-600 transition-colors">
+                  {expandedSection === 'recommended' ? (
+                    <ChevronUp className="w-5 h-5 text-[#8a18ca]" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-slate-500" />
+                  )}
+                </div>
               </button>
 
               {expandedSection === 'recommended' && (
-                <div className="mt-3.5 pl-8 sm:pl-8 space-y-3.5 animate-fade-in">
+                <div className="mt-3.5 space-y-3.5 animate-fade-in border-t border-slate-100 pt-3">
                   
                   {/* Recommended UPI Apps Radio Selection */}
                   <div className="space-y-2 text-xs">
                     <label
                       onClick={() => setSelectedUpiApp('gpay')}
-                      className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${
-                        selectedUpiApp === 'gpay' ? 'border-[#1064ea] bg-[#f0f6ff]' : 'border-slate-200 bg-white hover:bg-slate-50'
+                      className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all duration-200 ${
+                        selectedUpiApp === 'gpay' ? 'border-[#8a18ca] bg-purple-50/60 ring-1 ring-[#8a18ca]/30' : 'border-slate-200 bg-white hover:bg-slate-50'
                       }`}
                     >
                       <div className="flex items-center space-x-2.5">
-                        <input type="radio" checked={selectedUpiApp === 'gpay'} readOnly className="accent-[#1064ea]" />
+                        <input type="radio" checked={selectedUpiApp === 'gpay'} readOnly className="accent-[#8a18ca]" />
                         <span className="font-bold text-slate-900">Google Pay UPI</span>
                       </div>
                       <span className="text-[11px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">
@@ -375,12 +392,12 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
 
                     <label
                       onClick={() => setSelectedUpiApp('phonepe')}
-                      className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${
-                        selectedUpiApp === 'phonepe' ? 'border-[#1064ea] bg-[#f0f6ff]' : 'border-slate-200 bg-white hover:bg-slate-50'
+                      className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all duration-200 ${
+                        selectedUpiApp === 'phonepe' ? 'border-[#8a18ca] bg-purple-50/60 ring-1 ring-[#8a18ca]/30' : 'border-slate-200 bg-white hover:bg-slate-50'
                       }`}
                     >
                       <div className="flex items-center space-x-2.5">
-                        <input type="radio" checked={selectedUpiApp === 'phonepe'} readOnly className="accent-[#1064ea]" />
+                        <input type="radio" checked={selectedUpiApp === 'phonepe'} readOnly className="accent-[#8a18ca]" />
                         <span className="font-bold text-slate-900">PhonePe UPI</span>
                       </div>
                       <span className="text-[11px] text-emerald-600 font-bold">Fast UPI</span>
@@ -388,24 +405,24 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
 
                     <label
                       onClick={() => setSelectedUpiApp('paytm')}
-                      className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${
-                        selectedUpiApp === 'paytm' ? 'border-[#1064ea] bg-[#f0f6ff]' : 'border-slate-200 bg-white hover:bg-slate-50'
+                      className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all duration-200 ${
+                        selectedUpiApp === 'paytm' ? 'border-[#8a18ca] bg-purple-50/60 ring-1 ring-[#8a18ca]/30' : 'border-slate-200 bg-white hover:bg-slate-50'
                       }`}
                     >
                       <div className="flex items-center space-x-2.5">
-                        <input type="radio" checked={selectedUpiApp === 'paytm'} readOnly className="accent-[#1064ea]" />
+                        <input type="radio" checked={selectedUpiApp === 'paytm'} readOnly className="accent-[#8a18ca]" />
                         <span className="font-bold text-slate-900">Paytm UPI</span>
                       </div>
                     </label>
 
                     <label
                       onClick={() => setSelectedUpiApp('custom_upi')}
-                      className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${
-                        selectedUpiApp === 'custom_upi' ? 'border-[#1064ea] bg-[#f0f6ff]' : 'border-slate-200 bg-white hover:bg-slate-50'
+                      className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all duration-200 ${
+                        selectedUpiApp === 'custom_upi' ? 'border-[#8a18ca] bg-purple-50/60 ring-1 ring-[#8a18ca]/30' : 'border-slate-200 bg-white hover:bg-slate-50'
                       }`}
                     >
                       <div className="flex items-center space-x-2.5">
-                        <input type="radio" checked={selectedUpiApp === 'custom_upi'} readOnly className="accent-[#1064ea]" />
+                        <input type="radio" checked={selectedUpiApp === 'custom_upi'} readOnly className="accent-[#8a18ca]" />
                         <span className="font-bold text-slate-900">Enter other UPI ID</span>
                       </div>
                     </label>
@@ -419,7 +436,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                         placeholder="e.g. mobile@upi or username@okhdfcbank"
                         value={customUpiId}
                         onChange={e => setCustomUpiId(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#1064ea] focus:outline-hidden"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-1 focus:ring-[#8a18ca] focus:border-[#8a18ca] focus:outline-hidden"
                       />
                     </div>
                   )}
@@ -430,21 +447,21 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                     <span>Instant payment confirmation with zero convenience fees.</span>
                   </div>
 
-                  {/* Flipkart Yellow Pay Button */}
+                  {/* Products page style purple Pay Button */}
                   <button
                     type="button"
                     id="btn-recommended-upi-pay"
                     onClick={() => handleExecutePayment(`Recommended UPI (${selectedUpiApp.toUpperCase()})`, activeOrder)}
                     disabled={isProcessing}
-                    className="w-full py-3.5 rounded-xl font-bold text-sm sm:text-base text-slate-950 bg-[#ffc200] hover:bg-[#f3b800] active:bg-[#e2aa00] shadow-xs transition-all duration-150 cursor-pointer active:scale-[0.99] flex items-center justify-center space-x-2"
+                    className="w-full h-10 sm:h-10.5 rounded-xl font-semibold text-xs sm:text-sm text-white bg-[#8a18ca] hover:bg-[#7b14b5] active:bg-[#6c109f] shadow-2xs transition-all duration-200 cursor-pointer active:scale-[0.98] flex items-center justify-center space-x-2 px-3 tracking-tight"
                   >
                     {isProcessing ? (
                       <>
-                        <span className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         <span>Processing UPI Payment...</span>
                       </>
                     ) : (
-                      <span>Pay ₹{totalPayable.toLocaleString('en-IN')}</span>
+                      <span>Pay ₹{totalPayable.toLocaleString('en-IN')}{totalPayable % 1 === 0 ? '.00' : ''}</span>
                     )}
                   </button>
                 </div>
@@ -469,7 +486,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                     <div className="text-xs text-slate-500 font-normal">
                       Pay by any UPI app
                     </div>
-                    <div className="text-[11px] font-bold text-emerald-600 mt-0.5">
+                    <div className="text-[11px] font-bold text-[#8a18ca] bg-purple-50 px-2 py-0.5 rounded-full inline-block mt-0.5">
                       Get upto ₹100 cashback • 3 offers available
                     </div>
                   </div>
@@ -489,11 +506,11 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                     <label
                       onClick={() => setSelectedUpiApp('gpay')}
                       className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${
-                        selectedUpiApp === 'gpay' ? 'border-[#1064ea] bg-[#f0f6ff]' : 'border-slate-200 bg-white hover:bg-slate-50'
+                        selectedUpiApp === 'gpay' ? 'border-[#8a18ca] bg-purple-50/60 ring-1 ring-[#8a18ca]/30' : 'border-slate-200 bg-white hover:bg-slate-50'
                       }`}
                     >
                       <div className="flex items-center space-x-2.5">
-                        <input type="radio" checked={selectedUpiApp === 'gpay'} readOnly className="accent-[#1064ea]" />
+                        <input type="radio" checked={selectedUpiApp === 'gpay'} readOnly className="accent-[#8a18ca]" />
                         <span className="font-bold text-slate-900">Google Pay</span>
                       </div>
                       <span className="text-[11px] text-emerald-600 font-bold">Offer applied</span>
@@ -502,11 +519,11 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                     <label
                       onClick={() => setSelectedUpiApp('phonepe')}
                       className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${
-                        selectedUpiApp === 'phonepe' ? 'border-[#1064ea] bg-[#f0f6ff]' : 'border-slate-200 bg-white hover:bg-slate-50'
+                        selectedUpiApp === 'phonepe' ? 'border-[#8a18ca] bg-purple-50/60 ring-1 ring-[#8a18ca]/30' : 'border-slate-200 bg-white hover:bg-slate-50'
                       }`}
                     >
                       <div className="flex items-center space-x-2.5">
-                        <input type="radio" checked={selectedUpiApp === 'phonepe'} readOnly className="accent-[#1064ea]" />
+                        <input type="radio" checked={selectedUpiApp === 'phonepe'} readOnly className="accent-[#8a18ca]" />
                         <span className="font-bold text-slate-900">PhonePe</span>
                       </div>
                       <span className="text-[11px] text-emerald-600 font-bold">Fast UPI</span>
@@ -515,11 +532,11 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                     <label
                       onClick={() => setSelectedUpiApp('paytm')}
                       className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${
-                        selectedUpiApp === 'paytm' ? 'border-[#1064ea] bg-[#f0f6ff]' : 'border-slate-200 bg-white hover:bg-slate-50'
+                        selectedUpiApp === 'paytm' ? 'border-[#8a18ca] bg-purple-50/60 ring-1 ring-[#8a18ca]/30' : 'border-slate-200 bg-white hover:bg-slate-50'
                       }`}
                     >
                       <div className="flex items-center space-x-2.5">
-                        <input type="radio" checked={selectedUpiApp === 'paytm'} readOnly className="accent-[#1064ea]" />
+                        <input type="radio" checked={selectedUpiApp === 'paytm'} readOnly className="accent-[#8a18ca]" />
                         <span className="font-bold text-slate-900">Paytm UPI</span>
                       </div>
                     </label>
@@ -527,11 +544,11 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                     <label
                       onClick={() => setSelectedUpiApp('custom_upi')}
                       className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${
-                        selectedUpiApp === 'custom_upi' ? 'border-[#1064ea] bg-[#f0f6ff]' : 'border-slate-200 bg-white hover:bg-slate-50'
+                        selectedUpiApp === 'custom_upi' ? 'border-[#8a18ca] bg-purple-50/60 ring-1 ring-[#8a18ca]/30' : 'border-slate-200 bg-white hover:bg-slate-50'
                       }`}
                     >
                       <div className="flex items-center space-x-2.5">
-                        <input type="radio" checked={selectedUpiApp === 'custom_upi'} readOnly className="accent-[#1064ea]" />
+                        <input type="radio" checked={selectedUpiApp === 'custom_upi'} readOnly className="accent-[#8a18ca]" />
                         <span className="font-bold text-slate-900">Enter UPI ID</span>
                       </div>
                     </label>
@@ -539,11 +556,11 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                     <label
                       onClick={() => setSelectedUpiApp('qr')}
                       className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${
-                        selectedUpiApp === 'qr' ? 'border-[#1064ea] bg-[#f0f6ff]' : 'border-slate-200 bg-white hover:bg-slate-50'
+                        selectedUpiApp === 'qr' ? 'border-[#8a18ca] bg-purple-50/60 ring-1 ring-[#8a18ca]/30' : 'border-slate-200 bg-white hover:bg-slate-50'
                       }`}
                     >
                       <div className="flex items-center space-x-2.5">
-                        <input type="radio" checked={selectedUpiApp === 'qr'} readOnly className="accent-[#1064ea]" />
+                        <input type="radio" checked={selectedUpiApp === 'qr'} readOnly className="accent-[#8a18ca]" />
                         <span className="font-bold text-slate-900">Scan QR Code</span>
                       </div>
                       <QrCode className="w-4 h-4 text-slate-700" />
@@ -558,14 +575,14 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                         placeholder="e.g. mobile@upi or username@okhdfcbank"
                         value={customUpiId}
                         onChange={e => setCustomUpiId(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#1064ea] focus:outline-none"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-1 focus:ring-[#8a18ca] focus:border-[#8a18ca] focus:outline-none"
                       />
                     </div>
                   )}
 
                   {/* Scan QR Code Container */}
                   {selectedUpiApp === 'qr' && (
-                    <div className="p-4 bg-[#f5f6f8] rounded-xl flex flex-col items-center justify-center space-y-2 text-center">
+                    <div className="p-4 bg-slate-50 rounded-xl flex flex-col items-center justify-center space-y-2 text-center border border-slate-200/80">
                       <div className="w-28 h-28 bg-white p-2 rounded-lg border border-slate-200 flex items-center justify-center shadow-xs">
                         <QrCode className="w-24 h-24 text-slate-800" />
                       </div>
@@ -580,7 +597,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                     type="button"
                     onClick={() => handleExecutePayment(`UPI (${selectedUpiApp.toUpperCase()})`, activeOrder)}
                     disabled={isProcessing}
-                    className="w-full py-3.5 rounded-xl font-bold text-sm sm:text-base text-slate-950 bg-[#ffc200] hover:bg-[#f3b800] active:bg-[#e2aa00] shadow-xs transition-all duration-150 cursor-pointer active:scale-[0.99] flex items-center justify-center space-x-2"
+                    className="w-full py-3.5 rounded-xl font-semibold text-xs sm:text-sm text-white bg-[#8a18ca] hover:bg-[#7b14b5] active:bg-[#6c109f] shadow-2xs transition-all duration-200 cursor-pointer active:scale-[0.98] flex items-center justify-center space-x-2"
                   >
                     <span>Pay ₹{totalPayable.toLocaleString('en-IN')}</span>
                   </button>
@@ -589,19 +606,19 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
               )}
             </div>
 
-            {/* SECTION G: HAVE A FLIPKART GIFT CARD? */}
+            {/* SECTION G: HAVE A GIFT CARD? */}
             <div className="py-3.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <Gift className="w-5 h-5 text-slate-900 shrink-0 stroke-[2.2]" />
                   <span className="text-sm sm:text-[15px] font-bold text-slate-900">
-                    Have a Flipkart Gift Card?
+                    Have a Gift Card?
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => toggleSection('gift_card')}
-                  className="text-xs sm:text-sm font-bold text-[#1064ea] hover:text-[#0b4dc1] cursor-pointer hover:underline"
+                  className="text-xs sm:text-sm font-bold text-[#8a18ca] hover:text-[#7b14b5] cursor-pointer hover:underline"
                 >
                   {expandedSection === 'gift_card' ? 'Close' : 'Add'}
                 </button>
@@ -617,7 +634,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                         placeholder="16-digit card number"
                         value={giftCardNumber}
                         onChange={e => setGiftCardNumber(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#1064ea] focus:outline-none"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-1 focus:ring-[#8a18ca] focus:border-[#8a18ca] focus:outline-none"
                       />
                     </div>
                     <div>
@@ -628,7 +645,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                         placeholder="PIN"
                         value={giftCardPin}
                         onChange={e => setGiftCardPin(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-[#1064ea] focus:outline-none"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-1 focus:ring-[#8a18ca] focus:border-[#8a18ca] focus:outline-none"
                       />
                     </div>
                   </div>
@@ -637,10 +654,10 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                     type="button"
                     onClick={() => {
                       setGiftCardApplied(true);
-                      handleExecutePayment('Flipkart Gift Card', activeOrder);
+                      handleExecutePayment('Gift Card', activeOrder);
                     }}
                     disabled={!giftCardNumber || !giftCardPin || isProcessing}
-                    className="w-full py-3 rounded-xl font-bold text-xs sm:text-sm text-slate-950 bg-[#ffc200] hover:bg-[#f3b800] disabled:opacity-50 transition-all cursor-pointer"
+                    className="w-full py-3 rounded-xl font-semibold text-xs sm:text-sm text-white bg-[#8a18ca] hover:bg-[#7b14b5] active:bg-[#6c109f] disabled:opacity-50 transition-all cursor-pointer shadow-2xs"
                   >
                     Apply & Settle
                   </button>
@@ -649,7 +666,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
             </div>
 
             {/* SECTION H: DIRECT BANK TRANSFER (B2B WHOLESALE) */}
-            <div className="py-3.5">
+            <div className="pt-3.5">
               <button
                 type="button"
                 onClick={() => toggleSection('bank_transfer')}
@@ -676,7 +693,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
               {expandedSection === 'bank_transfer' && (
                 <div className="mt-3.5 pl-8 space-y-3 animate-fade-in">
                   
-                  <div className="bg-[#f5f6f8] rounded-xl p-3 text-xs space-y-1.5 text-slate-700 font-medium">
+                  <div className="bg-slate-50 rounded-xl p-3 text-xs space-y-1.5 text-slate-700 font-medium border border-slate-200/80">
                     <div className="flex justify-between">
                       <span className="text-slate-500">Beneficiary:</span>
                       <strong className="text-slate-900">Magadh Sparsh Logistics LLP</strong>
@@ -704,7 +721,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                       placeholder="e.g. UTR108293847291"
                       value={bankUtrNumber}
                       onChange={e => setBankUtrNumber(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-mono focus:ring-2 focus:ring-[#1064ea] focus:outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-mono focus:ring-1 focus:ring-[#8a18ca] focus:border-[#8a18ca] focus:outline-none"
                     />
                   </div>
 
@@ -712,7 +729,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                     type="button"
                     onClick={() => handleExecutePayment('Direct Bank Transfer (NEFT/RTGS)', activeOrder)}
                     disabled={isProcessing}
-                    className="w-full py-3.5 rounded-xl font-bold text-sm sm:text-base text-slate-950 bg-[#ffc200] hover:bg-[#f3b800] active:bg-[#e2aa00] shadow-xs transition-all duration-150 cursor-pointer active:scale-[0.99] flex items-center justify-center space-x-2"
+                    className="w-full py-3.5 rounded-xl font-semibold text-xs sm:text-sm text-white bg-[#8a18ca] hover:bg-[#7b14b5] active:bg-[#6c109f] shadow-2xs transition-all duration-200 cursor-pointer active:scale-[0.98] flex items-center justify-center space-x-2"
                   >
                     <span>Confirm Bank Transfer</span>
                   </button>
@@ -738,7 +755,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
   }
 
   // =========================================================================
-  // VIEW 2: GENERAL PAYMENTS & INVOICES (CLEAN FLIPKART THEME ON PURE WHITE)
+  // VIEW 2: GENERAL PAYMENTS & INVOICES (PRODUCTS PAGE UNIFIED THEME)
   // =========================================================================
   const selectedTotalAmount = allOrders
     .filter(o => selectedInvoiceIds.includes(o.id))
@@ -755,7 +772,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
               Payments & Invoices
             </h1>
           </div>
-          <div className="px-2.5 py-1 rounded-md bg-[#edf5fd] text-[#1064ea] text-xs font-bold">
+          <div className="px-2.5 py-1 rounded-full bg-purple-50 text-[#8a18ca] text-xs font-bold">
             {allOrders.filter(o => o.paymentStatus !== 'Paid').length} Due
           </div>
         </div>
@@ -765,7 +782,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
       <main className="max-w-2xl mx-auto px-4 pt-2.5 space-y-3">
         
         {/* Filters Card */}
-        <div className="bg-[#f5f6f8] rounded-2xl p-4 sm:p-5 space-y-3">
+        <div className="bg-white rounded-2xl p-4 sm:p-5 space-y-3 border border-slate-200/80 shadow-xs">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">
@@ -777,7 +794,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                   setSortBy(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#1064ea] cursor-pointer"
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#8a18ca] focus:border-[#8a18ca] cursor-pointer"
               >
                 <option value="inv_due_asc">Inv. Due Date (Asc)</option>
                 <option value="inv_due_desc">Inv. Due Date (Desc)</option>
@@ -798,7 +815,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                   setViewStatus(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#1064ea] cursor-pointer"
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#8a18ca] focus:border-[#8a18ca] cursor-pointer"
               >
                 <option value="Outstanding">Outstanding</option>
                 <option value="Paid">Paid</option>
@@ -841,7 +858,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                     onClick={() => setCurrentPage(num)}
                     className={`min-w-[28px] sm:min-w-[32px] h-7 px-1.5 sm:px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center cursor-pointer shrink-0 ${
                       currentPage === num
-                        ? 'bg-[#1064ea] text-white shadow-xs font-black'
+                        ? 'bg-[#8a18ca] text-white shadow-2xs font-black'
                         : 'text-slate-600 hover:bg-slate-100'
                     }`}
                   >
@@ -875,7 +892,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
             >
               <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
                 paginatedOrders.every(o => selectedInvoiceIds.includes(o.id))
-                  ? 'bg-[#1064ea] border-[#1064ea] text-white'
+                  ? 'bg-[#8a18ca] border-[#8a18ca] text-white'
                   : 'border-slate-300 bg-white'
               }`}>
                 {paginatedOrders.every(o => selectedInvoiceIds.includes(o.id)) && <Check className="w-3 h-3 stroke-[3]" />}
@@ -889,7 +906,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
         {/* Invoices List */}
         <div className="space-y-3">
           {paginatedOrders.length === 0 ? (
-            <div className="bg-[#f5f6f8] rounded-2xl p-8 text-center space-y-2">
+            <div className="bg-white rounded-2xl p-8 text-center space-y-2 border border-slate-200/80 shadow-xs">
               <FileText className="w-8 h-8 text-slate-300 mx-auto" />
               <h3 className="text-sm font-bold text-slate-800">No Invoices Found</h3>
               <p className="text-xs text-slate-500">There are no invoices matching your current filter.</p>
@@ -904,8 +921,8 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
               return (
                 <div
                   key={order.id}
-                  className={`bg-[#f5f6f8] rounded-2xl p-4 sm:p-4.5 border transition-all ${
-                    isSelected ? 'border-[#1064ea] ring-1 ring-[#1064ea]' : 'border-slate-200/80'
+                  className={`bg-white rounded-2xl p-4 sm:p-4.5 border transition-all shadow-xs ${
+                    isSelected ? 'border-[#8a18ca] ring-1 ring-[#8a18ca] bg-purple-50/20' : 'border-slate-200/80'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -918,7 +935,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                           className="sr-only"
                         />
                         <div className={`w-4 h-4 rounded border transition-all flex items-center justify-center ${
-                          isSelected ? 'bg-[#1064ea] border-[#1064ea] text-white' : 'border-slate-300 bg-white'
+                          isSelected ? 'bg-[#8a18ca] border-[#8a18ca] text-white' : 'border-slate-300 bg-white'
                         }`}>
                           {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
                         </div>
@@ -927,14 +944,14 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                       <button
                         type="button"
                         onClick={() => onViewInvoice ? onViewInvoice(order) : handleInitiateSinglePayment(order)}
-                        className="text-[#1064ea] font-extrabold font-mono text-sm hover:underline cursor-pointer"
+                        className="text-[#8a18ca] font-extrabold font-mono text-sm hover:underline cursor-pointer"
                       >
                         #{order.orderNumber}
                       </button>
                     </div>
 
                     <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                      <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
                         isPaid ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
                       }`}>
                         {isPaid ? 'Paid' : 'Outstanding'}
@@ -942,7 +959,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                     </div>
                   </div>
 
-                  <div className="mt-2.5 pt-2.5 border-t border-slate-200/80 flex items-baseline justify-between text-xs">
+                  <div className="mt-2.5 pt-2.5 border-t border-slate-100 flex items-baseline justify-between text-xs">
                     <span className="text-slate-500">Total Amount:</span>
                     <span className="font-extrabold text-sm text-slate-900">
                       {formatAmountINR(order.totalAmount)}
@@ -955,11 +972,11 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                   </div>
 
                   {!isPaid && (
-                    <div className="mt-3 pt-2.5 border-t border-slate-200/80 flex justify-end">
+                    <div className="mt-3 pt-2.5 border-t border-slate-100 flex justify-end">
                       <button
                         type="button"
                         onClick={() => handleInitiateSinglePayment(order)}
-                        className="px-4 py-1.5 rounded-lg bg-[#ffc200] hover:bg-[#f3b800] text-slate-950 font-bold text-xs shadow-2xs transition-all cursor-pointer active:scale-95"
+                        className="px-4 py-1.5 rounded-xl bg-[#8a18ca] hover:bg-[#7b14b5] active:bg-[#6c109f] text-white font-semibold text-xs shadow-2xs transition-all cursor-pointer active:scale-95"
                       >
                         Pay {formatAmountINR(order.totalAmount)}
                       </button>
@@ -994,7 +1011,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
               <button
                 type="button"
                 onClick={handleInitiateBulkPayment}
-                className="px-5 py-2 rounded-xl bg-[#ffc200] hover:bg-[#f3b800] text-slate-950 font-bold text-xs shadow-xs cursor-pointer active:scale-95"
+                className="px-5 py-2 rounded-xl bg-[#8a18ca] hover:bg-[#7b14b5] active:bg-[#6c109f] text-white font-semibold text-xs shadow-2xs cursor-pointer active:scale-95"
               >
                 Pay Selected
               </button>
@@ -1024,9 +1041,9 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
               </button>
             </div>
 
-            <div className="p-3.5 bg-[#f5f6f8] rounded-xl flex justify-between items-baseline text-xs">
+            <div className="p-3.5 bg-purple-50/60 border border-purple-100/80 rounded-xl flex justify-between items-baseline text-xs">
               <span className="font-bold text-slate-700">Total Payable:</span>
-              <span className="text-lg font-black text-slate-900">
+              <span className="text-lg font-black text-[#8a18ca]">
                 {formatAmountINR(paymentModalOrders.reduce((sum, o) => sum + o.totalAmount, 0))}
               </span>
             </div>
@@ -1051,7 +1068,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({
                   });
                   setIsPaymentModalOpen(false);
                 }}
-                className="w-full py-3 rounded-xl font-bold text-sm text-slate-950 bg-[#ffc200] hover:bg-[#f3b800] shadow-xs cursor-pointer active:scale-98"
+                className="w-full py-3 rounded-xl font-semibold text-sm text-white bg-[#8a18ca] hover:bg-[#7b14b5] active:bg-[#6c109f] shadow-2xs cursor-pointer active:scale-98"
               >
                 Confirm & Pay Now
               </button>
